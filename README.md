@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="./.github/logo.svg" alt="Rawi Logo" width="800"/>
+</div>
+
 # Rawi (راوي)
 
 <div align="center">
@@ -5,28 +9,32 @@
     <img src="https://img.shields.io/badge/github-%23181717.svg?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Repository"/>
   </a>
 
+  <a href="https://github.com/MKAbuMattar/rawi/releases" target="_blank" rel="noreferrer">
+    <img alt="GitHub Release" src="https://img.shields.io/github/v/release/MKAbuMattar/rawi?color=%23ce712e&label=Latest%20release&style=for-the-badge&logo=github" />
+  </a>
+
   <a href="https://www.npmjs.com/package/rawi/v/latest" target="_blank" rel="noreferrer">
-    <img src="https://img.shields.io/npm/v/rawi/latest?style=for-the-badge&logo=npm&logoColor=white&color=d52128" alt="Latest NPM Version"/>
+    <img src="https://img.shields.io/npm/v/rawi/latest?style=for-the-badge&logo=npm&logoColor=white&color=ce712e" alt="Latest NPM Version"/>
   </a>
 
   <a href="https://www.npmjs.com/package/rawi/v/beta" target="_blank" rel="noreferrer">
-    <img src="https://img.shields.io/npm/v/rawi/beta?style=for-the-badge&logo=npm&logoColor=white&color=d52128" alt="Beta NPM Version"/>
-  </a>
-  
-  <a href="https://github.com/MKAbuMattar/rawi/releases" target="_blank" rel="noreferrer">
-    <img alt="GitHub Release" src="https://img.shields.io/github/v/release/MKAbuMattar/rawi?color=%23d52128&label=Latest%20release&style=for-the-badge" />
+    <img src="https://img.shields.io/npm/v/rawi/beta?style=for-the-badge&logo=npm&logoColor=white&color=ce712e" alt="Beta NPM Version"/>
   </a>
 
   <a href="/LICENSE" target="_blank" rel="noreferrer">
-    <img alt="GitHub License" src="https://img.shields.io/github/license/MKAbuMattar/rawi?color=%23d52128&style=for-the-badge">
+    <img alt="GitHub License" src="https://img.shields.io/github/license/MKAbuMattar/rawi?color=%23ce712e&style=for-the-badge">
   </a>
 
   <a href="https://github.com/MKAbuMattar/rawi/stargazers" target="_blank" rel="noreferrer">
-    <img alt="GitHub Stars" src="https://img.shields.io/github/stars/MKAbuMattar/rawi?color=%23d52128&label=GitHub%20Stars&style=for-the-badge">
+    <img alt="GitHub Stars" src="https://img.shields.io/github/stars/MKAbuMattar/rawi?color=%23ce712e&label=GitHub%20Stars&style=for-the-badge">
   </a>
 </div>
 
+<div align="center">
+
 > _Bringing the art of storytelling to your command line._
+
+</div>
 
 **Rawi** (راوي) is a developer-friendly AI-powered CLI tool that delivers clear answers, summaries, and analyses directly in your terminal. Inspired by the rich Jordanian storytelling tradition, Rawi transforms your command line into an intelligent assistant for your development workflow.
 
