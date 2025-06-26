@@ -10,6 +10,9 @@
 - name: question
   color: d876e3
   description: Further information, clarification, or discussion is requested.
+- name: good first issue
+  color: 7057ff
+  description: Ideal for newcomers, requires minimal project knowledge.
 - name: help wanted
   color: 008672
   description: This issue requires extra attention or contributions from the community.
@@ -36,7 +39,7 @@
   description: Issues or improvements related to the underlying AI model's behavior, accuracy, or capabilities.
 - name: content
   color: 8fe290
-  description: Issues or enhancements related to the quality or relevance of generated answers, summaries, or analyses.
+  description: Quality & relevance of generated answers, summaries, or analyses.
 - name: tests
   color: 5319e7
   description: Related to unit, integration, or end-to-end tests; test improvements.
