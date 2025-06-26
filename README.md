@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./.github/logo.svg" alt="Rawi Logo" width="800"/>
+  <img src="./.github/logo.svg" alt="Rawi Logo" width="400"/>
 </div>
 
 # Rawi (راوي)
