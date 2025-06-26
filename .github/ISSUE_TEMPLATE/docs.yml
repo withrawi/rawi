@@ -1,5 +1,5 @@
 name: Documentation Improvement
-about: Suggest an improvement, correction, or addition to the documentation.
+description: Suggest an improvement, correction, or addition to the documentation.
 title: "[Docs]: "
 labels: ["documentation"]
 body:
