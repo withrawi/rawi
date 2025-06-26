@@ -1,0 +1,51 @@
+name: Documentation Improvement
+about: Suggest an improvement, correction, or addition to the documentation.
+title: "[Docs]: "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping us improve the Rawi documentation!
+        Please describe the suggested changes below.
+  - type: textarea
+    id: change-description
+    attributes:
+      label: Describe the Documentation Change
+      description: |
+        A clear and concise description of what needs to be changed, added, or corrected in the documentation.
+        What is confusing? What is missing? What is inaccurate?
+      placeholder: Describe the documentation improvement here...
+    validations:
+      required: true
+  - type: input
+    id: affected-location
+    attributes:
+      label: Affected Documentation Location(s)
+      description: Which file(s) or section(s) of the documentation are affected? (e.g., `README.md`, `CONTRIBUTING.md`, `docs/usage.md`)
+      placeholder: e.g., `README.md` in the "Installation" section
+    validations:
+      required: true
+  - type: textarea
+    id: reason-for-change
+    attributes:
+      label: Reason for the Change
+      description: Why is this change necessary? What problem does it solve or what does it clarify for users?
+      placeholder: This change is needed because...
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-content
+    attributes:
+      label: Proposed Content (Optional)
+      description: If you have specific text or examples in mind, please provide them here.
+      placeholder: |
+        Proposed text:
+        ```
+        Your suggested content here.
+        ```
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context (Optional)
+      description: Add any other context or information here.

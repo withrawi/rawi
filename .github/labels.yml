@@ -1,0 +1,66 @@
+- name: bug
+  color: d73a4a
+  description: Something isn't working or behaving as expected.
+- name: enhancement
+  color: a2eeef
+  description: New feature, improvement, or request for additional functionality.
+- name: documentation
+  color: 0075ca
+  description: Improvements, corrections, or additions to documentation.
+- name: question
+  color: d876e3
+  description: Further information, clarification, or discussion is requested.
+- name: help wanted
+  color: 008672
+  description: This issue requires extra attention or contributions from the community.
+- name: dependencies
+  color: 0366d6
+  description: Updates to project dependencies or related issues.
+- name: refactor
+  color: bfdadc
+  description: Code changes that improve structure or readability without adding new features or fixing bugs.
+- name: performance
+  color: eb6420
+  description: Issues or improvements related to speed, efficiency, or resource usage.
+- name: cli
+  color: fbca04
+  description: Specific issues or features related to the command-line interface (e.g., arguments, flags, parsing).
+- name: output
+  color: d4c5f9
+  description: Problems or enhancements related to the format or content of Rawi's terminal output.
+- name: ux
+  color: cc317c
+  description: User experience improvements for interacting with the CLI.
+- name: ai-model
+  color: c5def5
+  description: Issues or improvements related to the underlying AI model's behavior, accuracy, or capabilities.
+- name: content
+  color: 8fe290
+  description: Issues or enhancements related to the quality or relevance of generated answers, summaries, or analyses.
+- name: tests
+  color: 5319e7
+  description: Related to unit, integration, or end-to-end tests; test improvements.
+- name: build
+  color: f9d0c4
+  description: Changes to the build process, continuous integration, or development environment.
+- name: duplicate
+  color: cfd3d7
+  description: This issue or pull request already exists.
+- name: invalid
+  color: e4e669
+  description: This doesn't seem right, is incomplete, or is not actionable.
+- name: wontfix
+  color: ffffff
+  description: This will not be worked on or addressed.
+- name: hotfix
+  color: ffcc00
+  description: A quick, critical fix needed for an immediate issue.
+- name: "priority: high"
+  color: b60205
+  description: Urgent issue requiring immediate attention.
+- name: discussion
+  color: 006b75
+  description: For topics that require community discussion before action.
+- name: typescript
+  color: 2b7489
+  description: Pertains to TypeScript-specific code.

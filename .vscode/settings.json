@@ -111,8 +111,5 @@
   ],
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[dockerfile]": {
-    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
   }
 }
