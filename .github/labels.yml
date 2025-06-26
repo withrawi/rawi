@@ -55,9 +55,6 @@
 - name: hotfix
   color: ffcc00
   description: A quick, critical fix needed for an immediate issue.
-- name: "priority: high"
-  color: b60205
-  description: Urgent issue requiring immediate attention.
 - name: discussion
   color: 006b75
   description: For topics that require community discussion before action.
