@@ -170,7 +170,7 @@ export const createAskCommand = (): Command => {
 
         console.log(`Using profile: ${profile}`);
         console.log(
-          `Processing query: ${finalQuery.length > 100 ? finalQuery.substring(0, 100) + '...' : finalQuery}`,
+          `Processing query: ${finalQuery.length > 100 ? `${finalQuery.substring(0, 100)}...` : finalQuery}`,
         );
 
         spinnerManager.start('validation', 'Validating configuration...');
