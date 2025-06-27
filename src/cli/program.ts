@@ -27,8 +27,9 @@ const getPackageInfo = () => {
 
   return {
     name: 'rawi',
-    description: 'A developer-friendly AI-powered CLI tool',
-    version: '0.0.0',
+    description:
+      'Rawi (راوي): A developer-friendly AI-powered CLI tool that delivers clear answers, summaries, and analyses. It supports multiple AI providers, including OpenAI, Google, Amazon Bedrock, and more.',
+    version: '0.0.1',
   };
 };
 
@@ -37,7 +38,6 @@ export const createProgram = (): Command => {
 
   const program = new Command();
 
-  // Compose version string: rawi/0.0.0-beta.12 linux-x64 node-v18.20.2
   const nodeVersion = process.version;
   const platform = process.platform;
   const arch = process.arch;
