@@ -19,6 +19,9 @@ Ask AI a question and get a response.
 
 ```bash
 rawi ask [query] [options]
+
+# Example with verbose output
+rawi ask "What is the difference between JavaScript and TypeScript?" --verbose
 ```
 
 ### Arguments
@@ -27,14 +30,14 @@ rawi ask [query] [options]
 
 ### Options
 
-| Option                  | Alias | Description                            | Default   |
-| ----------------------- | ----- | -------------------------------------- | --------- |
-| `--profile <profile>`   | `-p`  | Profile to use for AI configuration    | `default` |
-| `--session <sessionId>` |       | Continue an existing chat session      |           |
-| `--new-session`         |       | Start a new chat session               |           |
-| `--act <template>`      |       | Use an act template by ID              |           |
-| `--list-acts`           |       | List all available act templates       |           |
-| `--show`                |       | Show act template details (with --act) |           |
+| Option | Alias | Description | Default |
+| `--profile <profile>` | `-p` | Profile to use for AI configuration | `default` |
+| `--session <sessionId>` | | Continue an existing chat session | |
+| `--new-session` | | Start a new chat session | |
+| `--act <template>` | | Use an act template by ID | |
+| `--list-acts` | | List all available act templates | |
+| `--show` | | Show act template details (with --act) | |
+| `--verbose` | | Show detailed status and debug information | |
 
 ### Examples
 
@@ -563,10 +566,11 @@ A developer-friendly AI-powered CLI tool that delivers clear answers, summaries,
 
 These options work with all commands:
 
-| Option      | Description              |
-| ----------- | ------------------------ |
-| `--help`    | Show help for command    |
-| `--version` | Show version information |
+| Option      | Description                                |
+| ----------- | ------------------------------------------ |
+| `--help`    | Show help for command                      |
+| `--version` | Show version information                   |
+| `--verbose` | Show detailed status and debug information |
 
 ### Examples
 

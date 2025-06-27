@@ -26,6 +26,7 @@ Rawi (راوي) is a developer-friendly AI-powered CLI tool that delivers clear 
 ```
 rawi
 ├── ask [query] [options]
+│     └── --verbose
 ├── configure [options]
 ├── history [options]
 │   ├── sessions [options]
@@ -53,11 +54,13 @@ rawi ask [query] [options]
 --act <template> Use an act template by ID
 --list-acts List all available act templates
 --show Show act template details (with --act)
+--verbose Show detailed status and debug information
 
 **Examples:**
 rawi ask "What is TypeScript?"
 rawi ask "Review this code" --profile work
 rawi ask --act ethereum-developer "explain smart contract security"
+rawi ask "What is the difference between JavaScript and TypeScript?" --verbose
 cat contract.sol | rawi ask --act ethereum-developer "review this contract"
 
 ### configure

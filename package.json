@@ -1,7 +1,7 @@
 {
   "name": "rawi",
   "description": "Rawi (راوي): A developer-friendly AI-powered CLI tool that delivers clear answers, summaries, and analyses. It supports multiple AI providers, including OpenAI, Google, Amazon Bedrock, and more.",
-  "version": "0.0.1-beta.2",
+  "version": "0.0.1-beta.4",
   "type": "module",
   "license": "MIT",
   "bin": {
@@ -50,7 +50,7 @@
     "man:build": "marked-man man/rawi.1.md > man/rawi.1",
     "man": "man ./man/rawi.1",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "pnpm run build && pnpm run man:build"
+    "postbuild": "npm run man:build && npm run typecheck"
   },
   "dependencies": {
     "@ai-sdk-community/ollama": "npm:ollama-ai-provider@1.2.0",
