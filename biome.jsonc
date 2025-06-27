@@ -4,6 +4,7 @@
     "includes": [
       "**",
       "!**/dist/**/*",
+      "!.github/CODEOWNERS",
       "!**/node_modules/**/*",
       "!**/coverage/**/*",
       "!**/src/generated/**/*"

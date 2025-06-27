@@ -1,0 +1,13 @@
+# Lines starting with '#' are comments.
+# Each line defines a file pattern and the CODEOWNERS responsible for reviewing changes to files matching that pattern.
+#
+# The pattern will match files in the repository.
+# You can use glob patterns.
+#
+# The owners can be GitHub usernames or team names (prefixed with @organization/team-name).
+#
+# For more information, see:
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# By default, require reviews from the 'release-approvers' team for all files.
+* @withrawi/release-approvers
