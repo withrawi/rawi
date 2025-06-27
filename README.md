@@ -1,8 +1,16 @@
 <div align="center">
-  <img src="./.github/logo.svg" alt="Rawi Logo" width="400"/>
+  <a href="https://rawi.mkabumattar.com/" target="_blank" rel="noreferrer">
+    <img src="./.github/logo.svg" alt="Rawi Logo" width="400"/>
+  </a>
 </div>
 
+<div align="center">
+
 # Rawi (راوي)
+
+[rawi.mkabumattar.com](https://rawi.mkabumattar.com)
+
+</div>
 
 <div align="center">
   <a href="https://github.com/MKAbuMattar/rawi" target="_blank" rel="noreferrer">
