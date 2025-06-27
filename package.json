@@ -1,7 +1,7 @@
 {
   "name": "rawi",
   "description": "Rawi (راوي): A developer-friendly AI-powered CLI tool that delivers clear answers, summaries, and analyses. It supports multiple AI providers, including OpenAI, Google, Amazon Bedrock, and more.",
-  "version": "0.0.1-beta.5",
+  "version": "0.0.1-beta.6",
   "type": "module",
   "license": "MIT",
   "bin": {

@@ -37,12 +37,18 @@ export const createProgram = (): Command => {
 
   const program = new Command();
 
+  // Compose version string: rawi/0.0.0-beta.12 linux-x64 node-v18.20.2
+  const nodeVersion = process.version;
+  const platform = process.platform;
+  const arch = process.arch;
+  const versionString = `${pkg.name || 'rawi'}/${pkg.version || '0.0.0'} ${platform}-${arch} node-${nodeVersion.replace('v', '')}`;
+
   program
     .name(pkg.name)
     .description(
       'A developer-friendly AI-powered CLI tool that delivers clear answers, summaries, and analyses. Inspired by Jordanian storytelling, Rawi (راوي).',
     )
-    .version(pkg.version);
+    .version(versionString, '-V, --version', 'Show version information');
 
   program.addCommand(createConfigureCommand());
   program.addCommand(createAskCommand());
