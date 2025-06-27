@@ -13,12 +13,12 @@
 </div>
 
 <div align="center">
-  <a href="https://github.com/MKAbuMattar/rawi" target="_blank" rel="noreferrer">
+  <a href="https://github.com/withrawi/rawi" target="_blank" rel="noreferrer">
     <img src="https://img.shields.io/badge/github-%23181717.svg?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Repository"/>
   </a>
 
-  <a href="https://github.com/MKAbuMattar/rawi/releases" target="_blank" rel="noreferrer">
-    <img alt="GitHub Release" src="https://img.shields.io/github/v/release/MKAbuMattar/rawi?color=%23ce712e&label=Latest%20release&style=for-the-badge&logo=github" />
+  <a href="https://github.com/withrawi/rawi/releases" target="_blank" rel="noreferrer">
+    <img alt="GitHub Release" src="https://img.shields.io/github/v/release/withrawi/rawi?color=%23ce712e&label=Latest%20release&style=for-the-badge&logo=github" />
   </a>
 
   <a href="https://www.npmjs.com/package/rawi/v/latest" target="_blank" rel="noreferrer">
@@ -30,11 +30,11 @@
   </a>
 
   <a href="/LICENSE" target="_blank" rel="noreferrer">
-    <img alt="GitHub License" src="https://img.shields.io/github/license/MKAbuMattar/rawi?color=%23ce712e&style=for-the-badge">
+    <img alt="GitHub License" src="https://img.shields.io/github/license/withrawi/rawi?color=%23ce712e&style=for-the-badge">
   </a>
 
-  <a href="https://github.com/MKAbuMattar/rawi/stargazers" target="_blank" rel="noreferrer">
-    <img alt="GitHub Stars" src="https://img.shields.io/github/stars/MKAbuMattar/rawi?color=%23ce712e&label=GitHub%20Stars&style=for-the-badge">
+  <a href="https://github.com/withrawi/rawi/stargazers" target="_blank" rel="noreferrer">
+    <img alt="GitHub Stars" src="https://img.shields.io/github/stars/withrawi/rawi?color=%23ce712e&label=GitHub%20Stars&style=for-the-badge">
   </a>
 </div>
 
@@ -227,7 +227,7 @@ pnpm dlx rawi configure
 npm install -g rawi@beta
 
 # Install from GitHub (latest main branch)
-npm install -g MKAbuMattar/rawi
+npm install -g withrawi/rawi
 ```
 
 ### Verify Installation
@@ -864,7 +864,7 @@ rawi ask "Document coding standards and best practices for our Python team"
 
 ```bash
 # Clone the repository
-git clone https://github.com/MKAbuMattar/rawi.git
+git clone https://github.com/withrawi/rawi.git
 cd rawi
 
 # Install dependencies
@@ -1331,7 +1331,7 @@ rawi configure -p profile-name --model valid-model-name
 ### Getting Help
 
 - Use `--help` flag with any command: `rawi ask --help`
-- Check the [GitHub Issues](https://github.com/MKAbuMattar/rawi/issues)
+- Check the [GitHub Issues](https://github.com/withrawi/rawi/issues)
 - Review provider documentation for API key setup
 - Ensure you have the latest version: `npm update -g rawi`
 
@@ -1355,8 +1355,8 @@ _Rawi (راوي) - Where ancient storytelling meets modern AI technology._
 
 - **🌐 Website**: [rawi.mkabumattar.com](https://rawi.mkabumattar.com/)
 - **📦 NPM Package**: [npmjs.com/package/rawi](https://www.npmjs.com/package/rawi)
-- **🐛 Report Issues**: [GitHub Issues](https://github.com/MKAbuMattar/rawi/issues)
-- **💬 Discussions**: [GitHub Discussions](https://github.com/MKAbuMattar/rawi/discussions)
+- **🐛 Report Issues**: [GitHub Issues](https://github.com/withrawi/rawi/issues)
+- **💬 Discussions**: [GitHub Discussions](https://github.com/withrawi/rawi/discussions)
 - **📚 Documentation**: [Full Documentation](https://rawi.mkabumattar.com/docs)
 
 ### 🌟 Show Your Support
@@ -1368,4 +1368,4 @@ If Rawi has helped you in your development workflow, consider:
 - 🤝 **Contributing** to the project
 - 💬 **Spreading the word** to fellow developers
 
-**Roadmap**: View our [development roadmap](https://github.com/MKAbuMattar/rawi/projects) to see what's coming next!
+**Roadmap**: View our [development roadmap](https://github.com/withrawi/rawi/projects) to see what's coming next!
