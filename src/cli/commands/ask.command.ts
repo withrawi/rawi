@@ -66,6 +66,7 @@ export const createAskCommand = (): Command => {
       '--show',
       'Show details of the specified act template (use with --act)',
     )
+    .option('--verbose', 'Show detailed status and debug information')
     .action(async (query, options) => {
       let dbManager: DatabaseManager | null = null;
 
@@ -81,14 +82,16 @@ export const createAskCommand = (): Command => {
         }
 
         if (options.show && !options.act) {
-          console.error(
-            chalk.red('❌ --show option requires --act <template-id>'),
-          );
-          console.log(
-            chalk.yellow(
-              '💡 Use "rawi ask --list-acts" to see available templates.',
-            ),
-          );
+          if (options.verbose) {
+            console.error(
+              chalk.red('❌ --show option requires --act <template-id>'),
+            );
+            console.log(
+              chalk.yellow(
+                '💡 Use "rawi ask --list-acts" to see available templates.',
+              ),
+            );
+          }
           return;
         }
 
@@ -111,16 +114,20 @@ export const createAskCommand = (): Command => {
         if (options.act) {
           try {
             finalQuery = applyActTemplate(options.act, finalQuery);
-            console.log(chalk.dim(`🎭 Using act template: ${options.act}`));
+            if (options.verbose) {
+              console.log(chalk.dim(`🎭 Using act template: ${options.act}`));
+            }
           } catch (error) {
             const errorMessage =
               error instanceof Error ? error.message : 'Unknown error occurred';
-            console.error(chalk.red(`❌ ${errorMessage}`));
-            console.log(
-              chalk.yellow(
-                '💡 Use "rawi ask --list-acts" to see available templates.',
-              ),
-            );
+            if (options.verbose) {
+              console.error(chalk.red(`❌ ${errorMessage}`));
+              console.log(
+                chalk.yellow(
+                  '💡 Use "rawi ask --list-acts" to see available templates.',
+                ),
+              );
+            }
             return;
           }
         }
@@ -128,16 +135,18 @@ export const createAskCommand = (): Command => {
         const profile = options.profile || DEFAULT_PROFILE;
 
         if (!isConfigured(profile)) {
-          console.error(
-            chalk.red(
-              `❌ Profile '${profile}' does not exist or is not properly configured.`,
-            ),
-          );
-          console.error(
-            chalk.yellow(
-              `Run 'rawi configure -p ${profile}' to set up this profile.`,
-            ),
-          );
+          if (options.verbose) {
+            console.error(
+              chalk.red(
+                `❌ Profile '${profile}' does not exist or is not properly configured.`,
+              ),
+            );
+            console.error(
+              chalk.yellow(
+                `Run 'rawi configure -p ${profile}' to set up this profile.`,
+              ),
+            );
+          }
           process.exit(1);
         }
 
@@ -146,51 +155,72 @@ export const createAskCommand = (): Command => {
         let sessionId: string;
         if (options.newSession) {
           sessionId = await dbManager.createSession(profile);
-          console.log(chalk.dim(`🆕 Started new session: ${sessionId}`));
+          if (options.verbose) {
+            console.log(chalk.dim(`🆕 Started new session: ${sessionId}`));
+          }
         } else if (options.session) {
           sessionId = options.session;
           const session = await dbManager.getSession(sessionId);
           if (!session) {
-            console.error(chalk.red(`❌ Session '${sessionId}' not found.`));
+            if (options.verbose) {
+              console.error(chalk.red(`❌ Session '${sessionId}' not found.`));
+            }
             process.exit(1);
           }
           if (session.profile !== profile) {
-            console.error(
-              chalk.red(
-                `❌ Session '${sessionId}' belongs to profile '${session.profile}', not '${profile}'.`,
-              ),
-            );
+            if (options.verbose) {
+              console.error(
+                chalk.red(
+                  `❌ Session '${sessionId}' belongs to profile '${session.profile}', not '${profile}'.`,
+                ),
+              );
+            }
             process.exit(1);
           }
-          console.log(chalk.dim(`🔄 Continuing session: ${sessionId}`));
+          if (options.verbose) {
+            console.log(chalk.dim(`🔄 Continuing session: ${sessionId}`));
+          }
         } else {
           sessionId = await dbManager.getCurrentSession(profile);
-          console.log(chalk.dim(`📝 Using current session: ${sessionId}`));
+          if (options.verbose) {
+            console.log(chalk.dim(`📝 Using current session: ${sessionId}`));
+          }
         }
 
-        console.log(`Using profile: ${profile}`);
-        console.log(
-          `Processing query: ${finalQuery.length > 100 ? `${finalQuery.substring(0, 100)}...` : finalQuery}`,
-        );
+        if (options.verbose) {
+          console.log(`Using profile: ${profile}`);
+          console.log(
+            `Processing query: ${finalQuery.length > 100 ? `${finalQuery.substring(0, 100)}...` : finalQuery}`,
+          );
+        }
 
-        spinnerManager.start('validation', 'Validating configuration...');
+        if (options.verbose) {
+          spinnerManager.start('validation', 'Validating configuration...');
+        }
 
         const credentials = getCredentials(profile);
 
         if (!credentials) {
-          spinnerManager.fail('validation', 'Configuration validation failed');
-          console.error(
-            chalk.red(
-              `❌ Unable to load credentials for profile '${profile}'.`,
-            ),
-          );
+          if (options.verbose) {
+            spinnerManager.fail(
+              'validation',
+              'Configuration validation failed',
+            );
+            console.error(
+              chalk.red(
+                `❌ Unable to load credentials for profile '${profile}'.`,
+              ),
+            );
+          }
           process.exit(1);
         }
 
-        spinnerManager.succeed(
-          'validation',
-          'Configuration validated successfully',
-        );
+        if (options.verbose) {
+          spinnerManager.succeed(
+            'validation',
+            'Configuration validated successfully',
+          );
+        }
 
         await dbManager.addMessage(
           sessionId,
@@ -202,11 +232,17 @@ export const createAskCommand = (): Command => {
           credentials.maxTokens,
         );
 
-        spinnerManager.start(
-          'generation',
-          `Generating response using ${credentials.provider} (${credentials.model})...`,
-          {color: 'cyan'},
-        );
+        if (options.verbose) {
+          spinnerManager.start(
+            'generation',
+            `Generating response using ${credentials.provider} (${credentials.model})...`,
+            {color: 'cyan'},
+          );
+        }
+
+        if (!options.verbose) {
+          spinnerManager.start('result', `${chalk.cyan('Result:')}`);
+        }
 
         let response: string;
 
@@ -228,12 +264,14 @@ export const createAskCommand = (): Command => {
           } else if (credentials.provider === 'qwen') {
             response = await generateWithQwen(credentials, finalQuery);
           } else {
-            spinnerManager.fail('generation', 'Unsupported provider');
-            console.error(
-              chalk.red(
-                `❌ Provider '${credentials.provider}' is not supported yet.`,
-              ),
-            );
+            if (options.verbose) {
+              spinnerManager.fail('generation', 'Unsupported provider');
+              console.error(
+                chalk.red(
+                  `❌ Provider '${credentials.provider}' is not supported yet.`,
+                ),
+              );
+            }
             response = `Unsupported provider: ${credentials.provider}. Please configure a supported provider (OpenAI, Anthropic, Google, Ollama, xAI, Azure, Bedrock, or Qwen).`;
           }
 
@@ -246,18 +284,21 @@ export const createAskCommand = (): Command => {
             credentials.temperature,
             credentials.maxTokens,
           );
-
-          spinnerManager.succeed(
-            'generation',
-            'Response generated successfully!',
-          );
+          if (options.verbose) {
+            spinnerManager.succeed(
+              'generation',
+              'Response generated successfully!',
+            );
+          }
         } catch (error) {
-          spinnerManager.fail('generation', 'Failed to generate response');
-          console.error(
-            chalk.red(
-              `❌ ${error instanceof Error ? error.message : String(error)}`,
-            ),
-          );
+          if (options.verbose) {
+            spinnerManager.fail('generation', 'Failed to generate response');
+            console.error(
+              chalk.red(
+                `❌ ${error instanceof Error ? error.message : String(error)}`,
+              ),
+            );
+          }
           response = `Unable to generate response using ${credentials.provider} (${credentials.model}). Error: ${error instanceof Error ? error.message : String(error)}`;
 
           await dbManager.addMessage(
@@ -272,19 +313,31 @@ export const createAskCommand = (): Command => {
           );
         }
 
-        console.log(`\n${chalk.cyan('Result:')}`);
-        console.log(response);
-
-        const session = await dbManager.getSession(sessionId);
-        if (session) {
-          console.log(
-            chalk.dim(
-              `\n💬 Session: ${sessionId} (${session.messageCount} messages)`,
-            ),
+        if (options.verbose) {
+          console.log(`\n${chalk.cyan('Result:')}`);
+        }
+        if (!options.verbose) {
+          spinnerManager.succeed(
+            'result',
+            `${chalk.cyan('Result:')}\n${response}`,
           );
+        } else {
+          console.log(response);
+        }
+        if (options.verbose) {
+          const session = await dbManager.getSession(sessionId);
+          if (session) {
+            console.log(
+              chalk.dim(
+                `\n💬 Session: ${sessionId} (${session.messageCount} messages)`,
+              ),
+            );
+          }
         }
       } catch (error) {
-        console.error('Error processing query:', error);
+        if (options.verbose) {
+          console.error('Error processing query:', error);
+        }
         process.exit(1);
       } finally {
         if (dbManager) {
