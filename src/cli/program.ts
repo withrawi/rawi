@@ -29,7 +29,7 @@ const getPackageInfo = () => {
     name: 'rawi',
     description:
       'Rawi (راوي): A developer-friendly AI-powered CLI tool that delivers clear answers, summaries, and analyses. It supports multiple AI providers, including OpenAI, Google, Amazon Bedrock, and more.',
-    version: '0.0.2',
+    version: '0.0.3',
   };
 };
 
