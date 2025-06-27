@@ -27,16 +27,16 @@
   "author": {
     "name": "Mohammad Abu Mattar",
     "email": "mohammad.khaled@outlook.com",
-    "url": "https://mkabumattar.github.io/"
+    "url": "https://mkabumattar.github.io"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MKAbuMattar/rawi.git"
+    "url": "https://github.com/withrawi/rawi.git"
   },
   "bugs": {
-    "url": "https://github.com/MKAbuMattar/rawi/issues"
+    "url": "https://github.com/withrawi/rawi/issues"
   },
-  "homepage": "https://rawi.mkabumattar.com/",
+  "homepage": "https://rawi.withrawi.com",
   "scripts": {
     "build": "rimraf dist && tsup --tsconfig tsconfig.json",
     "dev": "tsx src/index.ts",
