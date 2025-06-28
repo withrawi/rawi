@@ -22,7 +22,10 @@ export const isConfigured = (profile = DEFAULT_PROFILE): boolean => {
     return Boolean(
       credentials.provider &&
         credentials.model &&
-        credentials.apiKey &&
+        (credentials.apiKey ||
+          (credentials.providerSettings &&
+            'apiKey' in credentials.providerSettings &&
+            credentials.providerSettings.apiKey)) &&
         credentials.providerSettings &&
         'resourceName' in credentials.providerSettings,
     );
@@ -55,29 +58,24 @@ export const isConfigured = (profile = DEFAULT_PROFILE): boolean => {
     return false;
   }
 
-  if (credentials?.provider === 'qwen') {
-    return Boolean(
-      credentials.provider &&
-        credentials.model &&
-        credentials.providerSettings &&
+  const hasApiKey =
+    credentials &&
+    (credentials.apiKey ||
+      (credentials.providerSettings &&
         'apiKey' in credentials.providerSettings &&
-        credentials.providerSettings.apiKey,
-    );
+        credentials.providerSettings.apiKey));
+
+  if (
+    credentials?.provider === 'qwen' ||
+    credentials?.provider === 'xai' ||
+    credentials?.provider === 'openai' ||
+    credentials?.provider === 'google' ||
+    credentials?.provider === 'anthropic'
+  ) {
+    return Boolean(credentials?.provider && credentials?.model && hasApiKey);
   }
 
-  if (credentials?.provider === 'xai') {
-    return Boolean(
-      credentials.provider &&
-        credentials.model &&
-        credentials.providerSettings &&
-        'apiKey' in credentials.providerSettings &&
-        credentials.providerSettings.apiKey,
-    );
-  }
-
-  return Boolean(
-    credentials?.apiKey && credentials?.provider && credentials?.model,
-  );
+  return Boolean(hasApiKey && credentials?.provider && credentials?.model);
 };
 
 export const requireCredentials = (
@@ -94,6 +92,13 @@ export const requireCredentials = (
     process.exit(1);
   }
 
+  const hasApiKey =
+    credentials &&
+    (credentials.apiKey ||
+      (credentials.providerSettings &&
+        'apiKey' in credentials.providerSettings &&
+        credentials.providerSettings.apiKey));
+
   if (credentials.provider === 'ollama') {
     if (!credentials.provider || !credentials.model) {
       console.error(
@@ -105,7 +110,7 @@ export const requireCredentials = (
     }
   } else if (credentials.provider === 'azure') {
     if (
-      !credentials.apiKey ||
+      !hasApiKey ||
       !credentials.provider ||
       !credentials.model ||
       !credentials.providerSettings ||
@@ -149,53 +154,23 @@ export const requireCredentials = (
       );
       process.exit(1);
     }
-  } else if (credentials.provider === 'qwen') {
-    if (
-      !credentials.provider ||
-      !credentials.model ||
-      !credentials.providerSettings ||
-      !('apiKey' in credentials.providerSettings) ||
-      !credentials.providerSettings.apiKey
-    ) {
+  } else if (
+    credentials.provider === 'qwen' ||
+    credentials.provider === 'xai' ||
+    credentials.provider === 'openai' ||
+    credentials.provider === 'google' ||
+    credentials.provider === 'anthropic'
+  ) {
+    if (!credentials.provider || !credentials.model || !hasApiKey) {
       console.error(
         chalk.red(
-          `❌ Incomplete Qwen configuration for profile '${profile}'. Run 'rawi configure' to update.`,
-        ),
-      );
-      process.exit(1);
-    }
-  } else if (credentials.provider === 'xai') {
-    if (
-      !credentials.provider ||
-      !credentials.model ||
-      !credentials.providerSettings ||
-      !('apiKey' in credentials.providerSettings) ||
-      !credentials.providerSettings.apiKey
-    ) {
-      console.error(
-        chalk.red(
-          `❌ Incomplete xAI configuration for profile '${profile}'. Run 'rawi configure' to update.`,
-        ),
-      );
-      process.exit(1);
-    }
-  } else if (credentials.provider === 'openai') {
-    if (
-      !credentials.provider ||
-      !credentials.model ||
-      !credentials.providerSettings ||
-      !('apiKey' in credentials.providerSettings) ||
-      !credentials.providerSettings.apiKey
-    ) {
-      console.error(
-        chalk.red(
-          `❌ Incomplete OpenAI configuration for profile '${profile}'. Run 'rawi configure' to update.`,
+          `❌ Incomplete ${credentials.provider} configuration for profile '${profile}'. Run 'rawi configure' to update.`,
         ),
       );
       process.exit(1);
     }
   } else {
-    if (!credentials.apiKey || !credentials.provider || !credentials.model) {
+    if (!hasApiKey || !credentials.provider || !credentials.model) {
       console.error(
         chalk.red(
           `❌ Incomplete configuration for profile '${profile}'. Run 'rawi configure' to update.`,
