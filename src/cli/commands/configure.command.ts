@@ -1,10 +1,5 @@
 import {Command} from 'commander';
 import {ConfigManager} from '../../config/manager.js';
-import {
-  getAllProviders,
-  getProvider,
-  getProviderNames,
-} from '../../config/providers/index.js';
 import type {
   AnthropicSettings,
   AzureSettings,
@@ -16,7 +11,6 @@ import type {
   QwenSettings,
   RawiCredentials,
   SupportedLanguage,
-  SupportedProvider,
   XAISettings,
 } from '../../shared/types.js';
 
@@ -80,11 +74,6 @@ export const createConfigureCommand = (): Command => {
     )
     .option('--show', 'Show current configuration')
     .option('--list', 'List all profiles')
-    .option('--list-providers', 'List all available AI providers')
-    .option(
-      '--list-models <provider>',
-      'List all models for a specific provider',
-    )
     .option('--delete <profile>', 'Delete a configuration profile')
     .action(async (options) => {
       const configManager = new ConfigManager();
@@ -106,35 +95,6 @@ export const createConfigureCommand = (): Command => {
 
           console.log('Available profiles:');
           profiles.forEach((profile) => console.log(`  - ${profile}`));
-          return;
-        }
-
-        if (options.listProviders) {
-          const providers = getAllProviders();
-          console.log('Available AI providers:');
-          providers.forEach((provider) => {
-            console.log(`  ${provider.displayName} (${provider.name})`);
-          });
-          return;
-        }
-
-        if (options.listModels) {
-          const providerName = options.listModels as SupportedProvider;
-          const providerNames = getProviderNames();
-
-          if (!providerNames.includes(providerName)) {
-            console.error(`Invalid provider: ${providerName}`);
-            console.log('Available providers:', providerNames.join(', '));
-            return;
-          }
-
-          const provider = getProvider(providerName);
-          console.log(`Available models for ${provider.displayName}:`);
-          provider.models.forEach((model) => {
-            console.log(
-              `  - ${model.name}${model.displayName && model.displayName !== model.name ? ` (${model.displayName})` : ''}`,
-            );
-          });
           return;
         }
 

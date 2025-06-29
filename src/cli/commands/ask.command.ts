@@ -12,11 +12,6 @@ import {getCredentials, isConfigured} from '../../config/utils.js';
 import {DatabaseManager} from '../../database/index.js';
 import {DEFAULT_PROFILE} from '../../shared/constants.js';
 import {spinnerManager} from '../../shared/spinner.js';
-import {
-  applyActTemplate,
-  listActTemplates,
-  showActTemplate,
-} from '../../template/index.js';
 
 const readStdin = (): Promise<string> => {
   return new Promise((resolve) => {
@@ -57,44 +52,11 @@ export const createAskCommand = (): Command => {
     )
     .option('--session <sessionId>', 'Continue an existing chat session')
     .option('--new-session', 'Start a new chat session')
-    .option(
-      '--act <template>',
-      'Use an act template (e.g., ethereum-developer)',
-    )
-    .option('--list-acts', 'List all available act templates')
-    .option(
-      '--show',
-      'Show details of the specified act template (use with --act)',
-    )
     .option('--verbose', 'Show detailed status and debug information')
     .action(async (query, options) => {
       let dbManager: DatabaseManager | null = null;
 
       try {
-        if (options.listActs) {
-          listActTemplates();
-          return;
-        }
-
-        if (options.show && options.act) {
-          showActTemplate(options.act);
-          return;
-        }
-
-        if (options.show && !options.act) {
-          if (options.verbose) {
-            console.error(
-              chalk.red('❌ --show option requires --act <template-id>'),
-            );
-            console.log(
-              chalk.yellow(
-                '💡 Use "rawi ask --list-acts" to see available templates.',
-              ),
-            );
-          }
-          return;
-        }
-
         const stdinContent = await readStdin();
 
         let finalQuery: string;
@@ -109,27 +71,6 @@ export const createAskCommand = (): Command => {
         } else {
           askCommand.help();
           return;
-        }
-
-        if (options.act) {
-          try {
-            finalQuery = applyActTemplate(options.act, finalQuery);
-            if (options.verbose) {
-              console.log(chalk.dim(`🎭 Using act template: ${options.act}`));
-            }
-          } catch (error) {
-            const errorMessage =
-              error instanceof Error ? error.message : 'Unknown error occurred';
-            if (options.verbose) {
-              console.error(chalk.red(`❌ ${errorMessage}`));
-              console.log(
-                chalk.yellow(
-                  '💡 Use "rawi ask --list-acts" to see available templates.',
-                ),
-              );
-            }
-            return;
-          }
         }
 
         const profile = options.profile || DEFAULT_PROFILE;

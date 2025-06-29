@@ -36,7 +36,7 @@ export const listActTemplates = (): void => {
   }
 
   console.log(chalk.dim('Usage: rawi ask --act <template-id> "your question"'));
-  console.log(chalk.dim('Show template: rawi ask --act <template-id> --show'));
+  console.log(chalk.dim('Show template: rawi act --show <template-id>'));
 };
 
 export const showActTemplate = (id: string): void => {
@@ -45,7 +45,7 @@ export const showActTemplate = (id: string): void => {
   if (!template) {
     console.error(chalk.red(`❌ Act template '${id}' not found.`));
     console.log(
-      chalk.yellow('💡 Use "rawi ask --list-acts" to see available templates.'),
+      chalk.yellow('💡 Use "rawi act --list" to see available templates.'),
     );
     return;
   }

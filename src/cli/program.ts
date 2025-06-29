@@ -1,10 +1,12 @@
 import {Command} from 'commander';
 import pkg from '../../package.json';
 import {
+  createActCommand,
   createAskCommand,
   createConfigureCommand,
   createHistoryCommand,
   createInfoCommand,
+  createProviderCommand,
 } from './commands/index.js';
 
 export const createProgram = (): Command => {
@@ -26,6 +28,9 @@ export const createProgram = (): Command => {
   program.addCommand(createAskCommand());
   program.addCommand(createHistoryCommand());
   program.addCommand(createInfoCommand());
+  program.addCommand(createActCommand());
+
+  program.addCommand(createProviderCommand());
 
   return program;
 };
