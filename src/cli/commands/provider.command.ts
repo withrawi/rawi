@@ -9,16 +9,29 @@ export const createProviderCommand = (): Command => {
 
   command
     .description(
-      'Show information about supported AI providers and their models. Use this to discover available providers and their capabilities.',
+      [
+        chalk.bold(
+          'Show information about supported AI providers and their models.',
+        ),
+        '',
+        chalk.gray(
+          'Use this to discover available providers and their capabilities.',
+        ),
+      ].join('\n'),
     )
-    .option('-l, --list', 'List all supported AI providers')
+    .option('-l, --list', chalk.white('List all supported AI providers'))
     .option(
       '-m, --list-models <provider>',
-      'List all models for a specific provider',
+      chalk.white('List all models for a specific provider'),
     )
     .addHelpText(
       'after',
-      '\nSee also:\n  rawi configure --show\n  rawi act --list\n  rawi ask --profile <profile>\n',
+      [
+        chalk.bold.cyan('\nSee also:'),
+        chalk.gray('  rawi configure --show'),
+        chalk.gray('  rawi act --list'),
+        chalk.gray('  rawi ask --profile <profile>'),
+      ].join('\n'),
     )
     .action(async (options) => {
       if (options.list) {

@@ -38,9 +38,24 @@ rawi configure \
   --model gpt-4o \
   --api-key sk-your-key-here \
   --temperature 0.7 \
+
   --max-tokens 2048 \
   --language english
 ```
+
+## 🎭 Using Act Templates
+
+You can use act templates for specialized prompts in your configuration and queries:
+
+```bash
+# List all available act templates
+rawi act --list
+
+# Use an act template in a question
+rawi ask --act ethereum-developer "Explain smart contract security"
+```
+
+> 💡 Use `rawi act --list` to see all available act templates.
 
 ## 👤 Profile Management
 

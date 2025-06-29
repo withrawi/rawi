@@ -15,22 +15,36 @@ export const createHistoryCommand = (): Command => {
   const historyCommand = new Command('history');
 
   historyCommand
-    .description('Manage chat history')
+    .description(
+      [
+        chalk.bold('Manage chat history and sessions.'),
+        '',
+        chalk.gray(
+          'Search, filter, export, and clean up your AI chat history.',
+        ),
+      ].join('\n'),
+    )
     .option(
       '-p, --profile <profile>',
-      'Profile to show history for',
+      chalk.white('Profile to show history for'),
       DEFAULT_PROFILE,
     )
     .option(
       '-l, --limit <number>',
-      'Number of sessions to show',
+      chalk.white('Number of sessions to show'),
       DEFAULT_HISTORY_LIMIT.toString(),
     )
-    .option('-s, --search <query>', 'Search messages containing text')
-    .option('--provider <provider>', 'Filter by AI provider')
-    .option('--model <model>', 'Filter by AI model')
-    .option('--from <date>', 'Show sessions from date (YYYY-MM-DD)')
-    .option('--to <date>', 'Show sessions to date (YYYY-MM-DD)')
+    .option(
+      '-s, --search <query>',
+      chalk.white('Search messages containing text'),
+    )
+    .option('--provider <provider>', chalk.white('Filter by AI provider'))
+    .option('--model <model>', chalk.white('Filter by AI model'))
+    .option(
+      '--from <date>',
+      chalk.white('Show sessions from date (YYYY-MM-DD)'),
+    )
+    .option('--to <date>', chalk.white('Show sessions to date (YYYY-MM-DD)'))
     .action(async (options) => {
       let dbManager: DatabaseManager | null = null;
 
@@ -173,15 +187,21 @@ export const createHistoryCommand = (): Command => {
 
   historyCommand
     .command('sessions')
-    .description('List and manage chat sessions')
+    .description(
+      [
+        chalk.bold('List and manage chat sessions.'),
+        '',
+        chalk.gray('View, filter, and manage your chat sessions.'),
+      ].join('\n'),
+    )
     .option(
       '-p, --profile <profile>',
-      'Profile to show sessions for',
+      chalk.white('Profile to show sessions for'),
       DEFAULT_PROFILE,
     )
     .option(
       '-l, --limit <number>',
-      'Number of sessions to show',
+      chalk.white('Number of sessions to show'),
       DEFAULT_HISTORY_LIMIT.toString(),
     )
     .action(async (options) => {
@@ -234,7 +254,13 @@ export const createHistoryCommand = (): Command => {
 
   historyCommand
     .command('show <sessionId>')
-    .description('Show all messages in a specific session')
+    .description(
+      [
+        chalk.bold('Show all messages in a specific session.'),
+        '',
+        chalk.gray('Display the full conversation for a session.'),
+      ].join('\n'),
+    )
     .action(async (sessionId) => {
       let dbManager: DatabaseManager | null = null;
 
@@ -289,7 +315,13 @@ export const createHistoryCommand = (): Command => {
 
   historyCommand
     .command('delete <sessionId>')
-    .description('Delete a specific session')
+    .description(
+      [
+        chalk.bold('Delete a specific session.'),
+        '',
+        chalk.gray('Remove a chat session and its messages.'),
+      ].join('\n'),
+    )
     .action(async (sessionId) => {
       let dbManager: DatabaseManager | null = null;
 
@@ -329,8 +361,14 @@ export const createHistoryCommand = (): Command => {
 
   historyCommand
     .command('stats')
-    .description('Show usage statistics')
-    .option('-p, --profile <profile>', 'Profile to show stats for')
+    .description(
+      [
+        chalk.bold('Show usage statistics.'),
+        '',
+        chalk.gray('Display usage stats for your chat history.'),
+      ].join('\n'),
+    )
+    .option('-p, --profile <profile>', chalk.white('Profile to show stats for'))
     .action(async (options) => {
       let dbManager: DatabaseManager | null = null;
 
@@ -408,10 +446,24 @@ export const createHistoryCommand = (): Command => {
 
   historyCommand
     .command('cleanup')
-    .description('Clean up old sessions')
-    .option('-p, --profile <profile>', 'Profile to clean up', DEFAULT_PROFILE)
-    .option('-d, --days <number>', 'Delete sessions older than N days', '30')
-    .option('--confirm', 'Confirm deletion without prompt')
+    .description(
+      [
+        chalk.bold('Clean up old sessions.'),
+        '',
+        chalk.gray('Delete sessions older than a specified number of days.'),
+      ].join('\n'),
+    )
+    .option(
+      '-p, --profile <profile>',
+      chalk.white('Profile to clean up'),
+      DEFAULT_PROFILE,
+    )
+    .option(
+      '-d, --days <number>',
+      chalk.white('Delete sessions older than N days'),
+      '30',
+    )
+    .option('--confirm', chalk.white('Confirm deletion without prompt'))
     .action(async (options) => {
       let dbManager: DatabaseManager | null = null;
 
@@ -457,11 +509,17 @@ export const createHistoryCommand = (): Command => {
 
   historyCommand
     .command('export')
-    .description('Export chat history to JSON')
-    .option('-p, --profile <profile>', 'Profile to export')
+    .description(
+      [
+        chalk.bold('Export chat history to JSON.'),
+        '',
+        chalk.gray('Save your chat history to a file for backup or analysis.'),
+      ].join('\n'),
+    )
+    .option('-p, --profile <profile>', chalk.white('Profile to export'))
     .option(
       '-o, --output <file>',
-      'Output file path',
+      chalk.white('Output file path'),
       'rawi-history-export.json',
     )
     .action(async (options) => {

@@ -87,7 +87,12 @@ rawi ask "Explain this function: console.log('Hello World')"
 
 # Get help
 rawi ask "How do I create a React component?"
+
+# Use an act template for a specialized prompt
+rawi ask --act ethereum-developer "Explain smart contract security"
 ```
+
+> 💡 Use `rawi act --list` to see all available act templates.
 
 ## 📊 Basic Commands
 

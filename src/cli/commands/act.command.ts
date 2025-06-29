@@ -10,13 +10,25 @@ export const createActCommand = (): Command => {
 
   actCommand
     .description(
-      'List and explore act templates for specialized prompts. Use these to quickly apply expert prompt patterns.',
+      [
+        chalk.bold('List and explore act templates for specialized prompts.'),
+        '',
+        chalk.gray('Use these to quickly apply expert prompt patterns.'),
+      ].join('\n'),
     )
-    .option('-l, --list', 'List all available act templates')
-    .option('-s, --show <template>', 'Show details of a specific act template')
+    .option('-l, --list', chalk.white('List all available act templates'))
+    .option(
+      '-s, --show <template>',
+      chalk.white('Show details of a specific act template'),
+    )
     .addHelpText(
       'after',
-      '\nSee also:\n  rawi ask --profile <profile> --act <template> <query>\n  rawi configure --show\n  rawi provider --list\n',
+      [
+        chalk.bold.cyan('\nSee also:'),
+        chalk.gray('  rawi ask --profile <profile> --act <template> <query>'),
+        chalk.gray('  rawi configure --show'),
+        chalk.gray('  rawi provider --list'),
+      ].join('\n'),
     )
     .action(async (options) => {
       if (options.list) {

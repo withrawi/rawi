@@ -82,14 +82,15 @@ rawi ask [query] [options]
 --profile, -p <profile> Profile to use for AI configuration (default: default)
 --session, -s <sessionId> Continue an existing chat session
 --new-session, -n Start a new chat session
---act <template> Use an act template by ID
---list-acts List all available act templates
---show Show act template details (with --act)
+--act <template> Use an act template (e.g., ethereum-developer)
 --verbose Show detailed status and debug information
+
+💡 Use "rawi act --list" to see available templates.
 
 **Examples:**
 rawi ask "What is TypeScript?"
 rawi ask "Review this code" --profile work
+
 rawi ask --act ethereum-developer "explain smart contract security"
 rawi ask "What is the difference between JavaScript and TypeScript?" --verbose
 cat contract.sol | rawi ask --act ethereum-developer "review this contract"
@@ -107,7 +108,9 @@ rawi act [options]
 
 **Examples:**
 rawi act --list
-rawi act --show chef
+rawi act --show ethereum-developer
+
+💡 You can use act templates directly in `rawi ask` with `--act <template>`. See `rawi act --list` for all available templates.
 
 ### configure
 

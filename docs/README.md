@@ -22,6 +22,7 @@ Welcome to the comprehensive documentation for Rawi (راوي), a developer-frie
 ## 🚀 Quick Start
 
 ```bash
+
 # Install globally
 npm install -g rawi
 
@@ -30,7 +31,12 @@ rawi configure
 
 # Ask your first question
 rawi ask "What is TypeScript?"
+
+# Use an act template for a specialized prompt
+rawi ask --act ethereum-developer "Explain smart contract security"
 ```
+
+> 💡 Use `rawi act --list` to see all available act templates.
 
 ---
 

@@ -12,6 +12,7 @@ import {getCredentials, isConfigured} from '../../config/utils.js';
 import {DatabaseManager} from '../../database/index.js';
 import {DEFAULT_PROFILE} from '../../shared/constants.js';
 import {spinnerManager} from '../../shared/spinner.js';
+import {applyActTemplate} from '../../template/index.js';
 
 const readStdin = (): Promise<string> => {
   return new Promise((resolve) => {
@@ -39,23 +40,47 @@ export const createAskCommand = (): Command => {
 
   askCommand
     .description(
-      'Ask AI a question and get a response. Supports piped input from stdin.\n\nFor act templates, use the dedicated "rawi act" subcommand.',
+      [
+        chalk.bold('Ask AI a question and get a response.'),
+        '',
+        chalk.gray('Supports piped input from stdin.'),
+        chalk.gray(
+          'For act templates, use the dedicated "rawi act" subcommand.',
+        ),
+      ].join('\n'),
     )
     .argument(
       '[query]',
-      'The question or prompt to send to the AI (can be combined with piped input)',
+      chalk.white(
+        'The question or prompt to send to the AI (can be combined with piped input)',
+      ),
     )
     .option(
       '-p, --profile <profile>',
-      'Profile to use for AI configuration',
+      chalk.white('Profile to use for AI configuration'),
       DEFAULT_PROFILE,
     )
-    .option('-s, --session <sessionId>', 'Continue an existing chat session')
-    .option('-n, --new-session', 'Start a new chat session')
-    .option('--verbose', 'Show detailed status and debug information')
+    .option(
+      '-s, --session <sessionId>',
+      chalk.white('Continue an existing chat session'),
+    )
+    .option('-n, --new-session', chalk.white('Start a new chat session'))
+    .option(
+      '--act <template>',
+      chalk.white('Use an act template (e.g., ethereum-developer)'),
+    )
+    .option(
+      '--verbose',
+      chalk.white('Show detailed status and debug information'),
+    )
     .addHelpText(
       'after',
-      '\nSee also:\n  rawi act --list\n  rawi provider --list\n  rawi configure --show\n',
+      [
+        chalk.bold.cyan('\nSee also:'),
+        chalk.gray('  rawi act --list'),
+        chalk.gray('  rawi provider --list'),
+        chalk.gray('  rawi configure --show'),
+      ].join('\n'),
     )
     .action(async (query: string, options: any) => {
       let dbManager: DatabaseManager | null = null;
@@ -75,6 +100,27 @@ export const createAskCommand = (): Command => {
         } else {
           askCommand.help();
           return;
+        }
+
+        if (options.act) {
+          try {
+            finalQuery = applyActTemplate(options.act, finalQuery);
+            if (options.verbose) {
+              console.log(chalk.dim(`🎭 Using act template: ${options.act}`));
+            }
+          } catch (error) {
+            const errorMessage =
+              error instanceof Error ? error.message : 'Unknown error occurred';
+            if (options.verbose) {
+              console.error(chalk.red(`❌ ${errorMessage}`));
+              console.log(
+                chalk.yellow(
+                  '💡 Use "rawi act --list" to see available templates.',
+                ),
+              );
+            }
+            return;
+          }
         }
 
         const profile = options.profile || DEFAULT_PROFILE;

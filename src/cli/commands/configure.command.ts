@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import {Command} from 'commander';
 import {ConfigManager} from '../../config/manager.js';
 import type {
@@ -19,67 +20,100 @@ export const createConfigureCommand = (): Command => {
 
   command
     .description(
-      'Configure Rawi AI settings and manage profiles. Use this to set up providers, models, and credentials.',
+      [
+        chalk.bold('Configure AI provider settings and manage profiles.'),
+        '',
+        chalk.gray(
+          'Set up providers, models, credentials, and advanced options.',
+        ),
+        chalk.gray('Supports interactive and manual configuration.'),
+      ].join('\n'),
     )
-    .option('-p, --profile <profile>', 'Configuration profile name', 'default')
+    .option(
+      '-p, --profile <profile>',
+      chalk.white('Profile name to configure'),
+      'default',
+    )
     .option(
       '--provider <provider>',
-      'AI provider (openai, anthropic, google, ollama, xai, azure, bedrock, qwen)',
+      chalk.white(
+        'AI provider (openai, anthropic, google, ollama, xai, azure, bedrock, qwen)',
+      ),
     )
-    .option('--model <model>', 'AI model name')
+    .option('--model <model>', chalk.white('AI model name'))
     .option(
       '--api-key <apiKey>',
-      'API key for the provider (not needed for Ollama)',
+      chalk.white('API key for the provider (not needed for Ollama)'),
     )
     .option(
       '--base-url <baseURL>',
-      'Base URL for Ollama (default: http://localhost:11434/api), OpenAI (default: https://api.openai.com/v1), Anthropic (default: https://api.anthropic.com), Google (default: https://generativelanguage.googleapis.com/v1beta), Qwen (default: https://dashscope-intl.aliyuncs.com/compatible-mode/v1), or xAI (default: https://api.x.ai/v1)',
+      chalk.white('Base URL for provider API (see docs for defaults)'),
     )
     .option(
       '--resource-name <resourceName>',
-      'Resource name for Azure OpenAI (required for Azure)',
+      chalk.white('Resource name for Azure OpenAI (required for Azure)'),
     )
     .option(
       '--api-version <apiVersion>',
-      'API version for Azure OpenAI (default: 2024-10-01-preview)',
+      chalk.white('API version for Azure OpenAI (default: 2024-10-01-preview)'),
     )
     .option(
       '--region <region>',
-      'AWS region for Amazon Bedrock (default: us-east-1)',
+      chalk.white('AWS region for Amazon Bedrock (default: us-east-1)'),
     )
     .option(
       '--access-key-id <accessKeyId>',
-      'AWS access key ID for Amazon Bedrock',
+      chalk.white('AWS access key ID for Amazon Bedrock'),
     )
     .option(
       '--secret-access-key <secretAccessKey>',
-      'AWS secret access key for Amazon Bedrock',
+      chalk.white('AWS secret access key for Amazon Bedrock'),
     )
     .option(
       '--session-token <sessionToken>',
-      'AWS session token for Amazon Bedrock (optional)',
+      chalk.white('AWS session token for Amazon Bedrock (optional)'),
     )
     .option(
       '--use-provider-chain',
-      'Use AWS credential provider chain instead of explicit credentials',
+      chalk.white(
+        'Use AWS credential provider chain instead of explicit credentials',
+      ),
     )
     .option(
       '--temperature <temperature>',
-      'Temperature value (0-2)',
+      chalk.white('Sampling temperature (0-2, higher = more creative)'),
       Number.parseFloat,
     )
-    .option('--max-tokens <maxTokens>', 'Maximum tokens', Number.parseInt)
+    .option(
+      '--max-tokens <maxTokens>',
+      chalk.white('Maximum tokens for response'),
+      Number.parseInt,
+    )
     .option(
       '--language <language>',
-      'Language setting (english, arabic)',
+      chalk.white('Language (english, arabic)'),
       'english',
     )
-    .option('-s, --show', 'Show current configuration')
-    .option('-l, --list', 'List all profiles')
-    .option('-d, --delete <profile>', 'Delete a configuration profile')
+    .option(
+      '-s, --show',
+      chalk.white('Show current configuration for the selected profile'),
+    )
+    .option('-l, --list', chalk.white('List all configuration profiles'))
+    .option(
+      '-d, --delete <profile>',
+      chalk.white('Delete a configuration profile'),
+    )
     .addHelpText(
       'after',
-      '\nSee also:\n  rawi provider --list\n  rawi act --list\n  rawi ask --profile <profile>\n',
+      [
+        chalk.bold.cyan('\nSee also:'),
+        chalk.gray('  rawi provider --list'),
+        chalk.gray('  rawi act --list'),
+        chalk.gray('  rawi ask --profile <profile>'),
+        chalk.gray('  rawi configure --show --profile <profile>'),
+        '',
+        chalk.dim('For more examples, see: docs/configuration.md'),
+      ].join('\n'),
     )
     .action(async (options) => {
       const configManager = new ConfigManager();

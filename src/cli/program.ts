@@ -25,11 +25,10 @@ export const createProgram = (): Command => {
     .version(versionString, '-V, --version', 'Show version information');
 
   program.addCommand(createConfigureCommand());
-  program.addCommand(createAskCommand());
-  program.addCommand(createHistoryCommand());
   program.addCommand(createInfoCommand());
+  program.addCommand(createAskCommand());
   program.addCommand(createActCommand());
-
+  program.addCommand(createHistoryCommand());
   program.addCommand(createProviderCommand());
 
   return program;

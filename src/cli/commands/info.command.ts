@@ -9,8 +9,16 @@ export const createInfoCommand = (): Command => {
   const command = new Command('info');
 
   command
-    .description('Display information about Rawi and its capabilities.')
-    .option('--profiles', 'Show configured profiles')
+    .description(
+      [
+        chalk.bold('Display information about Rawi and its capabilities.'),
+        '',
+        chalk.gray(
+          'Show version, author, license, configuration status, and more.',
+        ),
+      ].join('\n'),
+    )
+    .option('--profiles', chalk.white('Show configured profiles'))
     .action(async (options) => {
       try {
         if (options.profiles) {

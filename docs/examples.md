@@ -30,6 +30,10 @@ cat package.json | rawi ask "Check these dependencies for known security issues"
 
 # Environment configuration review
 cat .env.example | rawi ask "Review this environment configuration for security best practices"
+
+# Use act template for smart contract security
+rawi ask --act ethereum-developer "Explain smart contract security"
+cat contract.sol | rawi ask --act ethereum-developer "Review this contract for vulnerabilities"
 ```
 
 #### Performance Optimization
@@ -58,6 +62,9 @@ cat README.md | rawi ask "Update this README with better examples and clearer in
 
 # Generate API documentation
 cat src/api/routes.js | rawi ask "Generate API documentation for these Express routes in OpenAPI format" > api-docs.yaml
+
+# Use act template for documentation
+rawi ask --act english-translator-improver "Improve this documentation"
 ```
 
 #### Code Documentation

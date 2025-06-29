@@ -34,7 +34,10 @@ rawi ask "What is the difference between JavaScript and TypeScript?" --verbose
 | `--profile <profile>` | `-p` | Profile to use for AI configuration | `default` |
 | `--session <sessionId>` | | Continue an existing chat session | |
 | `--new-session` | | Start a new chat session | |
+| `--act <template>` | | Use an act template (e.g., ethereum-developer) | |
 | `--verbose` | | Show detailed status and debug information | |
+
+> 💡 Use `rawi act --list` to see available act templates.
 
 ### Examples
 
@@ -49,6 +52,9 @@ rawi ask "How do I deploy a Node.js application?"
 
 # Code-related question
 rawi ask "Explain async/await in JavaScript"
+
+# Use an act template
+rawi ask --act ethereum-developer "Explain smart contract security"
 ```
 
 #### Using Profiles
@@ -61,6 +67,9 @@ rawi ask "Review this code" -p work
 # Use different providers
 rawi ask "Generate documentation" --profile openai-profile
 rawi ask "Analyze performance" --profile claude-profile
+
+# Use act template with a profile
+rawi ask -p google --act ethereum-developer "explain smart contract security" --verbose
 ```
 
 #### Session Management
@@ -74,6 +83,9 @@ rawi ask "Can you help me with state management?" --session abc123-def456
 
 # Ask follow-up questions
 rawi ask "What about Redux?" --session abc123-def456
+
+# Use act template in a session
+rawi ask --session abc123-def456 --act ethereum-developer "Add security checks to this contract"
 ```
 
 ---
@@ -91,10 +103,10 @@ rawi act --show <template>
 
 ### Options
 
-| Option              | Description                             |
-| ------------------- | --------------------------------------- |
-| `--list`            | List all available act templates        |
-| `--show <template>` | Show details of a specific act template |
+| Option                   | Description                             |
+| ------------------------ | --------------------------------------- |
+| `--list`/`-l`            | List all available act templates        |
+| `--show`/`-s <template>` | Show details of a specific act template |
 
 ### Examples
 
@@ -105,6 +117,8 @@ rawi act --list
 # Show details of a specific template
 rawi act --show ethereum-developer
 ```
+
+> 💡 You can use act templates directly in `rawi ask` with `--act <template>`. See `rawi act --list` for all available templates.
 
 **Available Template Categories:**
 
