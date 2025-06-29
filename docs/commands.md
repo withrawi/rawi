@@ -34,9 +34,6 @@ rawi ask "What is the difference between JavaScript and TypeScript?" --verbose
 | `--profile <profile>` | `-p` | Profile to use for AI configuration | `default` |
 | `--session <sessionId>` | | Continue an existing chat session | |
 | `--new-session` | | Start a new chat session | |
-| `--act <template>` | | Use an act template by ID | |
-| `--list-acts` | | List all available act templates | |
-| `--show` | | Show act template details (with --act) | |
 | `--verbose` | | Show detailed status and debug information | |
 
 ### Examples
@@ -79,35 +76,44 @@ rawi ask "Can you help me with state management?" --session abc123-def456
 rawi ask "What about Redux?" --session abc123-def456
 ```
 
-#### Act Templates
+---
 
-Use predefined act templates to get specialized responses from AI:
+## 🎭 Act Command
+
+List and explore act templates for specialized prompts.
+
+### Basic Usage
+
+```bash
+rawi act --list
+rawi act --show <template>
+```
+
+### Options
+
+| Option              | Description                             |
+| ------------------- | --------------------------------------- |
+| `--list`            | List all available act templates        |
+| `--show <template>` | Show details of a specific act template |
+
+### Examples
 
 ```bash
 # List all available act templates
-rawi ask --list-acts
+rawi act --list
 
 # Show details of a specific template
-rawi ask --act ethereum-developer --show
-
-# Use act template with your query
-rawi ask --act ethereum-developer "explain smart contract security"
-
-# Use with profile and template
-rawi ask -p ollama --act linux-terminal "ls -la /home"
-
-# Use template with piped input
-cat contract.sol | rawi ask --act ethereum-developer "review this contract"
+rawi act --show ethereum-developer
 ```
 
-**Available Templates Categories:**
+**Available Template Categories:**
 
 - **Development**: ethereum-developer, linux-terminal, javascript-console
 - **Language**: english-translator-improver, english-pronunciation-helper, spoken-english-teacher
 - **Tools**: excel-sheet
 - **Lifestyle**: travel-guide
 
-#### Pipe Integration
+---
 
 ```bash
 # Analyze file contents
@@ -123,7 +129,7 @@ tail -100 /var/log/app.log | rawi ask "Summarize any errors in this log"
 curl -s api.example.com/data | rawi ask "Explain this API response structure"
 ```
 
-#### Output Redirection
+---
 
 ```bash
 # Save response to file
@@ -136,7 +142,7 @@ rawi ask "Create a backup script for PostgreSQL" > backup.sh
 rawi ask "Add error handling to this code" >> improvements.txt
 ```
 
-### Error Handling
+---
 
 ```bash
 # Invalid query (no arguments)
@@ -200,13 +206,11 @@ rawi configure [options]
 
 ### Management Options
 
-| Option                     | Description                       |
-| -------------------------- | --------------------------------- |
-| `--show`                   | Show current configuration        |
-| `--list`                   | List all profiles                 |
-| `--list-providers`         | List all available AI providers   |
-| `--list-models <provider>` | List models for specific provider |
-| `--delete <profile>`       | Delete a configuration profile    |
+| Option               | Description                    |
+| -------------------- | ------------------------------ |
+| `--show`             | Show current configuration     |
+| `--list`             | List all profiles              |
+| `--delete <profile>` | Delete a configuration profile |
 
 ### Examples
 
@@ -283,20 +287,40 @@ rawi configure --show
 rawi configure --delete old-profile
 ```
 
-#### Provider Information
+---
+
+## 🏢 Provider Command
+
+Show information about supported AI providers and their models.
+
+### Basic Usage
+
+```bash
+rawi provider --list
+rawi provider --list-models <provider>
+```
+
+### Options
+
+| Option                     | Description                             |
+| -------------------------- | --------------------------------------- |
+| `--list`                   | List all supported AI providers         |
+| `--list-models <provider>` | List all models for a specific provider |
+
+### Examples
 
 ```bash
 # List all supported providers
-rawi configure --list-providers
+rawi provider --list
 
 # List OpenAI models
-rawi configure --list-models openai
+rawi provider --list-models openai
 
 # List Anthropic models
-rawi configure --list-models anthropic
+rawi provider --list-models anthropic
 
-# List Ollama models (shows popular models)
-rawi configure --list-models ollama
+# List Ollama models
+rawi provider --list-models ollama
 ```
 
 ---

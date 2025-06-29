@@ -7,9 +7,9 @@ export const createProviderCommand = (): Command => {
 
   command
     .description(
-      'Show information about supported AI providers and their models.',
+      'Show information about supported AI providers and their models. Use this to discover available providers and their capabilities.',
     )
-    .option('--list', 'Show supported AI providers')
+    .option('--list', 'List all supported AI providers')
     .option(
       '--list-models <provider>',
       'List all models for a specific provider',

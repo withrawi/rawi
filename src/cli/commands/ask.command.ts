@@ -39,7 +39,7 @@ export const createAskCommand = (): Command => {
 
   askCommand
     .description(
-      'Ask AI a question and get a response. Supports piped input from stdin.',
+      'Ask AI a question and get a response. Supports piped input from stdin.\n\nFor act templates, use the dedicated "rawi act" subcommand.',
     )
     .argument(
       '[query]',

@@ -5,9 +5,11 @@ export const createActCommand = (): Command => {
   const actCommand = new Command('act');
 
   actCommand
-    .description('Manage and explore act templates for specialized prompts.')
+    .description(
+      'List and explore act templates for specialized prompts. Use these to quickly apply expert prompt patterns.',
+    )
     .option('--list', 'List all available act templates')
-    .option('--show <template>', 'Show details of the specified act template')
+    .option('--show <template>', 'Show details of a specific act template')
     .action((options) => {
       if (options.list) {
         listActTemplates();

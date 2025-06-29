@@ -18,7 +18,9 @@ export const createConfigureCommand = (): Command => {
   const command = new Command('configure');
 
   command
-    .description('Configure Rawi AI settings')
+    .description(
+      'Configure Rawi AI settings and manage profiles. Use this to set up providers, models, and credentials.',
+    )
     .option('-p, --profile <profile>', 'Configuration profile name', 'default')
     .option(
       '--provider <provider>',

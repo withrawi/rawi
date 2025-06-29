@@ -87,8 +87,24 @@ curl -s api.example.com/data | rawi ask "Summarize this API response"
 rawi ask "Explain TypeScript generics" --session abc123
 rawi ask "Show me an example" --session abc123
 
-# Use different providers
-rawi ask "Optimize this SQL query" -p production-profile
+```
+
+---
+
+## 🏢 Provider Command
+
+Show information about supported AI providers and their models.
+
+### Examples
+
+```bash
+# List all supported providers
+rawi provider --list
+
+# List all models for a provider
+rawi provider --list-models openai
+```
+
 ```
 
 ---
@@ -98,24 +114,26 @@ rawi ask "Optimize this SQL query" -p production-profile
 See [architecture.md](./architecture.md) for a detailed diagram and explanation.
 
 ```
+
 src/
-├── cli/             # Command-line interface
-│   ├── commands/    # Individual commands (ask, configure, history, info)
-│   └── program.ts   # Main CLI program setup
-├── config/          # Configuration management
-│   ├── providers/   # AI provider configurations
-│   ├── manager.ts   # Config file handling
-│   └── utils.ts     # Configuration utilities
-├── database/        # Chat history and session management
-│   ├── schema/      # Database schema definitions
-│   ├── adapter.ts   # Database adapter
-│   └── manager.ts   # Database operations
-├── shared/          # Shared utilities and types
-│   ├── types.ts     # TypeScript type definitions
-│   ├── constants.ts # Application constants
-│   ├── utils.ts     # Utility functions
-│   └── spinner.ts   # Loading indicators
-└── data/            # Static data and prompts
+├── cli/ # Command-line interface
+│ ├── commands/ # Individual commands (ask, configure, history, info)
+│ └── program.ts # Main CLI program setup
+├── config/ # Configuration management
+│ ├── providers/ # AI provider configurations
+│ ├── manager.ts # Config file handling
+│ └── utils.ts # Configuration utilities
+├── database/ # Chat history and session management
+│ ├── schema/ # Database schema definitions
+│ ├── adapter.ts # Database adapter
+│ └── manager.ts # Database operations
+├── shared/ # Shared utilities and types
+│ ├── types.ts # TypeScript type definitions
+│ ├── constants.ts # Application constants
+│ ├── utils.ts # Utility functions
+│ └── spinner.ts # Loading indicators
+└── data/ # Static data and prompts
+
 ```
 
 ---
@@ -159,3 +177,4 @@ See [Development Guide](./development.md) for contribution guidelines.
 - [GitHub Issues](https://github.com/MKAbuMattar/rawi/issues)
 - [Documentation](https://rawi.mkabumattar.com/)
 - [Discord Community](#) (Coming soon)
+```

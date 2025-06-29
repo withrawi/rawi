@@ -116,12 +116,18 @@ rawi configure --show
 # List all profiles
 rawi configure --list
 
-# List available providers
-rawi configure --list-providers
+# List all supported providers
+rawi provider --list
+
+# List all models for a provider
+rawi provider --list-models openai
+```
 
 # List models for a provider
+
 rawi configure --list-models openai
-```
+
+````
 
 ### Chat History
 
@@ -137,7 +143,7 @@ rawi history show session-id
 
 # List all sessions
 rawi history sessions
-```
+````
 
 ### System Information
 

@@ -68,6 +68,12 @@ rawi configure --show --profile work
 
 # Delete a profile
 rawi configure --delete personal
+
+# List all supported providers
+rawi provider --list
+
+# List all models for a provider
+rawi provider --list-models openai
 ```
 
 ### Using Profiles
