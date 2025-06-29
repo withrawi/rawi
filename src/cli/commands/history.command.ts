@@ -22,6 +22,7 @@ export const createHistoryCommand = (): Command => {
         chalk.gray(
           'Search, filter, export, and clean up your AI chat history.',
         ),
+        chalk.gray('Use --limit for pagination, --search for filtering.'),
       ].join('\n'),
     )
     .option(
@@ -45,6 +46,17 @@ export const createHistoryCommand = (): Command => {
       chalk.white('Show sessions from date (YYYY-MM-DD)'),
     )
     .option('--to <date>', chalk.white('Show sessions to date (YYYY-MM-DD)'))
+    .addHelpText(
+      'after',
+      [
+        chalk.bold.cyan('\nSee also:'),
+        chalk.gray('  rawi history sessions'),
+        chalk.gray('  rawi history show <sessionId>'),
+        chalk.gray('  rawi history stats'),
+        chalk.gray('  rawi history cleanup'),
+        chalk.gray('  rawi history export'),
+      ].join('\n'),
+    )
     .action(async (options) => {
       let dbManager: DatabaseManager | null = null;
 

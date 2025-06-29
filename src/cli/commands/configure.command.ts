@@ -27,6 +27,7 @@ export const createConfigureCommand = (): Command => {
           'Set up providers, models, credentials, and advanced options.',
         ),
         chalk.gray('Supports interactive and manual configuration.'),
+        chalk.gray('Use --list to see all profiles, --show for details.'),
       ].join('\n'),
     )
     .option(
@@ -129,11 +130,10 @@ export const createConfigureCommand = (): Command => {
         if (options.list) {
           const profiles = configManager.listProfiles();
           if (profiles.length === 0) {
-            console.log('No profiles found.');
+            console.log(chalk.yellow('No configuration profiles found.'));
             return;
           }
-
-          console.log('Available profiles:');
+          console.log(chalk.bold('Available profiles:'));
           profiles.forEach((profile) => console.log(`  - ${profile}`));
           return;
         }
@@ -141,9 +141,13 @@ export const createConfigureCommand = (): Command => {
         if (options.delete) {
           const success = configManager.deleteProfile(options.delete);
           if (success) {
-            console.log(`Profile '${options.delete}' deleted successfully.`);
+            console.log(
+              chalk.green(`Profile '${options.delete}' deleted successfully.`),
+            );
           } else {
-            console.log(`Profile '${options.delete}' not found.`);
+            console.log(
+              chalk.red(`Failed to delete profile '${options.delete}'.`),
+            );
           }
           return;
         }
@@ -151,8 +155,11 @@ export const createConfigureCommand = (): Command => {
         if (options.language) {
           const validLanguages: SupportedLanguage[] = ['english', 'arabic'];
           if (!validLanguages.includes(options.language as SupportedLanguage)) {
-            console.error(`Invalid language: ${options.language}`);
-            console.log('Available languages:', validLanguages.join(', '));
+            console.error(chalk.red(`Invalid language: ${options.language}`));
+            console.log(
+              chalk.yellow('Available languages:'),
+              validLanguages.join(', '),
+            );
             return;
           }
         }

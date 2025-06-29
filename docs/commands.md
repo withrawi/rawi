@@ -32,8 +32,8 @@ rawi ask "What is the difference between JavaScript and TypeScript?" --verbose
 
 | Option | Alias | Description | Default |
 | `--profile <profile>` | `-p` | Profile to use for AI configuration | `default` |
-| `--session <sessionId>` | | Continue an existing chat session | |
-| `--new-session` | | Start a new chat session | |
+| `--session <sessionId>` | `-s` | Continue an existing chat session | |
+| `--new-session` | `-n` | Start a new chat session | |
 | `--act <template>` | | Use an act template (e.g., ethereum-developer) | |
 | `--verbose` | | Show detailed status and debug information | |
 
@@ -103,10 +103,10 @@ rawi act --show <template>
 
 ### Options
 
-| Option                   | Description                             |
-| ------------------------ | --------------------------------------- |
-| `--list`/`-l`            | List all available act templates        |
-| `--show`/`-s <template>` | Show details of a specific act template |
+| Option              | Alias | Description                             |
+| ------------------- | ----- | --------------------------------------- |
+| `--list`            | `-l`  | List all available act templates        |
+| `--show <template>` | `-s`  | Show details of a specific act template |
 
 ### Examples
 

@@ -14,6 +14,9 @@ export const createActCommand = (): Command => {
         chalk.bold('List and explore act templates for specialized prompts.'),
         '',
         chalk.gray('Use these to quickly apply expert prompt patterns.'),
+        chalk.gray(
+          'Use --list to see all templates, --show <template> for details.',
+        ),
       ].join('\n'),
     )
     .option('-l, --list', chalk.white('List all available act templates'))
@@ -28,6 +31,7 @@ export const createActCommand = (): Command => {
         chalk.gray('  rawi ask --profile <profile> --act <template> <query>'),
         chalk.gray('  rawi configure --show'),
         chalk.gray('  rawi provider --list'),
+        chalk.gray('  rawi act --list'),
       ].join('\n'),
     )
     .action(async (options) => {

@@ -44,9 +44,8 @@ export const createAskCommand = (): Command => {
         chalk.bold('Ask AI a question and get a response.'),
         '',
         chalk.gray('Supports piped input from stdin.'),
-        chalk.gray(
-          'For act templates, use the dedicated "rawi act" subcommand.',
-        ),
+        chalk.gray('Use --act <template> for expert prompt templates.'),
+        chalk.gray('See all templates with "rawi act --list".'),
       ].join('\n'),
     )
     .argument(
@@ -80,6 +79,7 @@ export const createAskCommand = (): Command => {
         chalk.gray('  rawi act --list'),
         chalk.gray('  rawi provider --list'),
         chalk.gray('  rawi configure --show'),
+        chalk.gray('  rawi ask --help'),
       ].join('\n'),
     )
     .action(async (query: string, options: any) => {

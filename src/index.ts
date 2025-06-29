@@ -148,9 +148,17 @@ process.on('uncaughtException', (error) => {
       if (inputCmd) {
         suggestion = suggestClosestCommand(inputCmd, commands);
       }
-      console.error(`\n${chalk.red(`❌ ${msg}`)}`);
+      console.error(`\n${chalk.red(`❌ Unknown command: ${inputCmd || msg}`)}`);
       if (suggestion) {
         console.info(chalk.yellowBright(`Did you mean '${suggestion}'?`));
+      } else {
+        // Fuzzy suggestion for similar commands
+        const close = commands.find(
+          (cmd) => inputCmd && cmd.startsWith(inputCmd[0]),
+        );
+        if (close) {
+          console.info(chalk.yellowBright(`Did you mean '${close}'?`));
+        }
       }
       console.info(
         chalk.gray('Run `rawi --help` to see all available commands.'),
@@ -168,6 +176,30 @@ process.on('uncaughtException', (error) => {
       console.error(`\n${chalk.red(`❌ ${msg}`)}`);
       console.info(chalk.gray('Check available options with `--help`.'));
       process.exit(1);
+    }
+    // Add more helpful error messages for common issues
+    if (msg.includes('not configured') || msg.includes('credentials')) {
+      console.error(`\n${chalk.red(`❌ ${msg}`)}`);
+      console.info(
+        chalk.yellow(
+          'Run `rawi configure` to set up your provider and credentials.',
+        ),
+      );
+      process.exit(2);
+    }
+    if (msg.includes('network') || msg.includes('timeout')) {
+      console.error(`\n${chalk.red(`❌ ${msg}`)}`);
+      console.info(
+        chalk.yellow('Check your internet connection or provider status.'),
+      );
+      process.exit(3);
+    }
+    if (msg.includes('authentication') || msg.includes('API key')) {
+      console.error(`\n${chalk.red(`❌ ${msg}`)}`);
+      console.info(
+        chalk.yellow('Check your API key and provider configuration.'),
+      );
+      process.exit(4);
     }
     console.error(`\n${chalk.red(`❌ Unexpected error: ${msg}`)}`);
     console.info(

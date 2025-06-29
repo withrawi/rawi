@@ -32,7 +32,6 @@ rawi configure
 # Ask your first question
 rawi ask "What is TypeScript?"
 
-# Use an act template for a specialized prompt
 rawi ask --act ethereum-developer "Explain smart contract security"
 ```
 

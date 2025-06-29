@@ -135,8 +135,10 @@ export const createCommandName = (): Command => {
 #### Command Responsibilities
 
 - **ask**: Query AI providers and manage conversations
+- **act**: List and explore act templates for expert prompt engineering
 - **configure**: Manage provider configurations and profiles
-- **history**: View and manage chat history
+- **provider**: Show supported AI providers and models
+- **history**: View and manage chat history and sessions
 - **info**: Display system and configuration information
 
 ### 2. Configuration Layer (`src/config/`)

@@ -20,9 +20,33 @@ export const createProgram = (): Command => {
   program
     .name(pkg.name)
     .description(
-      'A developer-friendly AI-powered CLI tool that delivers clear answers, summaries, and analyses. Inspired by Jordanian storytelling, Rawi (راوي).',
+      [
+        'A developer-friendly AI-powered CLI tool that delivers clear answers, summaries, and analyses. Inspired by Jordanian storytelling, Rawi (راوي).',
+        '',
+        'Commands:',
+        '',
+        '  ask         Ask AI a question and get a response',
+        '  act         List and explore act templates',
+        '  configure   Configure AI provider settings and profiles',
+        '  provider    Show supported AI providers and models',
+        '  history     Manage chat history and sessions',
+        '  info        Display system and configuration information',
+        '',
+        'Run `rawi <command> --help` for detailed usage of a command.',
+      ].join('\n'),
     )
-    .version(versionString, '-V, --version', 'Show version information');
+    .version(versionString, '-V, --version', 'Show version information')
+    .addHelpText(
+      'afterAll',
+      [
+        '',
+        'Global Options:',
+        '  -V, --version   Show version information',
+        '  -h, --help      Show help for command',
+        '',
+        'Docs: https://rawi.mkabumattar.com',
+      ].join('\n'),
+    );
 
   program.addCommand(createConfigureCommand());
   program.addCommand(createInfoCommand());
