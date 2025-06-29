@@ -1,5 +1,7 @@
 import {writeFile} from 'node:fs/promises';
+import {select} from '@inquirer/prompts';
 import chalk from 'chalk';
+import Table from 'cli-table3';
 import {Command} from 'commander';
 import {DatabaseManager} from '../../database/index.js';
 import {
@@ -45,44 +47,44 @@ export const createHistoryCommand = (): Command => {
           toDate: options.to,
         };
 
+        const pageSize = 10;
+
         if (options.search) {
           const messages = await dbManager.searchMessages(searchOptions);
-
           if (messages.length === 0) {
             console.log(
               chalk.yellow('📭 No messages found matching your search.'),
             );
             return;
           }
-
           console.log(chalk.cyan(`🔍 Found ${messages.length} messages:`));
           console.log();
-
-          for (const message of messages) {
-            const session = await dbManager.getSession(message.sessionId);
-            const sessionTitle = session?.title || 'Untitled Session';
-
-            console.log(
-              chalk.dim(
-                `Session: ${truncateText(sessionTitle, 40)} (${message.sessionId})`,
-              ),
-            );
-            console.log(
-              chalk.bold(
-                `${message.role === 'user' ? '👤' : '🤖'} ${message.role}:`,
-              ),
-            );
-            console.log(truncateText(message.content, 200));
-            console.log(
-              chalk.dim(
-                `${formatRelativeTime(message.timestamp)} • ${message.provider}/${message.model}`,
-              ),
-            );
-            console.log(chalk.dim('─'.repeat(60)));
-          }
+          const table = new Table({
+            head: [
+              chalk.cyan('Session'),
+              chalk.cyan('Role'),
+              chalk.cyan('Content'),
+              chalk.cyan('Time'),
+              chalk.cyan('Provider/Model'),
+            ],
+            style: {head: ['cyan']},
+            colWidths: [18, 8, 40, 16, 22],
+            wordWrap: true,
+          });
+          messages.forEach((message) => {
+            table.push([
+              truncateText(message.sessionId, 16),
+              message.role === 'user'
+                ? chalk.blue('👤 user')
+                : chalk.green('🤖 assistant'),
+              truncateText(message.content, 38),
+              formatRelativeTime(message.timestamp),
+              `${message.provider}/${message.model}`,
+            ]);
+          });
+          console.log(table.toString());
         } else {
           const sessions = await dbManager.getSessions(searchOptions);
-
           if (sessions.length === 0) {
             console.log(chalk.yellow('📭 No chat sessions found.'));
             console.log(
@@ -92,24 +94,56 @@ export const createHistoryCommand = (): Command => {
             );
             return;
           }
-
-          console.log(
-            chalk.cyan(`📚 Chat History (${sessions.length} sessions):`),
-          );
-          console.log();
-
-          for (const session of sessions) {
-            const title = session.title || 'Untitled Session';
-            const preview = truncateText(title, 50);
-
-            console.log(chalk.bold(`📝 ${preview}`));
-            console.log(chalk.dim(`   ID: ${session.id}`));
-            console.log(chalk.dim(`   Profile: ${session.profile}`));
-            console.log(chalk.dim(`   Messages: ${session.messageCount}`));
-            console.log(
-              chalk.dim(`   Updated: ${formatRelativeTime(session.updatedAt)}`),
-            );
-            console.log();
+          const totalPages = Math.ceil(sessions.length / pageSize);
+          let page = 0;
+          const renderPage = (pageIdx: number) => {
+            const table = new Table({
+              head: [
+                chalk.cyan('Title'),
+                chalk.cyan('ID'),
+                chalk.cyan('Profile'),
+                chalk.cyan('Messages'),
+                chalk.cyan('Updated'),
+              ],
+              style: {head: ['cyan']},
+              colWidths: [22, 38, 12, 10, 18],
+              wordWrap: true,
+            });
+            sessions
+              .slice(pageIdx * pageSize, (pageIdx + 1) * pageSize)
+              .forEach((session) => {
+                table.push([
+                  truncateText(session.title || 'Untitled', 20),
+                  session.id,
+                  session.profile,
+                  session.messageCount,
+                  formatRelativeTime(session.updatedAt),
+                ]);
+              });
+            console.log(table.toString());
+            console.log(chalk.gray(`Page ${pageIdx + 1} of ${totalPages}`));
+          };
+          if (sessions.length > pageSize) {
+            let exit = false;
+            while (!exit) {
+              renderPage(page);
+              const choices = [];
+              if (page > 0) choices.push({name: 'Previous', value: 'prev'});
+              if (page < totalPages - 1)
+                choices.push({name: 'Next', value: 'next'});
+              choices.push({name: 'Exit', value: 'exit'});
+              const nav = await select({
+                message: 'Navigate pages:',
+                choices,
+                default: page < totalPages - 1 ? 'next' : 'exit',
+              });
+              if (nav === 'prev') page--;
+              else if (nav === 'next') page++;
+              else exit = true;
+              if (!exit) console.clear();
+            }
+          } else {
+            renderPage(0);
           }
         }
 

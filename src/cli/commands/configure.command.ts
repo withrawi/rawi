@@ -74,9 +74,13 @@ export const createConfigureCommand = (): Command => {
       'Language setting (english, arabic)',
       'english',
     )
-    .option('--show', 'Show current configuration')
-    .option('--list', 'List all profiles')
-    .option('--delete <profile>', 'Delete a configuration profile')
+    .option('-s, --show', 'Show current configuration')
+    .option('-l, --list', 'List all profiles')
+    .option('-d, --delete <profile>', 'Delete a configuration profile')
+    .addHelpText(
+      'after',
+      '\nSee also:\n  rawi provider --list\n  rawi act --list\n  rawi ask --profile <profile>\n',
+    )
     .action(async (options) => {
       const configManager = new ConfigManager();
 

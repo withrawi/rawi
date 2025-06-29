@@ -17,7 +17,9 @@ Rawi (راوي) is a developer-friendly AI-powered CLI tool that delivers clear 
 | Command       | Description                                  |
 | ------------- | -------------------------------------------- |
 | **ask**       | Ask AI a question and get a response         |
-| **configure** | Configure AI provider settings               |
+| **act**       | List and explore act templates               |
+| **configure** | Configure AI provider settings and profiles  |
+| **provider**  | Show supported AI providers and models       |
 | **history**   | Manage chat history and sessions             |
 | **info**      | Display system and configuration information |
 
@@ -26,9 +28,39 @@ Rawi (راوي) is a developer-friendly AI-powered CLI tool that delivers clear 
 ```
 rawi
 ├── ask [query] [options]
+│     ├── --profile, -p <profile>
+│     ├── --session, -s <sessionId>
+│     ├── --new-session, -n
+│     ├── --act <template>
+│     ├── --list-acts
+│     ├── --show
 │     └── --verbose
+├── act [options]
+│     ├── --list, -l
+│     └── --show, -s <template>
 ├── configure [options]
+│     ├── --profile, -p <profile>
+│     ├── --provider <provider>
+│     ├── --model <model>
+│     ├── --api-key <apiKey>
+│     ├── --base-url <baseURL>
+│     ├── --temperature <temperature>
+│     ├── --max-tokens <maxTokens>
+│     ├── --language <language>
+│     ├── --show, -s
+│     ├── --list, -l
+│     └── --delete, -d <profile>
+├── provider [options]
+│     ├── --list, -l
+│     └── --list-models, -m <provider>
 ├── history [options]
+│   ├── --profile, -p <profile>
+│   ├── --limit, -l <number>
+│   ├── --search, -s <query>
+│   ├── --provider <provider>
+│   ├── --model <model>
+│   ├── --from <date>
+│   ├── --to <date>
 │   ├── sessions [options]
 │   ├── show <sessionId>
 │   ├── delete <sessionId>
@@ -36,21 +68,22 @@ rawi
 │   ├── cleanup [options]
 │   └── export [options]
 └── info [options]
+    └── --profiles
 ```
 
 ## COMMANDS
 
 ### ask
 
-Ask AI a question and get a response.
+Ask AI a question and get a response. Supports piped input from stdin.
 
 **Usage:**
 rawi ask [query] [options]
 
 **Options:**
 --profile, -p <profile> Profile to use for AI configuration (default: default)
---session <sessionId> Continue an existing chat session
---new-session Start a new chat session
+--session, -s <sessionId> Continue an existing chat session
+--new-session, -n Start a new chat session
 --act <template> Use an act template by ID
 --list-acts List all available act templates
 --show Show act template details (with --act)
@@ -63,6 +96,21 @@ rawi ask --act ethereum-developer "explain smart contract security"
 rawi ask "What is the difference between JavaScript and TypeScript?" --verbose
 cat contract.sol | rawi ask --act ethereum-developer "review this contract"
 
+### act
+
+List and explore act templates for specialized prompts.
+
+**Usage:**
+rawi act [options]
+
+**Options:**
+--list, -l List all available act templates
+--show, -s <template> Show details of a specific act template
+
+**Examples:**
+rawi act --list
+rawi act --show chef
+
 ### configure
 
 Configure Rawi AI provider settings and manage profiles.
@@ -71,24 +119,44 @@ Configure Rawi AI provider settings and manage profiles.
 rawi configure [options]
 
 **Options:**
---profile <profile> Configuration profile name
---provider <provider> AI provider
+--profile, -p <profile> Configuration profile name
+--provider <provider> AI provider (openai, anthropic, google, ollama, xai, azure, bedrock, qwen)
 --model <model> AI model name
 --api-key <apiKey> API key for the provider
 --base-url <baseURL> Custom base URL
 --temperature <temperature> Temperature value (0-2)
 --max-tokens <maxTokens> Maximum tokens
 --language <language> Language (english, arabic)
---show Show current configuration
---list List all profiles
---list-providers List all available AI providers
---list-models <provider> List models for specific provider
---delete <profile> Delete a configuration profile
+--show, -s Show current configuration
+--list, -l List all profiles
+--delete, -d <profile> Delete a configuration profile
 
 **Examples:**
 rawi configure --provider openai --model gpt-4o --api-key sk-your-key
 rawi configure --list
 rawi configure --show --profile work
+
+### provider
+
+Show information about supported AI providers and their models.
+
+**Usage:**
+rawi provider [options]
+
+**Options:**
+--list, -l List all supported AI providers
+--list-models, -m <provider> List all models for a specific provider (with pagination)
+
+**Examples:**
+rawi provider --list
+rawi provider --list-models ollama
+
+sessions [options] List and manage chat sessions
+show <sessionId> Show all messages in a specific session
+delete <sessionId> Delete a session
+stats [options] Show usage statistics
+cleanup [options] Clean up old sessions
+export [options] Export history to a file
 
 ### history
 

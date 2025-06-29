@@ -50,10 +50,14 @@ export const createAskCommand = (): Command => {
       'Profile to use for AI configuration',
       DEFAULT_PROFILE,
     )
-    .option('--session <sessionId>', 'Continue an existing chat session')
-    .option('--new-session', 'Start a new chat session')
+    .option('-s, --session <sessionId>', 'Continue an existing chat session')
+    .option('-n, --new-session', 'Start a new chat session')
     .option('--verbose', 'Show detailed status and debug information')
-    .action(async (query, options) => {
+    .addHelpText(
+      'after',
+      '\nSee also:\n  rawi act --list\n  rawi provider --list\n  rawi configure --show\n',
+    )
+    .action(async (query: string, options: any) => {
       let dbManager: DatabaseManager | null = null;
 
       try {

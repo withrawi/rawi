@@ -1,7 +1,7 @@
 {
   "name": "rawi",
   "description": "Rawi (راوي): A developer-friendly AI-powered CLI tool that delivers clear answers, summaries, and analyses. It supports multiple AI providers, including OpenAI, Google, Amazon Bedrock, and more.",
-  "version": "0.0.5-beta.3",
+  "version": "0.0.5-beta.4",
   "type": "module",
   "license": "MIT",
   "bin": {
@@ -15,7 +15,7 @@
   "types": "dist/index.d.ts",
   "files": [
     "/dist",
-    "/man",
+    "/man/rawi.1",
     "/index.d.ts"
   ],
   "keywords": [
@@ -68,8 +68,10 @@
     "ai": "4.3.16",
     "boxen": "8.0.1",
     "chalk": "5.4.1",
+    "cli-table3": "0.6.5",
     "commander": "14.0.0",
     "drizzle-orm": "0.44.2",
+    "leven": "4.0.0",
     "ora": "8.2.0",
     "update-notifier": "7.3.1",
     "uuid": "11.1.0"

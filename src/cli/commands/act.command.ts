@@ -1,5 +1,9 @@
+import {select} from '@inquirer/prompts';
+import chalk from 'chalk';
+import Table from 'cli-table3';
 import {Command} from 'commander';
-import {listActTemplates, showActTemplate} from '../../template/utils.js';
+import {actTemplates} from '../../template/index.js';
+import {showActTemplate} from '../../template/utils.js';
 
 export const createActCommand = (): Command => {
   const actCommand = new Command('act');
@@ -8,11 +12,75 @@ export const createActCommand = (): Command => {
     .description(
       'List and explore act templates for specialized prompts. Use these to quickly apply expert prompt patterns.',
     )
-    .option('--list', 'List all available act templates')
-    .option('--show <template>', 'Show details of a specific act template')
-    .action((options) => {
+    .option('-l, --list', 'List all available act templates')
+    .option('-s, --show <template>', 'Show details of a specific act template')
+    .addHelpText(
+      'after',
+      '\nSee also:\n  rawi ask --profile <profile> --act <template> <query>\n  rawi configure --show\n  rawi provider --list\n',
+    )
+    .action(async (options) => {
       if (options.list) {
-        listActTemplates();
+        const templates: Array<{
+          id: string;
+          label: string;
+          category: string;
+          description?: string;
+        }> = actTemplates;
+        if (!templates || templates.length === 0) {
+          console.log(chalk.yellow('No act templates found.'));
+          return;
+        }
+        const pageSize = 10;
+        let page = 0;
+        const totalPages = Math.ceil(templates.length / pageSize);
+        const table = new Table({
+          head: [
+            chalk.cyan('ID'),
+            chalk.cyan('Label'),
+            chalk.cyan('Category'),
+            chalk.cyan('Description'),
+          ],
+          style: {head: ['cyan']},
+          colWidths: [40, 22, 18, 36],
+          wordWrap: true,
+        });
+        const renderPage = (pageIdx: number) => {
+          table.length = 0;
+          templates
+            .slice(pageIdx * pageSize, (pageIdx + 1) * pageSize)
+            .forEach((tpl) => {
+              table.push([
+                chalk.cyan(tpl.id),
+                tpl.label,
+                tpl.category,
+                tpl.description || '',
+              ]);
+            });
+          console.log(table.toString());
+          console.log(chalk.gray(`Page ${pageIdx + 1} of ${totalPages}`));
+        };
+        if (templates.length > pageSize) {
+          let exit = false;
+          while (!exit) {
+            renderPage(page);
+            const choices = [];
+            if (page > 0) choices.push({name: 'Previous', value: 'prev'});
+            if (page < totalPages - 1)
+              choices.push({name: 'Next', value: 'next'});
+            choices.push({name: 'Exit', value: 'exit'});
+            const nav = await select({
+              message: 'Navigate pages:',
+              choices,
+              default: page < totalPages - 1 ? 'next' : 'exit',
+            });
+            if (nav === 'prev') page--;
+            else if (nav === 'next') page++;
+            else exit = true;
+            if (!exit) console.clear();
+          }
+        } else {
+          renderPage(0);
+        }
         return;
       }
       if (options.show) {
