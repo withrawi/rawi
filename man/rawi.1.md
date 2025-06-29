@@ -10,18 +10,18 @@ rawi \- A developer-friendly AI-powered CLI tool for clear answers, summaries, a
 
 ## DESCRIPTION
 
-Rawi (راوي) is a developer-friendly AI-powered CLI tool that delivers clear answers, summaries, and analyses. It supports multiple AI providers, including OpenAI, Google, Amazon Bedrock, and more.
+Rawi (راوي) is a developer-friendly AI-powered CLI tool that delivers clear answers, summaries, and analyses. It supports multiple AI providers, including OpenAI, Google, Amazon Bedrock, Anthropic, Ollama, xAI, Qwen, and more. Rawi is designed for clarity, consistency, and developer-friendliness, with modern output formatting, actionable error messages, and discoverable help.
 
 ## COMMAND OVERVIEW
 
-| Command       | Description                                  |
-| ------------- | -------------------------------------------- |
-| **ask**       | Ask AI a question and get a response         |
-| **act**       | List and explore act templates               |
-| **configure** | Configure AI provider settings and profiles  |
-| **provider**  | Show supported AI providers and models       |
-| **history**   | Manage chat history and sessions             |
-| **info**      | Display system and configuration information |
+| Command       | Description                                                                  |
+| ------------- | ---------------------------------------------------------------------------- |
+| **ask**       | Ask AI a question and get a response                                         |
+| **act**       | List and explore act templates (paginated)                                   |
+| **configure** | Configure AI provider settings and profiles                                  |
+| **provider**  | Show supported AI providers and models (paginated)                           |
+| **history**   | Manage chat history and sessions (paginated, search, stats, export, cleanup) |
+| **info**      | Display system and configuration information                                 |
 
 ## CLI COMMAND TREE
 
@@ -32,9 +32,7 @@ rawi
 │     ├── --session, -s <sessionId>
 │     ├── --new-session, -n
 │     ├── --act <template>
-│     ├── --list-acts
-│     ├── --show
-│     └── --verbose
+│     ├── --verbose
 ├── act [options]
 │     ├── --list, -l
 │     └── --show, -s <template>
