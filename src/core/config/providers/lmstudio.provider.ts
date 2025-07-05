@@ -6,12 +6,42 @@ import type {
   RawiCredentials,
 } from '../../shared/types.js';
 
-// LM Studio supports any OpenAI-compatible model, so allow free-form string
 type LooseLMStudioModelId = string;
 export type LMStudioModelId = LooseToStrict<LooseLMStudioModelId>;
 
-// Example default models (users can add their own)
-const lmstudioModelIds = ['mistralai/mistral-small-3.2'] as const;
+const lmstudioModelIds = [
+  'mistralai/mistral-small-3.2',
+  'mistralai/magistral-small',
+  'deepseek/deepseek-r1-0528-qwen3-8b',
+  'mistralai/devstral-small-2505',
+  'microsoft/phi-4-mini-reasoning',
+  'microsoft/phi-4-reasoning-plus',
+  'qwen/qwen3-235b-a22b',
+  'qwen/qwen3-32b',
+  'qwen/qwen3-30b-a3b',
+  'qwen/qwen3-1.7b',
+  'qwen/qwen3-4b',
+  'qwen/qwen3-14b',
+  'qwen/qwen3-8b',
+  'google/gemma-3-27b',
+  'google/gemma-3-12b',
+  'google/gemma-3-4b',
+  'google/gemma-3-1b',
+  'qwen/qwq-32b',
+  'ibm/granite-3.2-8b',
+  'qwen/qwen2.5-vl-7b',
+  'microsoft/phi-4',
+  'ibm/granite-3.1-8b',
+  'meta/llama-3.3-70b',
+  'qwen/qwen2.5-coder-14b',
+  'qwen/qwen2.5-coder-32b',
+  'mistralai/mistral-nemo-instruct-2407',
+  'mistralai/mathstral-7b-v0.1',
+  'google/gemma-2-9b',
+  'google/gemma-2-27b',
+  'mistralai/codestral-22b-v0.1',
+  'mistralai/mistral-7b-instruct-v0.3',
+] as const;
 
 export const lmstudioModels: ModelInfo[] = lmstudioModelIds.map((name) => ({
   name,
@@ -29,7 +59,6 @@ export const generateWithLMStudio = async (
   prompt: string,
 ): Promise<string> => {
   try {
-    // LM Studio is OpenAI-compatible, but does not require an API key
     const settings = credentials.providerSettings as
       | {baseURL?: string}
       | undefined;
