@@ -35,6 +35,8 @@ export const createHistoryCommand = (): Command => {
       chalk.white('Number of sessions to show'),
       DEFAULT_HISTORY_LIMIT.toString(),
     )
+    .option('--all', chalk.white('Show all sessions without pagination limit'))
+    .option('--all-profiles', chalk.white('Show sessions from all profiles'))
     .option(
       '-s, --search <query>',
       chalk.white('Search messages containing text'),
@@ -64,8 +66,10 @@ export const createHistoryCommand = (): Command => {
         dbManager = new DatabaseManager();
 
         const searchOptions: ChatHistoryOptions = {
-          profile: options.profile,
-          limit: Number.parseInt(options.limit) || DEFAULT_HISTORY_LIMIT,
+          profile: options.allProfiles ? undefined : options.profile,
+          limit: options.all
+            ? 1000
+            : Number.parseInt(options.limit) || DEFAULT_HISTORY_LIMIT,
           search: options.search,
           provider: options.provider,
           model: options.model,
@@ -110,6 +114,12 @@ export const createHistoryCommand = (): Command => {
           });
           console.log(table.toString());
         } else {
+          const profileMessage = options.allProfiles
+            ? 'all profiles'
+            : `profile: ${searchOptions.profile}`;
+          console.log(
+            chalk.dim(`Searching for sessions with ${profileMessage}`),
+          );
           const sessions = await dbManager.getSessions(searchOptions);
           if (sessions.length === 0) {
             console.log(chalk.yellow('📭 No chat sessions found.'));
@@ -216,6 +226,7 @@ export const createHistoryCommand = (): Command => {
       chalk.white('Number of sessions to show'),
       DEFAULT_HISTORY_LIMIT.toString(),
     )
+    .option('--all', chalk.white('Show all sessions without pagination limit'))
     .action(async (options) => {
       let dbManager: DatabaseManager | null = null;
 
@@ -223,7 +234,9 @@ export const createHistoryCommand = (): Command => {
         dbManager = new DatabaseManager();
         const sessions = await dbManager.getSessions({
           profile: options.profile,
-          limit: Number.parseInt(options.limit) || DEFAULT_HISTORY_LIMIT,
+          limit: options.all
+            ? 1000
+            : Number.parseInt(options.limit) || DEFAULT_HISTORY_LIMIT,
         });
 
         if (sessions.length === 0) {
