@@ -152,7 +152,6 @@ process.on('uncaughtException', (error) => {
       if (suggestion) {
         console.info(chalk.yellowBright(`Did you mean '${suggestion}'?`));
       } else {
-        // Fuzzy suggestion for similar commands
         const close = commands.find(
           (cmd) => inputCmd && cmd.startsWith(inputCmd[0]),
         );
@@ -177,7 +176,6 @@ process.on('uncaughtException', (error) => {
       console.info(chalk.gray('Check available options with `--help`.'));
       process.exit(1);
     }
-    // Add more helpful error messages for common issues
     if (msg.includes('not configured') || msg.includes('credentials')) {
       console.error(`\n${chalk.red(`❌ ${msg}`)}`);
       console.info(

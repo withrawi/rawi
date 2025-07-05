@@ -46,7 +46,7 @@ export const createActCommand = (): Command => {
           console.log(chalk.yellow('No act templates found.'));
           return;
         }
-        const pageSize = 10;
+        const pageSize = 6;
         let page = 0;
         const totalPages = Math.ceil(templates.length / pageSize);
         const table = new Table({
