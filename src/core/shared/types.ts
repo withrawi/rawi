@@ -26,7 +26,8 @@ export type SupportedProvider =
   | 'xai'
   | 'azure'
   | 'bedrock'
-  | 'qwen';
+  | 'qwen'
+  | 'lmstudio';
 
 export interface BaseCredentials {
   provider: SupportedProvider;
@@ -37,6 +38,10 @@ export interface BaseCredentials {
 }
 
 export interface OllamaSettings {
+  baseURL?: string;
+}
+
+export interface LMStudioSettings {
   baseURL?: string;
 }
 
@@ -86,7 +91,8 @@ export type ProviderSettings =
   | XAISettings
   | AzureSettings
   | BedrockSettings
-  | QwenSettings;
+  | QwenSettings
+  | LMStudioSettings;
 
 export interface RawiCredentials extends BaseCredentials {
   apiKey?: string;

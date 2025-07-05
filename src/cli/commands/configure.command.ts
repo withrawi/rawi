@@ -7,6 +7,7 @@ import type {
   BedrockSettings,
   ConfigureOptions,
   GoogleSettings,
+  LMStudioSettings,
   OllamaSettings,
   OpenAISettings,
   QwenSettings,
@@ -392,6 +393,26 @@ export const createConfigureCommand = (): Command => {
               language: (options.language as SupportedLanguage) || 'english',
               providerSettings: providerSettings,
             };
+          } else if (options.provider === 'lmstudio') {
+            requiredOptions = Boolean(options.model);
+
+            const providerSettings: LMStudioSettings = {};
+            if (options.baseUrl) {
+              providerSettings.baseURL = options.baseUrl;
+            }
+
+            credentials = {
+              provider: options.provider,
+              model: options.model,
+              temperature: options.temperature || 0.7,
+              maxTokens: options.maxTokens || 2048,
+            };
+
+            if (Object.keys(providerSettings).length > 0) {
+              credentials.providerSettings = providerSettings;
+            } else {
+              credentials.providerSettings = undefined;
+            }
           } else {
             requiredOptions = Boolean(
               options.provider && options.model && options.apiKey,

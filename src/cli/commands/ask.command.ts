@@ -4,6 +4,7 @@ import {generateWithBedrock} from '../../core/config/providers/amazon-bedrock.pr
 import {generateWithAnthropic} from '../../core/config/providers/anthropic.provider.js';
 import {generateWithAzure} from '../../core/config/providers/azura.provider.js';
 import {generateWithGoogle} from '../../core/config/providers/google.provider.js';
+import {generateWithLMStudio} from '../../core/config/providers/lmstudio.provider.js';
 import {generateWithOllama} from '../../core/config/providers/ollama.provider.js';
 import {generateWithOpenAI} from '../../core/config/providers/openai.provider.js';
 import {generateWithQwen} from '../../core/config/providers/qwen.provider.js';
@@ -254,6 +255,8 @@ export const createAskCommand = (): Command => {
             response = await generateWithBedrock(credentials, finalQuery);
           } else if (credentials.provider === 'qwen') {
             response = await generateWithQwen(credentials, finalQuery);
+          } else if (credentials.provider === 'lmstudio') {
+            response = await generateWithLMStudio(credentials, finalQuery);
           } else {
             if (options.verbose) {
               spinnerManager.fail('generation', 'Unsupported provider');
@@ -263,7 +266,7 @@ export const createAskCommand = (): Command => {
                 ),
               );
             }
-            response = `Unsupported provider: ${credentials.provider}. Please configure a supported provider (OpenAI, Anthropic, Google, Ollama, xAI, Azure, Bedrock, or Qwen).`;
+            response = `Unsupported provider: ${credentials.provider}. Please configure a supported provider (OpenAI, Anthropic, Google, Ollama, xAI, Azure, Bedrock, Qwen, or LM Studio).`;
           }
 
           await dbManager.addMessage(

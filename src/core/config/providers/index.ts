@@ -12,6 +12,7 @@ import {bedrockProvider} from './amazon-bedrock.provider.js';
 import {anthropicProvider} from './anthropic.provider.js';
 import {azureProvider} from './azura.provider.js';
 import {googleProvider} from './google.provider.js';
+import {lmstudioProvider} from './lmstudio.provider.js';
 import {ollamaProvider} from './ollama.provider.js';
 import {openaiProvider} from './openai.provider.js';
 import {qwenProvider} from './qwen.provider.js';
@@ -26,6 +27,7 @@ export const providers: Record<SupportedProvider, ProviderConfig> = {
   openai: openaiProvider,
   qwen: qwenProvider,
   xai: xaiProvider,
+  lmstudio: lmstudioProvider,
 };
 
 export const getProvider = (name: SupportedProvider): ProviderConfig => {

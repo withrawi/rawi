@@ -196,6 +196,20 @@ export class ConfigManager {
               baseURL,
             };
           }
+        } else if (provider === 'lmstudio') {
+          const baseURL = await this.getBaseURLLMStudio(
+            options.baseURL ||
+              (existingCredentials?.providerSettings &&
+              'baseURL' in existingCredentials.providerSettings
+                ? existingCredentials.providerSettings.baseURL
+                : undefined),
+          );
+
+          if (baseURL) {
+            credentials.providerSettings = {
+              baseURL,
+            };
+          }
         } else if (provider === 'azure') {
           const resourceName = await this.getResourceName(
             options.resourceName ||
@@ -643,6 +657,32 @@ export class ConfigManager {
     });
 
     if (baseURL === 'http://localhost:11434/api') {
+      return undefined;
+    }
+
+    return baseURL;
+  }
+
+  private async getBaseURLLMStudio(
+    defaultBaseURL?: string,
+  ): Promise<string | undefined> {
+    console.log(
+      chalk.gray(
+        '\nNote: The Base URL is where your LM Studio server is running.',
+      ),
+    );
+    console.log(
+      chalk.gray(
+        'The default is "http://localhost:1234/v1" which works for local installations.',
+      ),
+    );
+
+    const baseURL = await input({
+      message: 'Base URL for LM Studio:',
+      default: defaultBaseURL || 'http://localhost:1234/v1',
+    });
+
+    if (baseURL === 'http://localhost:1234/v1') {
       return undefined;
     }
 
