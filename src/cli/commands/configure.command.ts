@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import {Command} from 'commander';
-import {ConfigManager} from '../../config/manager.js';
+import {ConfigManager} from '../../core/config/manager.js';
 import type {
   AnthropicSettings,
   AzureSettings,
@@ -13,7 +13,7 @@ import type {
   RawiCredentials,
   SupportedLanguage,
   XAISettings,
-} from '../../shared/types.js';
+} from '../../core/shared/types.js';
 
 export const createConfigureCommand = (): Command => {
   const command = new Command('configure');

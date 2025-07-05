@@ -1,18 +1,18 @@
 import chalk from 'chalk';
 import {Command} from 'commander';
-import {generateWithBedrock} from '../../config/providers/amazon-bedrock.provider.js';
-import {generateWithAnthropic} from '../../config/providers/anthropic.provider.js';
-import {generateWithAzure} from '../../config/providers/azura.provider.js';
-import {generateWithGoogle} from '../../config/providers/google.provider.js';
-import {generateWithOllama} from '../../config/providers/ollama.provider.js';
-import {generateWithOpenAI} from '../../config/providers/openai.provider.js';
-import {generateWithQwen} from '../../config/providers/qwen.provider.js';
-import {generateWithXAI} from '../../config/providers/xai.provider.js';
-import {getCredentials, isConfigured} from '../../config/utils.js';
-import {DatabaseManager} from '../../database/index.js';
-import {DEFAULT_PROFILE} from '../../shared/constants.js';
-import {spinnerManager} from '../../shared/spinner.js';
-import {applyActTemplate} from '../../template/index.js';
+import {generateWithBedrock} from '../../core/config/providers/amazon-bedrock.provider.js';
+import {generateWithAnthropic} from '../../core/config/providers/anthropic.provider.js';
+import {generateWithAzure} from '../../core/config/providers/azura.provider.js';
+import {generateWithGoogle} from '../../core/config/providers/google.provider.js';
+import {generateWithOllama} from '../../core/config/providers/ollama.provider.js';
+import {generateWithOpenAI} from '../../core/config/providers/openai.provider.js';
+import {generateWithQwen} from '../../core/config/providers/qwen.provider.js';
+import {generateWithXAI} from '../../core/config/providers/xai.provider.js';
+import {getCredentials, isConfigured} from '../../core/config/utils.js';
+import {DatabaseManager} from '../../core/database/index.js';
+import {DEFAULT_PROFILE} from '../../core/shared/constants.js';
+import {spinnerManager} from '../../core/shared/spinner.js';
+import {applyActTemplate} from '../../core/template/index.js';
 
 const readStdin = (): Promise<string> => {
   return new Promise((resolve) => {

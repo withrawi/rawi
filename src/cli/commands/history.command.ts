@@ -3,13 +3,13 @@ import {select} from '@inquirer/prompts';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import {Command} from 'commander';
-import {DatabaseManager} from '../../database/index.js';
+import {DatabaseManager} from '../../core/database/index.js';
 import {
   DEFAULT_HISTORY_LIMIT,
   DEFAULT_PROFILE,
-} from '../../shared/constants.js';
-import type {ChatHistoryOptions} from '../../shared/types.js';
-import {formatRelativeTime, truncateText} from '../../shared/utils.js';
+} from '../../core/shared/constants.js';
+import type {ChatHistoryOptions} from '../../core/shared/types.js';
+import {formatRelativeTime, truncateText} from '../../core/shared/utils.js';
 
 export const createHistoryCommand = (): Command => {
   const historyCommand = new Command('history');
