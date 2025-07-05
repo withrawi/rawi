@@ -11,9 +11,8 @@ export type LMStudioModelId = LooseToStrict<LooseLMStudioModelId>;
 
 const lmstudioModelIds = [
   'deepseek/deepseek-r1-0528-qwen3-8b',
-  'google/gemma-2-27b',
-  'google/gemma-2-9b',
   'google/gemma-3-1b',
+  'google/gemma-2-9b',
   'google/gemma-3-12b',
   'google/gemma-3-27b',
   'google/gemma-3-4b',
@@ -30,16 +29,17 @@ const lmstudioModelIds = [
   'mistralai/mistral-7b-instruct-v0.3',
   'mistralai/mistral-nemo-instruct-2407',
   'mistralai/mistral-small-3.2',
-  'qwen/qwq-32b',
   'qwen/qwen2.5-coder-14b',
   'qwen/qwen2.5-coder-32b',
   'qwen/qwen2.5-vl-7b',
   'qwen/qwen3-1.7b',
-  'qwen/qwen3-14b',
-  'qwen/qwen3-30b-a3b',
-  'qwen/qwen3-32b',
   'qwen/qwen3-4b',
   'qwen/qwen3-8b',
+  'qwen/qwen3-14b',
+  'qwen/qwen3-235b-a22b',
+  'qwen/qwen3-30b-a3b',
+  'qwen/qwen3-32b',
+  'qwen/qwq-32b',
 ] as const;
 
 export const lmstudioModels: ModelInfo[] = lmstudioModelIds.map((name) => ({
