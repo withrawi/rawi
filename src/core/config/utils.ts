@@ -18,6 +18,10 @@ export const isConfigured = (profile = DEFAULT_PROFILE): boolean => {
     return Boolean(credentials.provider && credentials.model);
   }
 
+  if (credentials?.provider === 'lmstudio') {
+    return Boolean(credentials.provider && credentials.model);
+  }
+
   if (credentials?.provider === 'azure') {
     return Boolean(
       credentials.provider &&
