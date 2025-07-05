@@ -14,7 +14,6 @@ export type BedrockModelId = LooseToStrict<LooseBedrockModelId>;
 const bedrockModelIds = [
   'amazon.titan-tg1-large',
   'amazon.titan-text-express-v1',
-  'amazon.titan-text-lite-v1',
   'anthropic.claude-v2',
   'anthropic.claude-v2:1',
   'anthropic.claude-instant-v1',
@@ -44,6 +43,8 @@ const bedrockModelIds = [
   'mistral.mixtral-8x7b-instruct-v0:1',
   'mistral.mistral-large-2402-v1:0',
   'mistral.mistral-small-2402-v1:0',
+  'amazon.titan-text-express-v1',
+  'amazon.titan-text-lite-v1',
 ] as const;
 
 export const bedrockModels: ModelInfo[] = bedrockModelIds.map((name) => ({
