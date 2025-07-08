@@ -2,171 +2,793 @@
 
 ## NAME
 
-rawi \- Developer-friendly AI-powered CLI for answers, summaries, and analyses
+**rawi** \- Developer-friendly AI-powered CLI for answers, summaries, and analyses
 
 ## SYNOPSIS
 
-**rawi** <command> [options]
+**rawi** _command_ [*options*] [*arguments*]
+
+**rawi** **ask** [*query*] [*options*]
+
+**rawi** **configure** [*options*]
+
+**rawi** **history** [*options*] [*subcommand*]
+
+**rawi** **act** [*options*]
+
+**rawi** **provider** [*options*]
+
+**rawi** **info** [*options*]
 
 ## DESCRIPTION
 
-Rawi (راوي) is a modern, developer-friendly CLI for interacting with multiple AI providers (OpenAI, Google, Bedrock, Anthropic, Ollama, xAI, Qwen, and more). It delivers clear answers, summaries, and analyses, with a focus on usability, discoverability, and actionable output.
+Rawi (راوي) is a modern, developer-friendly CLI tool for interacting with multiple AI providers including OpenAI, Anthropic, Google, Amazon Bedrock, Azure OpenAI, Ollama, xAI, Qwen, and LM Studio. Inspired by Jordanian storytelling tradition, Rawi delivers clear answers, summaries, and analyses with a focus on usability, discoverability, and actionable output.
 
-- Modern output formatting
-- Helpful error messages
-- Interactive and scriptable
-- Supports profiles, history, and advanced prompt templates
+**Key Features:**
+
+- **Multi-provider support** \- Use different AI providers seamlessly
+- **Profile management** \- Multiple configurations for different contexts
+- **Session history** \- Persistent chat sessions with search and export
+- **Template system** \- Expert prompt templates for specialized tasks
+- **Piped input** \- Unix-style stdin support for scripting
+- **Interactive mode** \- Guided configuration and template selection
+- **Modern formatting** \- Clean, readable output with syntax highlighting
 
 ## GLOBAL OPTIONS
 
--V, --version Show version information
--h, --help Show help for command
+**-V, --version**
+
+Show version information including platform and Node.js version
+
+**-h, --help**
+
+Show help for command with usage examples
 
 ## COMMANDS
 
-### ask
+### ask \- Ask AI questions with piped input support
 
-Ask AI a question and get a response. Supports piped input and prompt templates.
+**Synopsis:**
 
-**Usage:**
-rawi ask [query] [options]
+**rawi ask** [*query*] [*options*]
+**echo** "_text_" **|** **rawi ask** [*query*] [*options*]
+**cat** _file_ **|** **rawi ask** [*query*] [*options*]
+
+**Description:**
+Send questions or prompts to AI providers. Supports stdin piping for processing files or command output. Can continue previous conversations or start new sessions.
+
+**Arguments:**
+
+_query_
+
+The question or prompt to send to the AI. Can be combined with piped input from stdin.
 
 **Options:**
--p, --profile <profile> Use a specific configuration profile
--s, --session <sessionId> Continue an existing chat session
--n, --new-session Start a new chat session
---act <template> Use an act template for expert prompts
---verbose Show detailed status and debug info
+
+**-p, --profile** _profile_
+
+Use a specific configuration profile (default: "default")
+
+**-s, --session** _sessionId_
+
+Continue an existing chat session by providing the session ID
+
+**-n, --new-session**
+
+Force creation of a new chat session instead of continuing the last one
+
+**--act** _template_
+
+Apply an expert prompt template. Use **rawi act --list** to see available templates. Templates provide specialized prompts for tasks like code review, documentation, analysis, etc.
+
+**--verbose**
+
+Show detailed status information, debug output, and processing steps
 
 **Examples:**
-rawi ask "What is TypeScript?"
-cat file.txt | rawi ask --act summarize "Summarize this file"
-rawi ask --profile work --act code-review "Review this code"
 
-### act
+# Basic question
 
-List and explore act templates for specialized prompts.
+**rawi ask** "What is TypeScript?"
 
-**Usage:**
-rawi act [options]
+# Use with piped input
+
+**cat** README.md **|** **rawi ask** "Summarize this documentation"
+
+# Git integration
+
+**git diff** **|** **rawi ask** "Review these code changes"
+
+# Use expert template
+
+**rawi ask** **--act** code-reviewer "Review this function"
+
+# Continue specific session
+
+**rawi ask** **--session** abc123 "Follow up question"
+
+# Use work profile with template
+
+**rawi ask** **--profile** work **--act** technical-writer "Document this API"
+
+# Verbose output for debugging
+
+**rawi ask** **--verbose** "Explain machine learning"
+
+### configure \- Manage AI provider settings and profiles
+
+**Synopsis:**
+
+**rawi configure** [*options*]
+
+**Description:**
+Configure AI provider settings, manage multiple profiles, and set up authentication credentials. Supports both interactive and command-line configuration modes.
 
 **Options:**
--l, --list List all available act templates
--s, --show <template> Show details of a specific act template
+
+**-p, --profile** _profile_
+
+Profile name to configure (default: "default")
+
+**--provider** _provider_
+
+AI provider name. Supported providers: **openai**, **anthropic**, **google**, **azure**, **bedrock**, **ollama**, **xai**, **qwen**, **lmstudio**
+
+**--model** _model_
+
+AI model name. Use **rawi provider --list-models** _provider_ to see available models
+
+**--api-key** _key_
+
+API key for the provider (not required for Ollama and LM Studio)
+
+**--base-url** _url_
+
+Custom base URL for provider API (useful for self-hosted instances)
+
+**--resource-name** _name_
+
+Azure OpenAI resource name (required for Azure provider)
+
+**--api-version** _version_
+
+Azure OpenAI API version (default: "2024-10-01-preview")
+
+**--region** _region_
+
+AWS region for Amazon Bedrock (default: "us-east-1")
+
+**--access-key-id** _id_
+
+AWS access key ID for Amazon Bedrock
+
+**--secret-access-key** _key_
+
+AWS secret access key for Amazon Bedrock
+
+**--session-token** _token_
+
+AWS session token for Amazon Bedrock (for temporary credentials)
+
+**--use-provider-chain**
+
+Use AWS credential provider chain instead of explicit credentials for Bedrock
+
+**--temperature** _value_
+
+Sampling temperature (0.0-2.0). Higher values make output more creative, lower values more focused
+
+**--max-tokens** _number_
+
+Maximum tokens for response (1-100000)
+
+**--language** _lang_
+
+Response language preference: **english** or **arabic**
+
+**-s, --show**
+
+Display current configuration with masked API keys
+
+**-l, --list**
+
+List all configured profiles
+
+**-d, --delete** _profile_
+
+Delete a configuration profile and all its settings
 
 **Examples:**
-rawi act --list
-rawi act --show developer
 
-### configure
+# Interactive configuration
 
-Configure AI provider settings and manage profiles.
+**rawi configure**
 
-**Usage:**
-rawi configure [options]
+# Quick OpenAI setup
 
-**Options:**
--p, --profile <profile> Profile name to configure (default: default)
---provider <provider> AI provider (openai, anthropic, google, ollama, xai, azure, bedrock, qwen)
---model <model> AI model name
---api-key <apiKey> API key for the provider
---base-url <baseURL> Custom base URL for the provider
---resource-name <name> Resource name (Azure only)
---api-version <version> API version (Azure only)
---temperature <value> Sampling temperature (0-2)
---max-tokens <number> Maximum tokens
---language <lang> Language (english, arabic)
--s, --show Show current configuration
--l, --list List all profiles
--d, --delete <profile> Delete a profile
+**rawi configure** **--provider** openai **--model** gpt-4o **--api-key** sk-...
 
-**Examples:**
-rawi configure --provider openai --model gpt-4o --api-key sk-xxx
-rawi configure --list
-rawi configure --show --profile work
+# Configure work profile for Anthropic
 
-### provider
+**rawi configure** **--profile** work **--provider** anthropic **--model** claude-3-opus
 
-Show supported AI providers and their models.
+# Azure OpenAI setup
 
-**Usage:**
-rawi provider [options]
+**rawi configure** **--provider** azure **--resource-name** my-resource **--api-key** ...
 
-**Options:**
--l, --list List all supported AI providers
--m, --list-models <provider> List all models for a specific provider
+# Local Ollama setup
 
-**Examples:**
-rawi provider --list
-rawi provider --list-models ollama
+**rawi configure** **--provider** ollama **--model** llama2 **--base-url** http://localhost:11434
 
-### history
+# Show current configuration
 
-Manage chat history and sessions.
+**rawi configure** **--show**
 
-**Usage:**
-rawi history [options]
+# List all profiles
+
+**rawi configure** **--list**
+
+# Delete old profile
+
+**rawi configure** **--delete** old-profile
+
+### history \- Manage chat sessions and message history
+
+**Synopsis:**
+
+**rawi history** [*options*] [*subcommand*]
+
+**Description:**
+Manage chat history, search conversations, export data, and clean up old sessions. Provides comprehensive session management with filtering and search capabilities.
 
 **Options:**
--p, --profile <profile> Profile to show history for (default: default)
--l, --limit <number> Number of sessions to show (default: 50)
---all Show all sessions (ignore limit)
---all-profiles Show sessions from all profiles
--s, --search <query> Search messages containing text
---provider <provider> Filter by AI provider
---model <model> Filter by AI model
---from <date> Show sessions from date (YYYY-MM-DD)
---to <date> Show sessions to date (YYYY-MM-DD)
+
+**-p, --profile** _profile_
+
+Show history for specific profile (default: "default")
+
+**-l, --limit** _number_
+
+Number of sessions to display (default: 50)
+
+**--all**
+
+Show all sessions without pagination limit
+
+**--all-profiles**
+
+Show sessions from all profiles
+
+**-s, --search** _query_
+
+Search messages containing specific text
+
+**--provider** _provider_
+
+Filter sessions by AI provider
+
+**--model** _model_
+
+Filter sessions by AI model
+
+**--from** _date_
+
+Show sessions from date (YYYY-MM-DD format)
+
+**--to** _date_
+
+Show sessions to date (YYYY-MM-DD format)
 
 **Subcommands:**
-sessions List and manage chat sessions
-show <sessionId> Show all messages in a session
-delete <sessionId> Delete a session
-stats Show usage statistics
-cleanup Clean up old sessions
-export Export history to a file
+
+**sessions**
+
+List and manage chat sessions with interactive navigation
+
+**show** _sessionId_
+
+Display all messages in a specific session
+
+**delete** _sessionId_
+
+Delete a session and all its messages permanently
+
+**stats**
+
+Show usage statistics including token counts, most used providers, and session metrics
+
+**cleanup** [**--days** *number*]
+
+Clean up old sessions. Use **--days** to specify age threshold
+
+**export** [**--output** *file*] [**--format** *format*]
+
+Export history to file. Supports JSON and CSV formats
 
 **Examples:**
-rawi history
-rawi history --profile work
-rawi history sessions
-rawi history show abc123
-rawi history delete abc123
-rawi history stats
-rawi history cleanup --days 7
-rawi history export --output backup.json
 
-### info
+# Show recent sessions
 
-Display information about Rawi, configuration, and environment.
+**rawi history**
 
-**Usage:**
-rawi info [options]
+# Show work profile history
+
+**rawi history** **--profile** work
+
+# Search for specific content
+
+**rawi history** **--search** "typescript"
+
+# Filter by provider and date
+
+**rawi history** **--provider** openai **--from** 2024-01-01
+
+# Interactive session management
+
+**rawi history** sessions
+
+# View specific session
+
+**rawi history** show abc123
+
+# Delete old session
+
+**rawi history** delete abc123
+
+# Show usage statistics
+
+**rawi history** stats
+
+# Clean up sessions older than 30 days
+
+**rawi history** cleanup **--days** 30
+
+# Export all history
+
+**rawi history** export **--output** backup.json
+
+### act \- Expert prompt template system
+
+**Synopsis:**
+
+**rawi act** [*options*]
+
+**Description:**
+List and explore expert prompt templates (called "acts") for specialized AI interactions. Templates provide pre-built prompts for common tasks like code review, documentation, analysis, and more.
 
 **Options:**
---profiles Show configured profiles
+
+**-l, --list**
+
+List all available act templates with pagination
+
+**-s, --show** _template_
+
+Show detailed information about a specific template including its prompt text
+
+**Template Categories:**
+
+- **Technical Support** \- Code review, troubleshooting, DevOps
+- **Content Creation** \- Writing, documentation, marketing
+- **Business & Strategy** \- Analysis, planning, consultation
+- **Education & Learning** \- Tutoring, explanations, guides
+- **Creative & Design** \- Creative direction, UX design, branding
 
 **Examples:**
-rawi info
-rawi info --profiles
+
+# List all templates
+
+**rawi act** **--list**
+
+# Show specific template details
+
+**rawi act** **--show** code-reviewer
+
+# Use template with ask command
+
+**rawi ask** **--act** technical-writer "Document this API"
+
+# Combine with file input
+
+**cat** component.js **|** **rawi ask** **--act** code-reviewer
+
+### provider \- AI provider information and capabilities
+
+**Synopsis:**
+
+**rawi provider** [*options*]
+
+**Description:**
+Display information about supported AI providers, their capabilities, and available models. Useful for discovering what providers and models are available for configuration.
+
+**Options:**
+
+**-l, --list**
+
+List all supported AI providers with descriptions
+
+**-m, --list-models** _provider_
+
+List all available models for a specific provider
+
+**Supported Providers:**
+
+- **🔵 OpenAI** \- GPT models (gpt-4o, gpt-4-turbo, o1, etc.)
+- **🟣 Anthropic** \- Claude models (claude-3-opus, claude-3-sonnet, etc.)
+- **🔴 Google** \- Gemini models (gemini-pro, gemini-flash, etc.)
+- **🔷 Azure** \- Azure OpenAI service deployments
+- **🟠 Bedrock** \- AWS-hosted AI models (Claude, Titan, etc.)
+- **🟢 Ollama** \- Local models (llama2, mistral, codellama, etc.)
+- **🤖 xAI** \- Grok models
+- **🟡 Qwen** \- Alibaba Cloud models
+- **🔧 LM Studio** \- Local model server
+
+**Examples:**
+
+# List all providers
+
+**rawi provider** **--list**
+
+# List OpenAI models
+
+**rawi provider** **--list-models** openai
+
+# List Ollama models
+
+**rawi provider** **--list-models** ollama
+
+### info \- System and configuration information
+
+**Synopsis:**
+
+**rawi info** [*options*]
+
+**Description:**
+Display information about Rawi installation, version, configuration status, and system capabilities.
+
+**Options:**
+
+**--profiles**
+
+Show detailed information about configured profiles
+
+**Examples:**
+
+# Show general system information
+
+**rawi info**
+
+# Show profile information
+
+**rawi info** **--profiles**
+
+## CONFIGURATION
+
+### Configuration Files
+
+Rawi stores configuration in the user's home directory:
+
+**~/.rawi/credentials**
+
+JSON file containing profile configurations, API keys, and provider settings
+
+**~/.rawi/database.sqlite**
+
+SQLite database storing chat history, sessions, and usage statistics
+
+### Configuration Format
+
+Configuration is stored as JSON with the following structure:
+
+```~.rawi/credentials
+{
+  "default": {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "apiKey": "sk-...",
+    "temperature": 0.7,
+    "maxTokens": 2048,
+    "language": "english"
+  },
+  "work": {
+    "provider": "anthropic",
+    "model": "claude-3-opus",
+    "apiKey": "sk-ant-...",
+    "temperature": 0.3,
+    "maxTokens": 4096
+  }
+}
+```
+
+### Environment Variables
+
+**RAWI_CONFIG_DIR**
+
+Override default configuration directory (default: ~/.rawi)
+
+**RAWI_DEBUG**
+
+Enable debug logging (set to "true" or "1")
+
+**OPENAI_API_KEY**
+
+Default OpenAI API key (can be overridden by profile configuration)
+
+**ANTHROPIC_API_KEY**
+
+Default Anthropic API key (can be overridden by profile configuration)
 
 ## EXAMPLES
 
-    cat README.md | rawi ask "Summarize this documentation"
-    git diff | rawi ask "Review these changes"
-    rawi ask "Create a deployment guide" > deploy.md
+### Basic Usage Patterns
 
-## EXIT CODES
+# Quick question
 
-| Code | Meaning              |
-| ---- | -------------------- |
-| 0    | Success              |
-| 1    | General error        |
-| 2    | Configuration error  |
-| 3    | Network/API error    |
-| 4    | Authentication error |
+**rawi ask** "What is the difference between let and var in JavaScript?"
+
+# Process file content
+
+**cat** package.json **|** **rawi ask** "Explain this package.json file"
+
+# Git workflow integration
+
+**git log** --oneline -10 **|** **rawi ask** "Summarize recent changes"
+
+# Code review workflow
+
+**git diff** HEAD~1 **|** **rawi ask** **--act** code-reviewer "Review this commit"
+
+### Profile Management
+
+# Setup multiple profiles
+
+**rawi configure** **--profile** personal **--provider** openai **--model** gpt-4o
+**rawi configure** **--profile** work **--provider** anthropic **--model** claude-3-opus
+
+# Use different profiles
+
+**rawi ask** **--profile** personal "Help with my hobby project"
+**rawi ask** **--profile** work "Generate business requirements"
+
+### Template Workflows
+
+# Documentation workflow
+
+**cat** src/api.ts **|** **rawi ask** **--act** technical-writer "Document this API"
+
+# Code analysis
+
+**find** . -name "\*.js" -exec **cat** {} **;** **|** **rawi ask** **--act** code-reviewer
+
+# Learning assistance
+
+**rawi ask** **--act** tutor "Explain React hooks with examples"
+
+### Advanced Scripting
+
+#!/bin/bash
+
+# Automated code review script
+
+# Get changed files from last commit
+
+changed_files=$(git diff --name-only HEAD~1)
+
+for file in $changed_files; do
+    echo "Reviewing $file..."
+    cat "$file" | rawi ask --act code-reviewer "Review this file: $file" > "review_$file.md"
+done
+
+echo "Code reviews saved to review\_\*.md files"
+
+### History and Session Management
+
+# Start focused session
+
+session_id=$(rawi ask --new-session "Let's discuss TypeScript best practices" | grep "Session:" | cut -d' ' -f2)
+
+# Continue the session
+
+**rawi ask** **--session** "$session_id" "What about error handling?"
+**rawi ask** **--session** "$session_id" "How to handle async operations?"
+
+# Review session later
+
+**rawi history** show "$session_id"
+
+## INTEGRATION
+
+### Shell Integration
+
+Add to your shell configuration (.bashrc, .zshrc):
+
+# Rawi aliases
+
+alias explain='rawi ask --act tutor'
+alias review='rawi ask --act code-reviewer'
+alias document='rawi ask --act technical-writer'
+
+# Function for quick explanations
+
+explain_command() {
+man "$1" 2>/dev/null | rawi ask "Explain this command concisely: $1"
+}
+
+### Git Integration
+
+Add to your .gitconfig:
+
+[alias]
+ai-review = "!git diff | rawi ask --act code-reviewer 'Review these changes'"
+ai-commit = "!git diff --cached | rawi ask 'Generate a commit message for these changes'"
+ai-explain = "!git log --oneline -10 | rawi ask 'Summarize recent changes'"
+
+### Editor Integration
+
+For VS Code, create a task in .vscode/tasks.json:
+
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Rawi Review Current File",
+      "type": "shell",
+      "command": "cat ${file} | rawi ask --act code-reviewer 'Review this file'",
+      "group": "build"
+    }
+  ]
+}
+```
+
+## FILES
+
+**~/.rawi/credentials**
+
+User configuration file containing profiles and API keys
+
+**~/.rawi/database.sqlite**
+
+SQLite database with chat history and sessions
+
+**~/.rawi/backups/**
+
+Automatic configuration and database backups
+
+## EXIT STATUS
+
+The **rawi** command exits with one of the following values:
+
+**0**
+
+Success - command completed successfully
+
+**1**
+
+General error - invalid arguments, file not found, or unexpected error
+
+**2**
+
+Configuration error - missing or invalid configuration, profile not found
+
+**3**
+
+Network or API error - connection failure, API timeout, or service unavailable
+
+**4**
+
+Authentication error - invalid API key, insufficient permissions, or quota exceeded
+
+**5**
+
+Database error - database corruption, disk full, or permission denied
+
+## DIAGNOSTICS
+
+### Common Issues
+
+**"Configuration not found"**
+
+Run **rawi configure** to set up your first profile
+
+**"API key invalid"**
+
+Verify your API key with **rawi configure --show** and update if needed
+
+**"Model not available"**
+
+Check available models with **rawi provider --list-models** _provider_
+
+**"Rate limit exceeded"**
+
+Wait before retrying or consider using a different model with lower rate limits
+
+### Debug Mode
+
+Enable verbose output for troubleshooting:
+
+**rawi ask** **--verbose** "test query"
+**RAWI_DEBUG=1** **rawi ask** "test query"
+
+### Health Check
+
+Verify your configuration:
+
+# Check general info
+
+**rawi info**
+
+# Test each profile
+
+**rawi configure** **--list**
+**rawi configure** **--show** **--profile** _profile_
+
+# Test providers
+
+**rawi provider** **--list**
+
+## SECURITY
+
+### API Key Safety
+
+- API keys are masked in output and logs
+- Configuration files have restricted permissions (600)
+- Keys are never transmitted in URLs or query parameters
+- Use environment variables for CI/CD environments
+
+### Best Practices
+
+- Use separate profiles for different environments
+- Regularly rotate API keys
+- Monitor API usage through provider dashboards
+- Use **--verbose** only when necessary (may expose sensitive data)
+- Keep configuration backups secure
 
 ## SEE ALSO
 
-Docs: https://rawi.mkabumattar.com
-More examples: https://github.com/MKAbuMattar/rawi/tree/main/docs/examples.md
+**curl**(1), **jq**(1), **git**(1)
+
+### Online Resources
+
+**Project Homepage:**
+
+https://rawi.mkabumattar.com
+
+**Documentation:**
+
+https://github.com/MKAbuMattar/rawi/tree/main/docs
+
+**Issue Tracker:**
+
+https://github.com/MKAbuMattar/rawi/issues
+
+**Examples and Tutorials:**
+
+https://github.com/MKAbuMattar/rawi/tree/main/docs/examples
+
+### Related Tools
+
+- **openai-cli** - Official OpenAI command line interface
+- **anthropic-cli** - Anthropic's Claude CLI tool
+- **gh** - GitHub CLI with AI features
+- **copilot-cli** - GitHub Copilot CLI integration
+
+## AUTHOR
+
+Mohammad Abu Mattar <mohammad.khaled@outlook.com>
+
+## LICENSE
+
+MIT License - see LICENSE file for details
+
+## BUGS
+
+Report bugs at: https://github.com/MKAbuMattar/rawi/issues
+
+When reporting bugs, include:
+
+- Rawi version (**rawi --version**)
+- Operating system and architecture
+- Command that failed and error message
+- Configuration details (with API keys masked)
+- Use **--verbose** flag for detailed error information

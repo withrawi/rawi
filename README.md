@@ -6,11 +6,9 @@
 
 <div align="center">
 
-# Rawi (راوي)
+# 🤖 Rawi (راوي)
 
-[rawi.mkabumattar.com](https://rawi.mkabumattar.com)
-
-</div>
+_Your AI-powered terminal companion for developers_
 
 <div align="center">
   <a href="https://github.com/withrawi/rawi" target="_blank" rel="noreferrer">
@@ -38,404 +36,284 @@
   </a>
 </div>
 
-<div align="center">
-
-> _Bringing the art of storytelling to your command line._
+[🌐 Website](https://rawi.mkabumattar.com) • [📚 Documentation](https://rawi.mkabumattar.com/docs) • [🚀 Quick Start](#-quick-start) • [💬 Support](https://github.com/withrawi/rawi/issues)
 
 </div>
 
-**Rawi** (راوي) is a developer-friendly AI-powered CLI tool that delivers clear answers, summaries, and analyses directly in your terminal. Inspired by the rich Jordanian storytelling tradition, Rawi transforms your command line into an intelligent assistant for your development workflow.
-
 ---
 
-## ✨ Features
+Transform your command line into an intelligent AI workspace. **Rawi** (راوي) is the developer-friendly CLI tool that brings 8 major AI providers directly to your terminal with seamless shell integration, persistent conversations, and 200+ specialized prompt templates.
 
-- **Multi-Provider Support**: 8 AI providers (OpenAI, Anthropic, Google, Ollama (local), Azure, Bedrock, Qwen, xAI)
-- **Profile Management**: Multiple configurations for different projects and teams
-- **Shell Integration**: Works perfectly with pipes, redirects, and automation
-- **Privacy First**: Local AI support with Ollama for sensitive data
-- **Session & History**: Persistent chat history and session management
-- **Developer Focused**: Built for coding workflows and technical tasks
+> _"راوي" means "storyteller" in Arabic — and every great story starts with a question._
 
----
+## ✨ Why Choose Rawi?
+
+Rawi isn't just another AI CLI tool — it's your complete AI-powered development environment:
+
+- **🔥 8 AI Providers**: OpenAI, Anthropic, Google, Ollama, Azure, Bedrock, Qwen, and xAI
+- **🛡️ Privacy First**: Local AI support with Ollama — no data leaves your machine
+- **⚡ Developer Optimized**: Built specifically for coding workflows and technical tasks
+- **🔄 Shell Integration**: Perfect pipes, redirects, and script automation
+- **📊 Smart Sessions**: Persistent conversations with context awareness
+- **🎯 200+ Templates**: Expert-level prompt templates for specialized responses
+- **🌍 Multilingual**: Full support for English and Arabic (راوي)
 
 ## 🚀 Quick Start
+
+Get your AI-powered terminal companion running in seconds:
 
 ```bash
 # Install globally
 npm install -g rawi
 
-# Configure your first provider (interactive)
+# One-command setup (interactive)
 rawi configure
 
-# Ask your first question
-rawi ask "What is TypeScript?"
+# Start asking questions
+rawi ask "What's the difference between TypeScript and JavaScript?"
+
+# Use with code review
+git diff | rawi ask "Review these changes for potential issues"
 ```
 
----
-
-## 📚 Documentation
-
-- [Getting Started](docs/getting-started.md)
-- [Configuration Guide](docs/configuration.md)
-- [CLI Commands Reference](docs/commands.md)
-- [Providers Guide](docs/providers.md)
-- [Usage Examples](docs/examples.md)
-- [API Reference](docs/api.md)
-- [Architecture](docs/architecture.md)
-- [Development Guide](docs/development.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [FAQ](docs/faq.md)
-
----
-
-## 🤖 Supported AI Providers
-
-| Provider           | Models                                          | API Key Required | Local Support |
-| ------------------ | ----------------------------------------------- | ---------------- | ------------- |
-| **OpenAI**         | GPT-4o, GPT-4, GPT-3.5, O1, O3                  | ✅               | ❌            |
-| **Anthropic**      | Claude 3.5 Sonnet, Claude 4, Haiku              | ✅               | ❌            |
-| **Google**         | Gemini 2.0 Flash, Gemini 1.5 Pro/Flash          | ✅               | ❌            |
-| **Ollama**         | Llama 3.2, Mistral, CodeLlama, Qwen + 100+ more | ❌               | ✅            |
-| **Azure OpenAI**   | Enterprise OpenAI models                        | ✅               | ❌            |
-| **Amazon Bedrock** | Claude, Llama, Titan                            | ✅               | ❌            |
-| **Qwen**           | Qwen-Max, Qwen-Plus, Qwen-Turbo                 | ✅               | ❌            |
-| **xAI**            | Grok-Beta, Grok-2                               | ✅               | ❌            |
-
----
-
-## 🏗️ Architecture Overview
-
-See [docs/architecture.md](docs/architecture.md) for a detailed diagram and explanation.
-
-```
-src/
-├── cli/             # Command-line interface
-│   ├── commands/    # Individual commands (ask, configure, history, info)
-│   └── program.ts   # Main CLI program setup
-├── config/          # Configuration management
-│   ├── providers/   # AI provider configurations
-│   ├── manager.ts   # Config file handling
-│   └── utils.ts     # Configuration utilities
-├── database/        # Chat history and session management
-│   ├── schema/      # Database schema definitions
-│   ├── adapter.ts   # Database adapter
-│   └── manager.ts   # Database operations
-├── shared/          # Shared utilities and types
-│   ├── types.ts     # TypeScript type definitions
-│   ├── constants.ts # Application constants
-│   ├── utils.ts     # Utility functions
-│   └── spinner.ts   # Loading indicators
-└── data/            # Static data and prompts
-```
-
----
-
-## � Example Usage
+### 🎯 Instant Results
 
 ```bash
-# Code review with pipe
-cat src/app.js | rawi ask "Review this code for security issues"
+# Quick coding help
+rawi ask "Create a React component for file upload"
 
-# Generate commit messages
-git diff | rawi ask "Write a conventional commit message"
+# Debug errors instantly
+rawi ask "Fix this Python error: NameError: name 'x' is not defined"
 
-# Analyze data
-curl -s api.example.com/data | rawi ask "Summarize this API response"
+# Get specialized AI personas
+rawi ask --act security-expert "Analyze this authentication code"
 
-# Continue a conversation
-rawi ask "Explain TypeScript generics" --session abc123
-rawi ask "Show me an example" --session abc123
-
-# Use different providers
-rawi ask "Optimize this SQL query" -p production-profile
+# Continue conversations
+rawi ask "How do I handle state management?" --session abc123
 ```
 
----
+## 🤖 AI Providers — Your Choice, Your Control
 
-## � Security & Privacy
+Access the best AI models through one unified interface:
 
-- **API Keys**: Stored locally and encrypted
-- **Local AI**: Ollama support for complete privacy
-- **No Telemetry**: Zero data collection or tracking
-- **Secure Storage**: Credentials stored in home directory with proper permissions
+| Provider         | Top Models                            | API Key | Local | Best For                       |
+| ---------------- | ------------------------------------- | ------- | ----- | ------------------------------ |
+| **🔵 OpenAI**    | GPT-4o, GPT-4, O1, O3, GPT-4o-mini    | ✅      | ❌    | General development, coding    |
+| **🟣 Anthropic** | Claude 3.5 Sonnet, Claude 3.5 Haiku   | ✅      | ❌    | Analysis, safety, long content |
+| **🔴 Google**    | Gemini 2.0 Flash, Gemini 1.5 Pro      | ✅      | ❌    | Fast inference, multimodal     |
+| **🟢 Ollama**    | Llama 3.2, CodeLlama, Qwen, +100 more | ❌      | ✅    | Privacy, offline, free         |
+| **� LM Studio**  | Llama 3.3, Phi-4, Gemma-3, Qwen-3     | ❌      | ✅    | Local models, GUI management   |
+| **�🔷 Azure**    | Enterprise OpenAI deployments         | ✅      | ❌    | Enterprise, compliance         |
+| **🟠 Bedrock**   | Claude, Llama, Titan via AWS          | ✅      | ❌    | AWS integration, scale         |
+| **🟡 Qwen**      | Qwen-Max, Qwen-Plus, Qwen-Turbo       | ✅      | ❌    | Multilingual, Chinese          |
+| **🤖 xAI**       | Grok-3, Grok-2, Grok-Beta             | ✅      | ❌    | Real-time, conversational      |
 
----
+> **🛡️ Privacy Note**: Use Ollama or LM Studio for complete privacy — all processing happens locally on your machine.
 
-## 🌍 Internationalization
+## 🎯 Act Templates — Specialized AI Personas
 
-- **English** (default)
-- **Arabic** (راوي)
-
----
-
-## �️ Development
-
-See [docs/development.md](docs/development.md) for setup, build, and contribution guidelines.
-
----
-
-## � License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-## 👥 Contributing
-
-See [docs/development.md](docs/development.md) for contribution guidelines.
-
-- [📄 License](#-license)
-
-## 📦 Installation
-
-### System Requirements
-
-- **Node.js**: 18.0.0 or higher
-- **Package Manager**: npm, pnpm, or yarn
-- **Operating System**: Windows, macOS, or Linux
-
-### Install Options
-
-#### Global Installation (Recommended)
+Transform your prompts with 200+ expertly crafted AI personas:
 
 ```bash
-# Using npm
-npm install -g rawi
+# Browse all templates
+rawi act --list
 
-# Using pnpm (faster)
-pnpm add -g rawi
+# Get template details
+rawi act --show ethereum-developer
 
-# Using yarn
-yarn global add rawi
+# Use templates in conversations
+rawi ask --act linux-terminal "list files in home directory"
+rawi ask --act code-reviewer "analyze this Python function"
+rawi ask --act security-expert "check this auth implementation"
 ```
 
-#### Alternative: Run without installing
+### 🔥 Popular Templates
+
+| Template               | Use Case                              | Example                                                |
+| ---------------------- | ------------------------------------- | ------------------------------------------------------ |
+| **ethereum-developer** | Smart contract development & security | `--act ethereum-developer "review this Solidity code"` |
+| **linux-terminal**     | Terminal command simulation           | `--act linux-terminal "show disk usage"`               |
+| **code-reviewer**      | Code analysis and review              | `--act code-reviewer "optimize this algorithm"`        |
+| **tech-writer**        | Technical documentation               | `--act tech-writer "document this API endpoint"`       |
+| **security-expert**    | Security analysis and auditing        | `--act security-expert "analyze this auth flow"`       |
+| **database-admin**     | Database optimization and queries     | `--act database-admin "optimize this SQL query"`       |
+
+**Categories**: Development, Security, Writing, Education, Business, Creative, and more!
+
+## 📋 Essential Commands
+
+Master Rawi's core commands for maximum productivity:
+
+### 🗣️ `rawi ask` — Your AI Assistant
 
 ```bash
-# Use with npx (always gets latest version)
-npx rawi ask "Hello, world!"
+# Basic question
+rawi ask "How do I optimize this SQL query?"
 
-# Use with pnpm
-pnpm dlx rawi configure
+# Use specific profile
+rawi ask "Review this code" --profile work
+
+# Continue conversation
+rawi ask "What about performance?" --session abc123
+
+# Apply AI persona
+rawi ask --act security-expert "Analyze this authentication logic"
+
+# Pipe input for analysis
+cat server.js | rawi ask "Review this Express server"
 ```
 
-#### Development/Beta Versions
+### ⚙️ `rawi configure` — Setup & Manage
 
 ```bash
-# Install beta versions
-npm install -g rawi@beta
+# Interactive setup (recommended)
+rawi configure
 
-# Install from GitHub (latest main branch)
-npm install -g withrawi/rawi
+# Quick provider setup
+rawi configure --provider openai --model gpt-4o --api-key sk-xxx
+
+# List all profiles
+rawi configure --list
+
+# Show current config
+rawi configure --show
+
+# Multiple profiles for different needs
+rawi configure --profile work --provider anthropic --model claude-3-5-sonnet-20241022
 ```
 
-### Verify Installation
+### 📚 `rawi history` — Conversation Management
 
 ```bash
-rawi --version
+# View recent conversations
+rawi history
+
+# Search conversation history
+rawi history --search "docker"
+
+# Show specific session
+rawi history show abc123
+
+# Export history
+rawi history export --output backup.json
+
+# Clean up old sessions
+rawi history cleanup --days 30
+```
+
+### 🎭 `rawi act` — Template Explorer
+
+```bash
+# Browse all templates
+rawi act --list
+
+# Show template details
+rawi act --show ethereum-developer
+
+# Search templates by category
+rawi act --list | grep -i security
+```
+
+### 🔧 `rawi provider` — Provider Information
+
+```bash
+# List all providers
+rawi provider --list
+
+# Show models for specific provider
+rawi provider --list-models openai
+
+# Get provider details
+rawi provider --info anthropic
+```
+
+### ℹ️ `rawi info` — System Information
+
+```bash
+# Show system info
 rawi info
+
+# Show profile details
+rawi info --profiles
+
+# Show provider capabilities
+rawi info --providers
 ```
 
-## 🚀 Quick Start
+## 🛠️ Configuration Made Simple
 
-Get up and running with Rawi in under 2 minutes:
+Get up and running with any AI provider in minutes:
+
+### 🚀 Quick Provider Setup
 
 ```bash
-# 1. Install Rawi globally
-npm install -g rawi
+# OpenAI (most popular)
+rawi configure --provider openai --model gpt-4o --api-key sk-your-key
 
-# 2. Configure your first AI provider (interactive setup)
-rawi configure
+# Anthropic Claude (great for analysis)
+rawi configure --provider anthropic --model claude-3-5-sonnet-20241022 --api-key sk-ant-xxx
 
-# 3. Start asking questions!
-rawi ask "What is the difference between JavaScript and TypeScript?"
+# Google Gemini (fast and efficient)
+rawi configure --provider google --model gemini-2.0-flash-exp --api-key AIza-xxx
 
-# 4. Use with your development workflow
-git diff | rawi ask "Write a commit message for these changes"
+# Ollama (free and private)
+rawi configure --provider ollama --model llama3.2
 ```
 
-**🎯 Choose Your Setup Style:**
-
-- **Interactive** (recommended for first-time users): `rawi configure`
-- **Command-line** (for automation): `rawi configure --provider openai --api-key YOUR_KEY --model gpt-4o`
-- **Local/Privacy-first**: `rawi configure --provider ollama --model llama3.2` (no API key needed)
-
-## ⚙️ Configuration
-
-Rawi supports multiple configuration methods to fit your workflow, from interactive setup to fully automated deployment.
-
-### 🎯 Interactive Setup (Recommended for First-Time Users)
-
-The interactive mode provides a guided, step-by-step experience:
+### 🏢 Enterprise & Advanced
 
 ```bash
-# Configure default profile
-rawi configure
+# Azure OpenAI for enterprise
+rawi configure --provider azure \
+  --model your-deployment-name \
+  --resource-name your-resource \
+  --api-key your-azure-key
 
-# Configure a named profile
-rawi configure -p work-profile
-```
+# AWS Bedrock with credential chain
+rawi configure --provider bedrock \
+  --model anthropic.claude-3-sonnet-20240229-v1:0 \
+  --use-provider-chain \
+  --region us-west-2
 
-**What the interactive setup covers:**
-
-- ✅ AI provider selection with descriptions
-- ✅ Model recommendations based on use case
-- ✅ API credential setup (with validation)
-- ✅ Performance tuning (temperature, max tokens)
-- ✅ Language and response preferences
-
-### ⚡ Command-Line Setup (Perfect for Automation)
-
-For scripts, CI/CD, and power users who know exactly what they want:
-
-```bash
-# OpenAI setup
-rawi configure -p openai-profile \
-  --provider openai \
-  --api-key $OPENAI_API_KEY \
-  --model gpt-4o \
-  --temperature 0.7 \
-  --max-tokens 2048
-
-# Local Ollama (no API key required)
-rawi configure -p local-profile \
-  --provider ollama \
-  --model llama3.2 \
-  --base-url http://localhost:11434
-
-# Anthropic Claude
-rawi configure -p claude-profile \
-  --provider anthropic \
-  --api-key $ANTHROPIC_API_KEY \
-  --model claude-3-5-sonnet-latest
-
-# Google Gemini
-rawi configure -p gemini-profile \
-  --provider google \
-  --api-key $GOOGLE_AI_API_KEY \
-  --model gemini-2.0-flash-exp
-
-# Azure OpenAI
-rawi configure -p azure-profile \
-  --provider azure \
-  --api-key $AZURE_OPENAI_API_KEY \
-  --resource-name your-resource-name \
-  --model your-deployment-name
-
-# Amazon Bedrock (with AWS credentials)
-rawi configure -p bedrock-profile \
-  --provider bedrock \
-  --model anthropic.claude-3-5-sonnet-20241022-v2:0 \
-  --region us-east-1 \
-  --access-key-id $AWS_ACCESS_KEY_ID \
-  --secret-access-key $AWS_SECRET_ACCESS_KEY
-
-# Amazon Bedrock (with AWS credential chain)
-rawi configure -p bedrock-aws-profile \
-  --provider bedrock \
-  --model anthropic.claude-3-5-sonnet-20241022-v2:0 \
-  --use-provider-chain
-
-# Qwen (Alibaba Cloud)
-rawi configure -p qwen-profile \
-  --provider qwen \
-  --api-key $QWEN_API_KEY \
-  --model qwen-max
-
-# xAI Grok
-rawi configure -p grok-profile \
-  --provider xai \
-  --api-key $XAI_API_KEY \
-  --model grok-beta
-```
-
-### 📋 Configuration Management
-
-```bash
-# List all available providers
-rawi configure --list-providers
-
-# List models for a specific provider
-rawi configure --list-models openai
-rawi configure --list-models anthropic
-rawi configure --list-models ollama
-
-# View configurations
-rawi configure --show                    # Default profile
-rawi configure -p work-profile --show    # Specific profile
-rawi configure --list                    # All profiles
-
-# Profile management
-rawi configure --delete old-profile      # Delete a profile
+# Multiple profiles for different projects
+rawi configure --profile work --provider openai --model gpt-4o
+rawi configure --profile personal --provider ollama --model llama3.2
+rawi configure --profile enterprise --provider azure --model gpt-4o
 ```
 
 ### 🎛️ Advanced Options
 
 ```bash
 # Fine-tune AI behavior
-rawi configure -p creative --temperature 1.2     # More creative responses
-rawi configure -p precise --temperature 0.1      # More focused responses
-rawi configure -p brief --max-tokens 500         # Shorter responses
-rawi configure -p detailed --max-tokens 4000     # Longer responses
+rawi configure --provider openai \
+  --model gpt-4o \
+  --temperature 0.7 \
+  --max-tokens 4096 \
+  --language english
 
-# Language preferences
-rawi configure -p arabic --language arabic       # Arabic responses
-rawi configure -p english --language english     # English responses (default)
-
-# Custom base URLs (for OpenAI-compatible APIs)
-rawi configure -p custom --base-url https://api.custom-ai.com/v1
+# Different languages
+rawi configure --language arabic  # Full Arabic support
 ```
 
-## 💬 Usage & Examples
+## � Developer Workflow Integration
 
-### 🗣️ Basic Usage
+See how Rawi fits seamlessly into your development process:
 
-```bash
-# Simple questions
-rawi ask "What is the difference between JavaScript and TypeScript?"
-rawi ask "Explain how async/await works in JavaScript"
-rawi ask "How do I optimize a PostgreSQL query?"
-
-# Use specific profiles
-rawi ask -p claude-profile "Explain quantum computing"
-rawi ask -p local-profile "Review this confidential code"
-```
-
-### � Shell Integration & Workflow Examples
-
-Rawi excels when integrated into your existing development workflow:
-
-#### Code Analysis & Review
+### 🔍 Code Review & Analysis
 
 ```bash
-# Review current changes
+# Review git changes
 git diff | rawi ask "Review these changes for potential issues"
 
-# Analyze specific files
-cat src/app.js | rawi ask "Find security vulnerabilities in this code"
-rawi ask "Explain this function" < utils/helper.js
+# Analyze entire files
+cat src/auth.js | rawi ask --act security-expert "Analyze for vulnerabilities"
 
-# Code quality assessment
-find . -name "*.js" -exec cat {} + | rawi ask "Analyze code quality and suggest improvements"
-```
+# Get improvement suggestions
+rawi ask --act code-reviewer "How can I optimize this function?" < utils.py
 
-#### Documentation & Content Generation
+# Generate commit messages
+git diff --cached | rawi ask "Write a conventional commit message"
 
-```bash
-# Generate documentation
-rawi ask "Create JSDoc comments for this function" < function.js > documented.js
-
-# README generation
-rawi ask "Create a comprehensive README for this project" > README.md
-
-# API documentation
-cat api-spec.json | rawi ask "Generate user-friendly API documentation"
-```
-
-#### Git Workflow Integration
-
-```bash
 # Smart commit messages
 git diff --staged | rawi ask "Generate a conventional commit message"
 
@@ -446,421 +324,309 @@ git log --oneline $(git describe --tags --abbrev=0)..HEAD | \
 # Branch summaries
 git log --oneline main..feature-branch | \
   rawi ask "Summarize the changes in this feature branch"
+
+# Pull request descriptions
+git diff origin/main | rawi ask "Write a pull request description for these changes"
 ```
 
-#### Data Analysis & Processing
+### 🐛 Debugging & Problem Solving
 
 ```bash
-# CSV analysis
-cat sales_data.csv | rawi ask "Analyze trends and provide insights"
+# Debug error messages
+rawi ask "Fix this Python error: NameError: name 'x' is not defined"
+
+# Analyze log files
+tail -100 /var/log/app.log | rawi ask "Summarize errors and suggest fixes"
+
+# Understand complex code
+rawi ask --act code-reviewer "Explain this algorithm" < algorithm.py
+
+# Performance optimization
+rawi ask --act database-admin "Optimize this slow query" < queries.sql
+```
+
+### 📝 Documentation & Generation
+
+```bash
+# Create documentation
+rawi ask --act tech-writer "Document this API endpoint" < api.js
+
+# Generate README files
+rawi ask "Create a comprehensive README for this project" < package.json
+
+# Write test cases
+rawi ask --act qa-engineer "Generate unit tests for this function" < utils.js
+
+# Create configuration files
+rawi ask "Generate Docker configuration for this Node.js app"
+```
+
+### 🔧 Automation & Scripting
+
+```bash
+# Generate deployment scripts
+rawi ask "Create a GitHub Actions workflow for CI/CD" > .github/workflows/deploy.yml
+
+# Create backup scripts
+rawi ask "Create a database backup script for PostgreSQL" > backup.sh
+
+# Configuration generation
+rawi ask "Generate nginx config for this Express app" > nginx.conf
+
+# Data processing
+cat data.json | rawi ask "Transform this JSON into CSV format" > data.csv
+```
+
+### 📊 Data Analysis & Processing
+
+```bash
+# Analyze CSV files
+cat sales-data.csv | rawi ask "Analyze this sales data and find trends"
+
+# Process API responses
+curl -s api.example.com/data | rawi ask "Explain this API response structure"
 
 # Log analysis
-tail -n 100 /var/log/app.log | rawi ask "Identify error patterns and suggest fixes"
+grep ERROR app.log | rawi ask "Categorize these errors and suggest fixes"
 
-# JSON processing
-curl -s https://api.github.com/users/octocat | \
-  rawi ask "Summarize this GitHub user profile"
+# Configuration analysis
+cat docker-compose.yml | rawi ask "Review this Docker configuration"
 ```
 
-#### Development Workflow
+## 🔒 Security & Privacy — Your Data, Your Control
+
+Rawi is designed with security and privacy as core principles:
+
+### 🛡️ Security Features
+
+- **� Encrypted Storage**: All API keys and credentials encrypted at rest using AES-256
+- **🏠 Local Processing**: Full local AI support with Ollama — no data leaves your machine
+- **🚫 Zero Telemetry**: No data collection, tracking, or analytics
+- **🔒 Secure Defaults**: Minimal permissions and secure configuration out of the box
+- **🔑 Key Management**: OS-level secure key storage with proper access controls
+
+### 🔐 Privacy Options
 
 ```bash
-# Error debugging
-npm test 2>&1 | rawi ask "Explain these test failures and suggest fixes"
+# Complete privacy with Ollama (local AI)
+rawi configure --provider ollama --model llama3.2
 
-# Performance analysis
-cat performance-report.json | rawi ask "Identify performance bottlenecks"
+# No internet required after setup
+rawi ask "Review this sensitive code" --profile local
 
-# Dependency analysis
-npm audit --json | rawi ask "Prioritize these security vulnerabilities"
+# Keep sensitive data local
+cat confidential.py | rawi ask "Analyze this code" --profile ollama
 ```
 
-### 🎯 Advanced Usage Patterns
+### 🌍 Global & Multilingual Support
 
-#### Multi-step Workflows
+- **🇺🇸 English**: Full native support with optimized models
+- **🇸🇦 Arabic**: Native Arabic support — راوي speaks your language
+- **🌐 Multilingual**: All providers support multiple languages seamlessly
 
 ```bash
-# Generate and process
-rawi ask "Create 10 test user records in JSON format" | \
-  jq '.[] | select(.age > 25)' | \
-  rawi ask "Convert this filtered data to SQL INSERT statements"
+# Arabic language support
+rawi configure --language arabic
+rawi ask "اشرح لي هذا الكود"
 
-# Chain analysis
-cat config.yaml | \
-  rawi ask "Validate this configuration and suggest improvements" | \
-  tee config-review.md
+# Switch between languages
+rawi ask "Translate this to Arabic and explain" --language arabic
 ```
 
-#### Template and Scripting
+## 📊 Smart Session Management
+
+Rawi remembers your conversations and maintains context across interactions:
+
+### 🗣️ Conversation Flow
 
 ```bash
-#!/bin/bash
-# Smart deploy script
-CHANGES=$(git diff --name-only HEAD~1)
-SUMMARY=$(echo "$CHANGES" | rawi ask "Assess deployment risk for these files")
-echo "Deploy Risk Assessment: $SUMMARY"
+# Start a new session
+rawi ask "I'm building a React app with TypeScript" --new-session
 
-if [[ "$SUMMARY" =~ "high risk" ]]; then
-  echo "⚠️  High risk deployment detected. Manual review required."
-  exit 1
-fi
+# Continue the conversation (auto-detects session)
+rawi ask "How should I structure the components?"
+
+# Use specific session
+rawi ask "What about state management?" --session abc123-def456
+
+# Resume from history
+rawi history show abc123-def456
+rawi ask "Let's continue from where we left off" --session abc123-def456
 ```
 
-#### Cross-Platform Integration
+### 📚 History Management
 
 ```bash
-# PowerShell (Windows)
-Get-ChildItem *.cs | Get-Content | rawi ask "Review this C# code for best practices"
+# View recent conversations
+rawi history
 
-# With jq for JSON processing
-rawi ask "Generate sample API response" | jq '.data[0]' | rawi ask "Validate this schema"
+# Search your chat history
+rawi history --search "docker deployment"
 
-# With grep for filtering
-rawi ask "List common JavaScript errors" | grep -i "reference" | head -5
+# Filter by provider or model
+rawi history --provider openai --model gpt-4o
+
+# Export for backup
+rawi history export --output my-ai-conversations.json
+
+# Clean up old sessions
+rawi history cleanup --days 30
 ```
 
-### 👤 Profile-Based Workflows
+### 📈 Usage Analytics
 
 ```bash
-# Different models for different tasks
-rawi ask -p creative-gpt4 "Write a technical blog post about WebAssembly"
-rawi ask -p precise-claude "Perform detailed code review" < critical-component.js
-rawi ask -p local-llama "Analyze sensitive data" < private-logs.txt
-rawi ask -p fast-gemini "Quick syntax check" < script.py
+# See usage statistics
+rawi history stats
+
+# Profile-specific stats
+rawi history stats --profile work
+
+# Track your AI usage patterns
+rawi info --profiles
 ```
 
-## 📚 Commands Reference
+## � Installation & Setup
 
-### `rawi ask`
+Multiple ways to get started — choose what works best for you:
 
-Ask questions and get AI-powered responses.
+### 📦 Package Managers
 
 ```bash
-rawi ask [query] [options]
+# NPM (recommended)
+npm install -g rawi
 
-Options:
-  -p, --profile <profile>    Use specific configuration profile (default: "default")
-  --session <sessionId>      Continue an existing chat session
-  --new-session             Start a new chat session
-  --act <template>          Use an act template (e.g., ethereum-developer)
-  --list-acts               List all available act templates
-  --show                    Show details of the specified act template (use with --act)
-  -h, --help                Display help information
+# PNPM (faster)
+pnpm add -g rawi
 
-Examples:
-  rawi ask "How does Docker work?"
-  rawi ask -p claude-profile "Explain machine learning"
-  echo "console.log('hello')" | rawi ask "What does this code do?"
+# Yarn
+yarn global add rawi
 
-  # Using act templates
-  rawi ask --list-acts
-  rawi ask --act ethereum-developer "explain smart contract security"
-  rawi ask -p ollama --act linux-terminal "ls -la /home"
+# Try without installing
+npx rawi ask "Hello, world!"
 ```
 
-### `rawi configure`
-
-Manage AI provider configurations and profiles.
+### ⚡ Quick Verification
 
 ```bash
-rawi configure [options]
+# Check installation
+rawi --version
 
-Configuration Options:
-  -p, --profile <profile>              Profile name (default: "default")
-  --provider <provider>                AI provider (openai, anthropic, google, ollama, xai, azure, bedrock, qwen)
-  --model <model>                      AI model name
-  --api-key <key>                      API key (not needed for Ollama)
-  --base-url <url>                     Custom base URL for API
-  --temperature <temp>                 Creativity level (0.0-2.0)
-  --max-tokens <tokens>                Maximum response length
-  --language <lang>                    Response language (english, arabic)
+# Test basic functionality
+rawi ask "Test message"
 
-Azure-specific:
-  --resource-name <name>               Azure resource name (required)
-  --api-version <version>              API version (default: 2024-10-01-preview)
-
-Bedrock-specific:
-  --region <region>                    AWS region (default: us-east-1)
-  --access-key-id <key>                AWS access key
-  --secret-access-key <key>            AWS secret key
-  --session-token <token>              AWS session token (optional)
-  --use-provider-chain                 Use AWS credential provider chain
-
-Management Options:
-  --show                               Show current configuration
-  --list                               List all profiles
-  --list-providers                     List available AI providers
-  --list-models <provider>             List models for specific provider
-  --delete <profile>                   Delete a profile
-
-Examples:
-  rawi configure                                    # Interactive setup
-  rawi configure --list-providers                   # Show all providers
-  rawi configure --list-models openai               # Show OpenAI models
-  rawi configure -p work --show                     # Show work profile
-```
-
-### `rawi info`
-
-Display information about Rawi and its capabilities.
-
-```bash
+# View system info
 rawi info
-
-Example:
-  rawi info    # Shows version, author, and description
 ```
 
-## 🤖 Supported AI Providers
+## 🏗️ Architecture & Design
 
-Rawi supports 8 major AI providers with their latest models:
+Rawi is built with modularity, extensibility, and developer experience in mind:
 
-### 🔵 OpenAI
+### 📐 Clean Architecture
 
-**Models**: GPT-4o, GPT-4-turbo, GPT-3.5-turbo, O1, O3, and more
-
-- **API Key**: Required (get from [OpenAI Platform](https://platform.openai.com/api-keys))
-- **Best for**: General-purpose tasks, coding, analysis
-- **Custom Base URL**: Supported for OpenAI-compatible APIs
-
-### 🟣 Anthropic (Claude)
-
-**Models**: Claude 3.5 Sonnet, Claude 4, Claude 3 Haiku, and more
-
-- **API Key**: Required (get from [Anthropic Console](https://console.anthropic.com/))
-- **Best for**: Long-form content, analysis, safety-conscious tasks
-- **Context Length**: Up to 200K tokens
-
-### 🔴 Google (Gemini)
-
-**Models**: Gemini 2.0 Flash, Gemini 1.5 Pro, Gemini 1.5 Flash, and more
-
-- **API Key**: Required (get from [Google AI Studio](https://aistudio.google.com/))
-- **Best for**: Multimodal tasks, real-time applications
-- **Features**: Fast inference, large context windows
-
-### 🟢 Ollama (Local AI)
-
-**Models**: 100+ local models including Llama 3.2, Mistral, CodeLlama, Qwen, Phi, and more
-
-- **API Key**: Not required (runs locally)
-- **Best for**: Privacy, offline usage, local development
-- **Setup**: Install [Ollama](https://ollama.ai/) and pull models locally
-- **Benefits**: Free, private, offline capable
-
-### 🔷 Azure OpenAI
-
-**Models**: Enterprise versions of OpenAI models
-
-- **API Key**: Required (Azure subscription needed)
-- **Resource Name**: Your Azure OpenAI resource name required
-- **Best for**: Enterprise applications, compliance requirements
-- **Features**: Enterprise-grade security, SLA guarantees
-
-### 🟠 Amazon Bedrock
-
-**Models**: Claude, Llama, Titan, and more AWS-hosted models
-
-- **Credentials**: AWS credentials or IAM roles
-- **Best for**: AWS-integrated applications, enterprise scalability
-- **Setup**: AWS account with Bedrock access required
-- **Authentication**: Supports AWS credential chain or explicit keys
-
-### 🟡 Qwen (Alibaba Cloud)
-
-**Models**: Qwen-Max, Qwen-Plus, Qwen-Turbo, and specialized models
-
-- **API Key**: Required (Alibaba Cloud account)
-- **Best for**: Multilingual tasks, Chinese language processing
-- **Features**: Strong performance in Asian languages
-
-### 🤖 xAI (Grok)
-
-**Models**: Grok-Beta, Grok-2, and other xAI models
-
-- **API Key**: Required (xAI account)
-- **Best for**: Real-time information, conversational AI
-- **Features**: Access to real-time data, witty responses
-
-## 🎯 Real-World Use Cases
-
-### 👨‍💻 Development Workflows
-
-**Code Review & Quality Assurance**
-
-```bash
-# Pre-commit hooks
-git diff --cached | rawi ask "Review staged changes for issues"
-
-# Pull request analysis
-gh pr diff 123 | rawi ask "Summarize changes and identify potential risks"
-
-# Code architecture review
-find src/ -name "*.ts" | head -10 | xargs cat | \
-  rawi ask "Analyze architecture patterns and suggest improvements"
+```
+rawi/
+├── src/
+│   ├── cli/                    # Command-line interface
+│   │   ├── commands/           # ask, configure, history, info, act, provider
+│   │   └── program.ts          # Main CLI program setup
+│   ├── core/
+│   │   ├── config/             # Configuration management
+│   │   │   └── providers/      # AI provider integrations (8 providers)
+│   │   ├── database/           # SQLite-based chat history & sessions
+│   │   ├── shared/             # Utilities, types, and constants
+│   │   └── template/           # Act templates system (200+ templates)
+│   └── index.ts                # Application entry point
+├── docs/                       # Comprehensive documentation
+├── man/                        # Manual pages for CLI
+└── tests/                      # Test suites
 ```
 
-**Debugging & Troubleshooting**
+### 🔧 Core Technologies
 
-```bash
-# Error log analysis
-tail -f /var/log/app.log | rawi ask "Monitor for critical errors and explain them"
+- **TypeScript**: Type-safe development with excellent IDE support
+- **Commander.js**: Robust CLI framework with intuitive command structure
+- **AI SDK**: Unified interface for multiple AI providers
+- **SQLite**: Lightweight, embedded database for session management
+- **Secure Storage**: AES-256 encryption for credential protection
 
-# Performance troubleshooting
-cat performance.json | rawi ask "Identify bottlenecks and optimization opportunities"
+### 🎨 Design Principles
 
-# Dependency issue resolution
-npm ls --depth=0 2>&1 | rawi ask "Resolve dependency conflicts"
-```
+- **🔌 Extensibility**: Easy to add new providers and features
+- **🛡️ Security**: Credentials encrypted at rest, minimal permissions
+- **⚡ Performance**: Fast startup, efficient resource usage
+- **🔧 Maintainability**: Clean code structure, comprehensive testing
+- **🌍 Accessibility**: Works across platforms and environments
 
-**Documentation & Knowledge Management**
+## 🔄 Why Rawi Beats the Competition
 
-```bash
-# API documentation generation
-swagger-codegen generate -i api.yaml -l markdown | \
-  rawi ask "Create user-friendly documentation from this spec"
+See how Rawi stacks up against other AI CLI tools:
 
-# Code commenting
-rawi ask "Add comprehensive comments to this function" < complex-algorithm.js
+| Feature                   | Rawi                     | Others             |
+| ------------------------- | ------------------------ | ------------------ |
+| **AI Providers**          | ✅ 8 major providers     | ❌ Usually 1-2     |
+| **Local AI Support**      | ✅ Full Ollama support   | ❌ Cloud only      |
+| **Specialized Templates** | ✅ 200+ act templates    | ❌ Basic prompts   |
+| **Session Management**    | ✅ Persistent + search   | ❌ No context      |
+| **Shell Integration**     | ✅ Pipes, redirects      | ❌ Limited         |
+| **Privacy Options**       | ✅ Local + Cloud         | ❌ Cloud only      |
+| **Multi-language**        | ✅ English + Arabic      | ❌ English only    |
+| **Profile Management**    | ✅ Multiple profiles     | ❌ Single config   |
+| **Conversation History**  | ✅ Full history + export | ❌ No history      |
+| **Developer-focused**     | ✅ Built for developers  | ❌ General purpose |
 
-# Technical decision records
-rawi ask "Create a technical decision record for switching to microservices"
-```
+### 🎯 What Makes Rawi Special
 
-### 🔒 Security & Compliance
+- **🔥 True Multi-Provider**: Switch between 8 AI providers without changing tools
+- **🛡️ Privacy First**: Only tool with full local AI support via Ollama
+- **🎭 Expert Templates**: 200+ specialized AI personas for any task
+- **📊 Smart Sessions**: Persistent conversations with full context
+- **🌍 Global Ready**: Native Arabic support alongside English
+- **🔧 Developer Native**: Built specifically for technical workflows
 
-**Security Analysis**
+## 📚 Documentation & Learning
 
-```bash
-# Vulnerability assessment
-cat package.json | rawi ask "Identify potential security risks in these dependencies"
+Comprehensive resources to master Rawi:
 
-# Code security review
-rawi ask -p security-focused "Audit this authentication function for vulnerabilities" < auth.js
+### � Essential Guides
 
-# Configuration security
-cat nginx.conf | rawi ask "Review this config for security best practices"
-```
+- **🚀 [Quick Start Guide](https://rawi.mkabumattar.com/docs/quick-start)** - Get up and running in minutes
+- **🎯 [Act Templates Guide](https://rawi.mkabumattar.com/docs/templates)** - Master all 200+ AI personas
+- **🔧 [Configuration Guide](https://rawi.mkabumattar.com/docs/configuration)** - Complete setup for all providers
+- **🛠️ [Development Guide](https://rawi.mkabumattar.com/docs/development)** - Contributing and development
+- **� [Command Reference](https://rawi.mkabumattar.com/docs/commands)** - Complete CLI documentation
 
-**Compliance & Auditing**
+### 💡 Advanced Resources
 
-```bash
-# GDPR compliance check
-find . -name "*.js" -exec grep -l "user.*data" {} + | \
-  xargs cat | rawi ask "Check GDPR compliance for user data handling"
+- **🔍 [Usage Examples](https://rawi.mkabumattar.com/docs/examples)** - Real-world scenarios and workflows
+- **🤖 [Provider Guide](https://rawi.mkabumattar.com/docs/providers)** - Deep dive into each AI provider
+- **🏗️ [Architecture](https://rawi.mkabumattar.com/docs/architecture)** - Technical implementation details
+- **❓ [FAQ](https://rawi.mkabumattar.com/docs/faq)** - Common questions and troubleshooting
+- **📈 [API Reference](https://rawi.mkabumattar.com/docs/api)** - Complete API documentation
 
-# Access control review
-cat permissions.yaml | rawi ask "Validate access control policies"
-```
+### 🎓 Learning Path
 
-### 📊 Data Analysis & Business Intelligence
+1. **Start Here**: [Quick Start](https://rawi.mkabumattar.com/docs/quick-start) → Install and configure
+2. **Explore**: [Act Templates](https://rawi.mkabumattar.com/docs/templates) → Discover AI personas
+3. **Integrate**: [Usage Examples](https://rawi.mkabumattar.com/docs/examples) → Real workflows
+4. **Master**: [Advanced Configuration](https://rawi.mkabumattar.com/docs/configuration) → Power user features
+5. **Contribute**: [Development Guide](https://rawi.mkabumattar.com/docs/development) → Help improve Rawi
 
-**Log Analysis & Monitoring**
+## 💬 Community & Support
 
-```bash
-# Application metrics analysis
-cat metrics.json | rawi ask "Analyze application performance trends"
+Join our growing community and get help when you need it:
 
-# User behavior analysis
-cat user-events.csv | rawi ask "Identify user engagement patterns"
+### 🆘 Get Help
 
-# System health monitoring
-df -h && free -h && top -bn1 | head -20 | \
-  rawi ask "Assess system health and recommend optimizations"
-```
+- **🐛 [Report Issues](https://github.com/withrawi/rawi/issues)** - Bug reports and feature requests
+- **💡 [Discussions](https://github.com/withrawi/rawi/discussions)** - Ideas, questions, and community chat
+- **📧 [Email Support](mailto:mohammad.khaled@outlook.com)** - Direct support from the creator
+- **📖 [Documentation](https://rawi.mkabumattar.com)** - Comprehensive guides and references
 
-**Business Intelligence**
+### 🤝 Contributing
 
-```bash
-# Sales data insights
-cat quarterly-sales.csv | rawi ask "Provide business insights and recommendations"
-
-# A/B test analysis
-cat ab-test-results.json | rawi ask "Analyze test results and determine statistical significance"
-```
-
-### 🚀 DevOps & Infrastructure
-
-**Infrastructure as Code**
-
-```bash
-# Terraform plan analysis
-terraform plan | rawi ask "Review infrastructure changes and identify risks"
-
-# Kubernetes manifest validation
-cat deployment.yaml | rawi ask "Validate Kubernetes deployment for best practices"
-
-# Docker optimization
-cat Dockerfile | rawi ask "Optimize this Dockerfile for security and performance"
-```
-
-**CI/CD Pipeline Enhancement**
-
-```bash
-# Build failure analysis
-cat build.log | rawi ask "Diagnose build failures and suggest fixes"
-
-# Deployment strategy planning
-rawi ask "Design a blue-green deployment strategy for a Node.js microservice"
-
-# Pipeline optimization
-cat .github/workflows/ci.yml | rawi ask "Optimize this CI pipeline for speed and reliability"
-```
-
-### 🎨 Content Creation & Marketing
-
-**Technical Writing**
-
-```bash
-# Blog post creation
-rawi ask -p creative-writer "Write a technical blog post about GraphQL vs REST APIs"
-
-# Tutorial generation
-rawi ask "Create a step-by-step tutorial for setting up Docker" > docker-tutorial.md
-
-# Release notes
-git log --oneline v1.0.0..HEAD | \
-  rawi ask "Create user-friendly release notes from these commits"
-```
-
-**API & SDK Documentation**
-
-```bash
-# OpenAPI documentation
-cat openapi.json | rawi ask "Generate comprehensive API documentation"
-
-# SDK examples
-rawi ask "Create code examples for this API endpoint" < endpoint-spec.json
-```
-
-### 🏢 Team Collaboration & Management
-
-**Code Review Assistance**
-
-```bash
-# Review checklist generation
-rawi ask "Create a code review checklist for React components"
-
-# Architecture decision support
-rawi ask "Compare pros and cons of microservices vs monolithic architecture for e-commerce"
-
-# Technical onboarding
-rawi ask "Create an onboarding guide for new developers joining a TypeScript project"
-```
-
-**Knowledge Sharing**
-
-```bash
-# Technical documentation
-cat complex-system.md | rawi ask "Simplify this technical documentation for junior developers"
-
-# Best practices documentation
-rawi ask "Document coding standards and best practices for our Python team"
-```
-
-## 🛠️ Development
-
-### Setting Up Development Environment
+We welcome contributions from developers of all levels:
 
 ```bash
 # Clone the repository
@@ -870,502 +636,50 @@ cd rawi
 # Install dependencies
 pnpm install
 
-# Run in development mode
-pnpm dev ask "Hello from development!"
-
-# Build the project
-pnpm build
+# Start development
+pnpm dev
 
 # Run tests
 pnpm test
 
-# Lint and format code
-pnpm lint
-pnpm fmt
-```
-
-### Project Structure
-
-```
-src/
-├── cli/                 # CLI commands and program setup
-│   ├── commands/       # Individual command implementations
-│   └── program.ts      # Main CLI program
-├── config/             # Configuration management
-│   ├── providers/      # AI provider implementations
-│   ├── manager.ts      # Configuration manager
-│   └── utils.ts        # Config utilities
-├── shared/             # Shared utilities and types
-│   ├── constants.ts    # App constants
-│   ├── types.ts        # TypeScript types
-│   └── utils.ts        # Utility functions
-└── index.ts           # Main entry point
-```
-
-## 🤝 Contributing
-
-We welcome contributions from the community! Here's how you can help make Rawi even better.
-
-### 🚀 Quick Start for Contributors
-
-```bash
-# 1. Fork and clone the repository
-git clone https://github.com/YourUsername/rawi.git
-cd rawi
-
-# 2. Install dependencies
-pnpm install
-
-# 3. Run in development mode
-pnpm dev ask "Hello from development!"
-
-# 4. Run tests
-pnpm test
-
-# 5. Build the project
+# Build for production
 pnpm build
 ```
 
-### 📁 Project Structure
-
-```
-src/
-├── cli/                    # CLI commands and program setup
-│   ├── commands/          # Individual command implementations
-│   │   ├── ask.command.ts
-│   │   ├── configure.command.ts
-│   │   └── info.command.ts
-│   └── program.ts         # Main CLI program
-├── config/                # Configuration management
-│   ├── providers/         # AI provider implementations
-│   │   ├── openai.provider.ts
-│   │   ├── anthropic.provider.ts
-│   │   └── ...
-│   ├── manager.ts         # Configuration manager
-│   └── utils.ts          # Config utilities
-├── shared/                # Shared utilities and types
-│   ├── constants.ts      # App constants
-│   ├── types.ts          # TypeScript types
-│   ├── utils.ts          # Utility functions
-│   └── spinner.ts        # Centralized spinner management
-└── index.ts              # Main entry point
-```
-
-### 🛠️ Development Guidelines
-
-**Code Quality**
-
-- **TypeScript**: Strict typing required
-- **ESLint & Prettier**: Enforced via Biome
-- **Testing**: Write tests for new features
-- **Documentation**: Update README and JSDoc comments
-
-**Git Workflow**
-
-```bash
-# Create feature branch
-git checkout -b feature/amazing-new-feature
-
-# Make changes and commit
-git add .
-git commit -m "feat: add amazing new feature"
-
-# Push and create PR
-git push origin feature/amazing-new-feature
-```
-
-**Commit Convention**
-We follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-- `feat:` New features
-- `fix:` Bug fixes
-- `docs:` Documentation changes
-- `refactor:` Code refactoring
-- `test:` Adding tests
-- `chore:` Maintenance tasks
-
-### 🔌 Adding New AI Providers
-
-1. **Create provider file**: `src/config/providers/newprovider.provider.ts`
-
-```typescript
-export const newProvider = {
-  name: "newprovider" as const,
-  displayName: "� New Provider",
-  models: [
-    { name: "model-1", displayName: "Model 1" },
-    { name: "model-2", displayName: "Model 2" },
-  ],
-};
-
-export const generateWithNewProvider = async (
-  credentials: RawiCredentials,
-  prompt: string
-): Promise<string> => {
-  // Implementation here
-};
-```
-
-2. **Update types**: Add to `ProviderName` type in `src/shared/types.ts`
-3. **Export provider**: Add to `src/config/providers/index.ts`
-4. **Add configuration options**: Update CLI commands if needed
-5. **Write tests**: Add test coverage for the new provider
-6. **Update documentation**: Add to README and provider list
-
-### 🧪 Testing
-
-```bash
-# Run all tests
-pnpm test
-
-# Run tests with coverage
-pnpm test:coverage
-
-# Run specific test file
-pnpm test src/config/providers/openai.provider.test.ts
-
-# Watch mode during development
-pnpm test --watch
-```
-
-### 📝 Documentation
-
-- **README updates**: Keep the README.md current
-- **JSDoc comments**: Document all public functions
-- **Examples**: Add usage examples for new features
-- **CLI help**: Update command descriptions and help text
-
-### 🚀 Release Process
-
-1. **Version bump**: Follow semantic versioning
-2. **Changelog**: Update CHANGELOG.md
-3. **Testing**: Ensure all tests pass
-4. **Build**: Verify clean build
-5. **Publish**: Maintainers handle NPM publishing
-
-### 💡 Areas for Contribution
-
-**High Priority**
-
-- 🤖 New AI provider integrations
-- 🔧 Performance improvements
-- 📖 Documentation enhancements
-- 🐛 Bug fixes
-
-**Medium Priority**
-
-- 🎨 UI/UX improvements
-- 🔒 Security enhancements
-- 🌐 Internationalization
-- 📱 Platform-specific features
-
-**Ideas Welcome**
-
-- 🔌 Plugin system
-- 📊 Usage analytics (privacy-respecting)
-- 🎯 Smart prompt templates
-- 🔄 Response caching
-
-### 📞 Getting Help
-
-- **GitHub Issues**: For bug reports and feature requests
-- **Discussions**: For questions and community chat
-- **Discord**: [Join our community server](https://discord.gg/rawi-community)
-- **Email**: Contact maintainers directly
-
-Thank you for contributing to Rawi! 🙏
-
-## 🔧 Configuration Details
-
-### File Locations
-
-Rawi stores all configuration in your home directory:
-
-```
-~/.rawi/
-└── credentials    # Encrypted configuration file containing:
-                  │
-                  ├── API keys and credentials
-                  ├── Provider configurations
-                  ├── Model preferences
-                  ├── Generation settings (temperature, tokens)
-                  ├── Language preferences
-                  └── Custom base URLs
-```
-
-### Environment Variables
-
-For CI/CD and automation scenarios:
-
-```bash
-# API Keys
-export OPENAI_API_KEY="your-openai-key"
-export ANTHROPIC_API_KEY="your-anthropic-key"
-export GOOGLE_AI_API_KEY="your-google-key"
-export XAI_API_KEY="your-xai-key"
-
-# AWS (for Bedrock)
-export AWS_ACCESS_KEY_ID="your-access-key"
-export AWS_SECRET_ACCESS_KEY="your-secret-key"
-export AWS_REGION="us-east-1"
-
-# Azure
-export AZURE_OPENAI_API_KEY="your-azure-key"
-export AZURE_OPENAI_ENDPOINT="https://your-resource.openai.azure.com"
-
-# Override default profile
-export RAWI_PROFILE="production-profile"
-```
-
-### Configuration Schema
-
-```typescript
-interface RawiConfig {
-  profiles: {
-    [profileName: string]: {
-      provider:
-        | "openai"
-        | "anthropic"
-        | "google"
-        | "ollama"
-        | "azure"
-        | "bedrock"
-        | "qwen"
-        | "xai";
-      model: string;
-      apiKey?: string;
-      baseUrl?: string;
-      temperature?: number; // 0.0-2.0
-      maxTokens?: number; // 1-32000+
-      language?: "english" | "arabic";
-
-      // Provider-specific options
-      azure?: {
-        resourceName: string;
-        apiVersion?: string;
-      };
-      bedrock?: {
-        region: string;
-        accessKeyId?: string;
-        secretAccessKey?: string;
-        sessionToken?: string;
-        useProviderChain?: boolean;
-      };
-    };
-  };
-  defaultProfile: string;
-}
-```
-
-## 🚀 Performance Tips
-
-### ⚡ Speed Optimization
-
-**Faster Response Times**
-
-```bash
-# Use local models for instant responses
-rawi configure -p instant --provider ollama --model llama3.2
-
-# Choose fast models for quick tasks
-rawi configure -p quick --provider google --model gemini-2.0-flash-exp
-rawi configure -p quick --provider openai --model gpt-3.5-turbo
-
-# Optimize token limits for shorter responses
-rawi configure -p brief --max-tokens 500
-```
-
-**Efficient Model Selection**
-
-- **Quick answers**: Gemini Flash, GPT-3.5-turbo, Claude Haiku
-- **Code analysis**: GPT-4o, Claude 3.5 Sonnet
-- **Creative tasks**: GPT-4, Claude 3.5 Sonnet
-- **Privacy/Local**: Ollama models (Llama, Mistral, CodeLlama)
-
-### 💰 Cost Optimization
-
-**Smart Token Management**
-
-```bash
-# Set reasonable limits to control costs
-rawi configure -p cost-effective --max-tokens 1000
-
-# Use cheaper models for simple tasks
-rawi configure -p budget --provider openai --model gpt-3.5-turbo
-rawi configure -p budget --provider anthropic --model claude-3-haiku-20240307
-```
-
-**Free Alternatives**
-
-```bash
-# Use Ollama for completely free inference
-rawi configure -p free --provider ollama --model llama3.2
-
-# Popular free local models
-ollama pull llama3.2        # General purpose
-ollama pull codellama       # Code-focused
-ollama pull mistral         # Efficient and capable
-ollama pull qwen2.5         # Multilingual
-```
-
-### 🎯 Quality Enhancement
-
-**Better Results Through Configuration**
-
-```bash
-# Precise, factual responses
-rawi configure -p factual --temperature 0.1
-
-# Creative, varied responses
-rawi configure -p creative --temperature 1.0
-
-# Balanced responses
-rawi configure -p balanced --temperature 0.7
-
-# Detailed analysis
-rawi configure -p detailed --max-tokens 3000
-```
-
-**Context and Prompting Tips**
-
-```bash
-# Provide context for better results
-cat README.md package.json | rawi ask "Analyze this project structure"
-
-# Be specific in your queries
-rawi ask "Review this React component for accessibility issues" < Component.jsx
-
-# Use role-based prompting
-rawi ask "As a senior security engineer, audit this authentication function" < auth.js
-```
-
-## 🔒 Security & Privacy
-
-### API Key Security
-
-- API keys are stored securely in your home directory
-- Keys are never logged or transmitted except to official provider APIs
-- Use environment variables in CI/CD: `RAWI_API_KEY`
-
-### Privacy Options
-
-- **Ollama**: Complete privacy with local models
-- **Profile isolation**: Separate configs for sensitive vs. general use
-- **No telemetry**: Rawi doesn't collect usage data
-
-### Best Practices
-
-```bash
-# Use local models for sensitive data
-rawi configure -p private --provider ollama --model llama3.2
-
-# Separate profiles for different security contexts
-rawi configure -p public-cloud --provider openai
-rawi configure -p enterprise --provider azure
-rawi configure -p local-only --provider ollama
-```
-
-## 🌐 Multilingual Support
-
-Rawi supports responses in multiple languages:
-
-```bash
-# Configure Arabic responses
-rawi configure -p arabic --language arabic
-
-# English responses (default)
-rawi configure -p english --language english
-
-# Ask in any language, get responses in configured language
-rawi ask -p arabic "What is artificial intelligence?"
-# Response will be in Arabic regardless of query language
-```
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**"Profile not configured" error:**
-
-```bash
-# Check existing profiles
-rawi configure --list
-
-# Reconfigure the profile
-rawi configure -p profile-name
-```
-
-**API key errors:**
-
-```bash
-# Verify your configuration
-rawi configure --show
-
-# Reconfigure with correct API key
-rawi configure -p profile-name --api-key NEW_KEY
-```
-
-**Ollama connection issues:**
-
-```bash
-# Check if Ollama is running
-ollama list
-
-# Start Ollama service
-ollama serve
-
-# Configure custom Ollama URL
-rawi configure -p ollama --base-url http://localhost:11434
-```
-
-**Model not found errors:**
-
-```bash
-# List available models for your provider
-rawi configure --list-models openai
-
-# Update to a valid model
-rawi configure -p profile-name --model valid-model-name
-```
-
-### Getting Help
-
-- Use `--help` flag with any command: `rawi ask --help`
-- Check the [GitHub Issues](https://github.com/withrawi/rawi/issues)
-- Review provider documentation for API key setup
-- Ensure you have the latest version: `npm update -g rawi`
+### 🌟 Ways to Contribute
+
+- **🐛 Fix bugs** - Check our [issues](https://github.com/withrawi/rawi/issues)
+- **✨ Add features** - Implement new providers or commands
+- **📖 Improve docs** - Help others learn and use Rawi
+- **🎭 Create templates** - Add new act templates
+- **🧪 Write tests** - Improve code quality and coverage
+
+### 🔄 Development Workflow
+
+1. **Fork & Clone**: Fork the repo and clone locally
+2. **Install**: Run `pnpm install` to setup dependencies
+3. **Branch**: Create feature branch (`git checkout -b feature/awesome-feature`)
+4. **Code**: Make your changes with tests
+5. **Test**: Run `pnpm test` and `pnpm lint`
+6. **Commit**: Use conventional commits
+7. **Push**: Push to your fork and create a pull request
+
+See our [Development Guide](https://rawi.mkabumattar.com/docs/development) for detailed instructions.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Built with modern TypeScript and Node.js
-- Powered by the excellent [AI SDK](https://github.com/vercel/ai) by Vercel
-- Thanks to all AI providers for making their APIs accessible
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**Made with ❤️ by [Mohammad Abu Mattar](https://mkabumattar.github.io/)**
+<div align="center">
 
-_Rawi (راوي) - Where ancient storytelling meets modern AI technology._
+**Made with ❤️ by [Mohammad Abu Mattar](https://mkabumattar.github.io)**
 
-### 🔗 Links
+_Rawi (راوي) - Every great story starts with a question_
 
-- **🌐 Website**: [rawi.mkabumattar.com](https://rawi.mkabumattar.com/)
-- **📦 NPM Package**: [npmjs.com/package/rawi](https://www.npmjs.com/package/rawi)
-- **🐛 Report Issues**: [GitHub Issues](https://github.com/withrawi/rawi/issues)
-- **💬 Discussions**: [GitHub Discussions](https://github.com/withrawi/rawi/discussions)
-- **📚 Documentation**: [Full Documentation](https://rawi.mkabumattar.com/docs)
+[![GitHub](https://img.shields.io/badge/GitHub-withrawi%2Frawi-blue?style=for-the-badge&logo=github)](https://github.com/withrawi/rawi)
+[![Website](https://img.shields.io/badge/Website-rawi.mkabumattar.com-green?style=for-the-badge&logo=globe)](https://rawi.mkabumattar.com)
+[![NPM](https://img.shields.io/badge/NPM-rawi-red?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/rawi)
 
-### 🌟 Show Your Support
-
-If Rawi has helped you in your development workflow, consider:
-
-- ⭐ **Starring the repository** on GitHub
-- 🐦 **Sharing on social media** with `#RawiCLI`
-- 🤝 **Contributing** to the project
-- 💬 **Spreading the word** to fellow developers
-
-**Roadmap**: View our [development roadmap](https://github.com/withrawi/rawi/projects) to see what's coming next!
+</div>
