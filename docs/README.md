@@ -1,183 +1,160 @@
-# Rawi Documentation
+# Rawi Documentation Wiki
 
-Comprehensive documentation for the Rawi AI-powered CLI tool.
+Welcome to the **Rawi (راوي)** documentation wiki! This comprehensive guide covers everything you need to know about using the AI-powered CLI tool that transforms your terminal into an intelligent workspace.
 
-## Table of Contents
+## 🚀 Quick Navigation
 
-- [CLI Commands](#cli-commands)
-- [Core Architecture](#core-architecture)
-- [Development Guide](#development-guide)
-- [API Reference](#api-reference)
+### Getting Started
 
-## CLI Commands
+- [**Installation & Setup**](./installation.md) — Install Rawi and get started in minutes
+- [**Quick Start Guide**](./quickstart.md) — Your first steps with Rawi
+- [**Configuration**](./configuration.md) — Set up AI providers and profiles
 
-Documentation for all available CLI commands:
+### Core Features
 
-- **[ask](./cli/ask.md)** - Ask AI questions and get responses
-- **[act](./cli/act.md)** - Use expert prompt templates
-- **[configure](./cli/configure.md)** - Configure AI providers and profiles
-- **[history](./cli/history.md)** - Manage chat history and sessions
-- **[info](./cli/info.md)** - Display system information
-- **[provider](./cli/provider.md)** - Manage AI providers
+- [**Commands Reference**](./commands/README.md) — Complete guide to all Rawi commands
+- [**AI Providers**](./providers/README.md) — Supported AI providers and setup guides
+- [**Act Templates**](./templates/README.md) — 200+ expert prompt templates
+- [**Session Management**](./sessions.md) — Persistent conversations and context
 
-## Core Architecture
+### Advanced Usage
 
-Technical documentation for the core system:
+- [**Shell Integration**](./shell-integration.md) — Pipes, redirects, and scripting
+- [**Workflow Examples**](./workflows/README.md) — Real-world usage patterns
+- [**Profile Management**](./profiles.md) — Multiple configurations for different projects
+- [**History & Analytics**](./history.md) — Manage and analyze your AI conversations
 
-### [Core Overview](./core/README.md)
+### Reference
 
-High-level architecture and module organization.
+- [**CLI Reference**](./cli/README.md) — Detailed command documentation
+- [**Troubleshooting**](./troubleshooting.md) — Common issues and solutions
+- [**FAQ**](./faq.md) — Frequently asked questions
+- [**API Reference**](./api/README.md) — For developers and integrators
 
-### [Configuration System](./core/config/README.md)
+---
 
-- Configuration management
-- [Provider system](./core/config/providers.md)
-- Profile management
-- Credential storage
+## 📖 What is Rawi?
 
-### [Database System](./core/database/README.md)
+**Rawi (راوي)** is a developer-friendly AI-powered CLI tool that brings multiple AI providers directly to your terminal. Whether you're debugging code, writing documentation, analyzing data, or learning new technologies, Rawi provides intelligent assistance through a simple command-line interface.
 
-- Chat history storage
-- Session management
-- Message persistence
-- Statistics and analytics
+### Key Features
 
-### [Shared Utilities](./core/shared/README.md)
+- 🤖 **9 AI Providers** — OpenAI, Anthropic, Google, Ollama, LM Studio, Azure, Bedrock, Qwen, and xAI
+- 🛡️ **Privacy First** — Local AI support with Ollama and LM Studio
+- ⚡ **Developer Optimized** — Built specifically for coding workflows
+- 🎯 **200+ Templates** — Expert-level prompt templates
+- 🔄 **Shell Integration** — Perfect pipes, redirects, and script automation
+- 📊 **Smart Sessions** — Persistent conversations with context awareness
+- 🌍 **Multilingual** — Full support for English and Arabic
+- 📚 **Rich History** — Search, export, and manage conversations
 
-- Common types and interfaces
-- Utility functions
-- Constants and defaults
-- Validation helpers
+---
 
-### [Template System](./core/template/README.md)
+## 🎯 Choose Your Path
 
-- Act template management
-- Expert prompt system
-- Variable substitution
-- Template categories
+### New to Rawi?
 
-## Development Guide
+1. [**Installation & Setup**](./installation.md) — Get Rawi installed
+2. [**Quick Start Guide**](./quickstart.md) — Your first AI conversation
+3. [**Basic Commands**](./commands/ask.md) — Learn the `ask` command
 
-Resources for developers working on Rawi:
+### Want to Configure Providers?
 
-### [Development Setup](./development/README.md)
+1. [**AI Providers Overview**](./providers/README.md) — Compare providers
+2. [**Configuration Guide**](./configuration.md) — Set up your first provider
+3. [**Provider-Specific Guides**](./providers/README.md) — Detailed setup instructions
 
-- Getting started
-- Project structure
-- Development workflow
-- Testing and debugging
+### Looking for Advanced Features?
 
-### [CLI Architecture](./development/cli-architecture.md)
+1. [**Act Templates**](./templates/README.md) — Specialized AI personas
+2. [**Session Management**](./sessions.md) — Conversation continuity
+3. [**Shell Integration**](./shell-integration.md) — Powerful terminal workflows
 
-- Command structure
-- Program configuration
-- Error handling
-- Input/output patterns
+### Need Help?
 
-### [API Reference](./development/api-reference.md)
+1. [**Troubleshooting**](./troubleshooting.md) — Common issues and fixes
+2. [**FAQ**](./faq.md) — Frequently asked questions
+3. [**Community Support**](https://github.com/withrawi/rawi/discussions) — Get help from the community
 
-- Complete API documentation
-- Type definitions
-- Usage examples
-- Error handling patterns
+---
 
-## Quick Start
+## 📋 All Documentation Pages
 
-### Installation
+### 🚀 Getting Started
 
-```bash
-npm install -g rawi
-```
+- [**Installation & Setup**](installation.md) — Get Rawi installed and running
+- [**Quick Start Guide**](quickstart.md) — Your first steps with Rawi
+- [**Usage Guide**](usage.md) — Comprehensive usage examples
 
-### Basic Usage
+### 📚 Commands Reference
 
-```bash
-# Configure your AI provider
-rawi configure
+- [**Commands Overview**](commands/README.md) — All available commands
+- [**ask** — AI Assistant](commands/ask.md) — Interactive AI conversations
+- [**configure** — Setup & Management](commands/configure.md) — Configuration and settings
+- [**history** — Conversation Management](commands/history.md) — View and manage conversation history
+- [**act** — Template Explorer](commands/act.md) — Role-based AI interactions
+- [**provider** — Provider Management](commands/provider.md) — AI provider configuration
+- [**info** — System Information](commands/info.md) — View system and configuration info
 
-# Ask a question
-rawi ask "What is TypeScript?"
+### 🤖 AI Providers & Features
 
-# Use expert prompts
-rawi ask --act code-reviewer "Review this code"
+- [**Providers Overview**](providers/README.md) — Supported AI providers and setup
+- [**Act Templates**](templates/README.md) — Pre-built prompts and specialized roles
+- [**Session Management**](sessions.md) — Conversation context and continuity
+- [**Profile Management**](profiles.md) — Multiple configuration profiles
+- [**Shell Integration**](shell-integration.md) — Advanced terminal integration
 
-# Manage history
-rawi history --list
-```
+### 🛠️ Workflows & Examples
 
-### Configuration
+- [**Workflow Examples**](workflows/README.md) — Real-world usage patterns
+- [**Development Workflow**](workflows/development.md) — Code review, debugging, documentation
+- [**Content Creation Workflow**](workflows/content-creation.md) — Writing, editing, research
+- [**Research & Analysis Workflow**](workflows/research.md) — Data analysis, literature review
 
-```bash
-# Interactive configuration
-rawi configure
+### 🔧 Help & Support
 
-# Quick setup
-rawi configure --provider openai --model gpt-4o --api-key sk-...
+- [**FAQ**](faq.md) — Frequently asked questions and answers
+- [**Troubleshooting**](troubleshooting.md) — Common issues and solutions
+- [LM Studio](./providers/lmstudio.md)
+- [Azure OpenAI](./providers/azure.md)
+- [AWS Bedrock](./providers/bedrock.md)
+- [Qwen](./providers/qwen.md)
+- [xAI](./providers/xai.md)
 
-# List profiles
-rawi configure --list
+### Templates & Workflows
 
-# Show current config
-rawi configure --show
-```
+- [Act Templates](./templates/README.md)
+- [Development Workflows](./workflows/development.md)
+- [Data Analysis Workflows](./workflows/data-analysis.md)
+- [Content Creation Workflows](./workflows/content-creation.md)
+- [Learning & Research Workflows](./workflows/learning.md)
 
-## Features
+### Technical Reference
 
-### Multi-Provider Support
+- [CLI Reference](./cli/README.md)
+- [API Reference](./api/README.md)
+- [Configuration File Format](./reference/config-format.md)
+- [Environment Variables](./reference/environment.md)
 
-- **OpenAI** - GPT models
-- **Anthropic** - Claude models
-- **Google** - Gemini models
-- **Azure OpenAI** - Enterprise OpenAI
-- **Amazon Bedrock** - AWS-hosted models
-- **Ollama** - Local models
-- **xAI** - Grok models
-- **Qwen** - Alibaba Cloud models
-- **LM Studio** - Local model server
+---
 
-### Advanced Features
+## 🤝 Contributing
 
-- **Session Management** - Persistent chat history
-- **Profile Support** - Multiple configurations
-- **Template System** - Expert prompt templates
-- **Piped Input** - Unix-style input piping
-- **Interactive Mode** - Conversational interface
-- **Multilingual** - English and Arabic support
+Found an issue with the documentation or want to contribute?
 
-## Architecture Overview
+- **Report Issues**: [GitHub Issues](https://github.com/withrawi/rawi/issues)
+- **Suggest Improvements**: [GitHub Discussions](https://github.com/withrawi/rawi/discussions)
+- **Contribute**: See our [Contributing Guide](https://github.com/withrawi/rawi/blob/main/.github/CONTRIBUTING.md)
 
-```
-Rawi CLI Tool
-├── CLI Interface
-│   ├── Commands (ask, configure, history, etc.)
-│   ├── Argument Parsing
-│   └── User Interface
-├── Core System
-│   ├── Configuration Management
-│   ├── Provider Integration
-│   ├── Database Operations
-│   └── Template Processing
-└── External Integrations
-    ├── AI Provider APIs
-    ├── Local Database (SQLite)
-    └── File System
-```
+---
 
-## Contributing
+## 🔗 External Links
 
-We welcome contributions! Please see our [Development Guide](./development/README.md) for details on:
+- [**GitHub Repository**](https://github.com/withrawi/rawi) — Source code and issues
+- [**NPM Package**](https://www.npmjs.com/package/rawi) — Download and installation
+- [**Website**](https://rawi.mkabumattar.com) — Official website
+- [**Discussions**](https://github.com/withrawi/rawi/discussions) — Community support
 
-- Setting up the development environment
-- Code style and conventions
-- Testing procedures
-- Submitting pull requests
+---
 
-## Support
-
-- **Documentation**: Browse this documentation for detailed guides
-- **Issues**: Report bugs or request features on GitHub
-- **Discussions**: Join community discussions for questions and ideas
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+_"راوي" means "storyteller" in Arabic — every great story starts with a question._
