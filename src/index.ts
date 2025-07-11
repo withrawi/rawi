@@ -4,10 +4,10 @@ import boxen from 'boxen';
 import chalk, {type ChalkInstance} from 'chalk';
 import leven from 'leven';
 import updateNotifier from 'update-notifier';
-import packageJson from '../package.json';
+import {packageInfo} from './core/index.js';
 
 const notifier = await updateNotifier({
-  pkg: packageJson,
+  pkg: packageInfo,
   updateCheckInterval: 1000 * 60 * 60 * 2,
   shouldNotifyInNpmScript: true,
   distTag: 'latest',
@@ -33,9 +33,9 @@ function suggestClosestCommand(
 
 if (notifier.update) {
   const {current, latest, type} = notifier.update;
-  const packageName = packageJson.name;
-  const releaseNotesUrl = packageJson?.repository?.url
-    ? `${packageJson.repository.url.replace(/^git\+/, '').replace(/\.git$/, '')}/releases/latest`
+  const packageName = packageInfo.name;
+  const releaseNotesUrl = packageInfo?.repository?.url
+    ? `${packageInfo.repository.url.replace(/^git\+/, '').replace(/\.git$/, '')}/releases/latest`
     : null;
 
   let typeColorFn: ChalkInstance;

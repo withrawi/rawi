@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 import {Command} from 'commander';
-import pkg from '../../../package.json';
 import {
   ConfigManager,
   getAllProviders,
+  packageInfo,
   spinnerManager,
 } from '../../core/index.js';
 
@@ -59,19 +59,21 @@ const showGeneralInfo = async (): Promise<void> => {
       chalk.gray('Supports OpenAI, Google, Amazon Bedrock, and more.'),
     );
 
-    if (pkg.homepage) {
-      console.log(chalk.bold('📚 Docs: ') + chalk.underline.cyan(pkg.homepage));
+    if (packageInfo.homepage) {
+      console.log(
+        chalk.bold('📚 Docs: ') + chalk.underline.cyan(packageInfo.homepage),
+      );
     }
 
     console.log(`\n${chalk.bold.blue('📋 System Information')}`);
     console.log(
-      `${chalk.blue('   Version:')}  ${chalk.whiteBright(pkg.version)}`,
+      `${chalk.blue('   Version:')}  ${chalk.whiteBright(packageInfo.version)}`,
     );
     console.log(
-      `${chalk.blue('   Author: ')}  ${chalk.whiteBright(pkg.author?.name || 'Mohammad Abu Mattar')}`,
+      `${chalk.blue('   Author: ')}  ${chalk.whiteBright(packageInfo.author?.name || 'Mohammad Abu Mattar')}`,
     );
     console.log(
-      `${chalk.blue('   License:')}  ${chalk.whiteBright(pkg.license || 'MIT')}`,
+      `${chalk.blue('   License:')}  ${chalk.whiteBright(packageInfo.license || 'MIT')}`,
     );
 
     console.log(`\n${chalk.bold.blue('⚙️  Configuration Status')}`);

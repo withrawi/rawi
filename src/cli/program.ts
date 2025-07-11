@@ -1,5 +1,5 @@
 import {Command} from 'commander';
-import pkg from '../../package.json';
+import {packageInfo} from '../core/index.js';
 import {
   createActCommand,
   createAskCommand,
@@ -15,10 +15,10 @@ export const createProgram = (): Command => {
   const nodeVersion = process.version;
   const platform = process.platform;
   const arch = process.arch;
-  const versionString = `${pkg.name || 'rawi'}/${pkg.version || '0.0.0'} ${platform}-${arch} node-${nodeVersion.replace('v', '')}`;
+  const versionString = `${packageInfo.name || 'rawi'}/${packageInfo.version || '0.0.0'} ${platform}-${arch} node-${nodeVersion.replace('v', '')}`;
 
   program
-    .name(pkg.name)
+    .name(packageInfo.name)
     .description(
       [
         'A developer-friendly AI-powered CLI tool that delivers clear answers, summaries, and analyses. Inspired by Jordanian storytelling, Rawi (راوي).',
