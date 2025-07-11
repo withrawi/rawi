@@ -14,7 +14,7 @@ import {
   type RawiConfig,
   type RawiCredentials,
 } from '../../shared/index.js';
-import type {IConfigManager, IConfigPersistence} from '../interfaces/index.js';
+import type {IConfigManager, IConfigPersistence} from '../index.js';
 
 export class BaseConfigManager implements IConfigManager, IConfigPersistence {
   protected readonly configDir: string;

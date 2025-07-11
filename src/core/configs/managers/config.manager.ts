@@ -14,13 +14,14 @@ import {
   spinnerManager,
   type XAISettings,
 } from '../../shared/index.js';
-import {ConfigValidator, type IInteractiveConfigManager} from '../index.js';
 import {
   BaseConfigManager,
   ConfigDisplayManager,
+  ConfigValidator,
+  type IInteractiveConfigManager,
   InteractiveConfigManager,
   ProviderConfigManager,
-} from './index.js';
+} from '../index.js';
 
 export class ConfigManager
   extends BaseConfigManager
