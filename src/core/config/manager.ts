@@ -1,5 +1,3 @@
-import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'node:fs';
-import {confirm, input, password, select} from '@inquirer/prompts';
 import chalk from 'chalk';
 import {
   DEFAULT_LANGUAGE,
@@ -16,127 +14,25 @@ import type {
   GoogleSettings,
   OpenAISettings,
   QwenSettings,
-  RawiConfig,
   RawiCredentials,
-  SupportedLanguage,
-  SupportedProvider,
   XAISettings,
 } from '../shared/types.js';
-import {
-  getConfigDir,
-  getCredentialsFilePath,
-  maskApiKey,
-  validateApiKey,
-  validateMaxTokens,
-  validateTemperature,
-} from '../shared/utils.js';
-import {getAllProviders, getProvider} from './providers/index.js';
+import {BaseConfigManager} from './base-manager.js';
+import {ConfigDisplayManager} from './display.js';
+import {InteractiveConfigManager} from './interactive.js';
+import {ProviderConfigManager} from './provider-config.js';
 
-export class ConfigManager {
-  private readonly configDir: string;
-  private readonly configFile: string;
-
-  constructor() {
-    this.configDir = getConfigDir();
-    this.configFile = getCredentialsFilePath();
-  }
-
-  private ensureConfigDir(): void {
-    if (!existsSync(this.configDir)) {
-      try {
-        mkdirSync(this.configDir, {recursive: true});
-      } catch (error) {
-        throw new Error(
-          `Failed to create config directory: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-        );
-      }
-    }
-  }
-
-  private readConfig(): RawiConfig {
-    if (!existsSync(this.configFile)) {
-      return {};
-    }
-
-    try {
-      const content = readFileSync(this.configFile, 'utf-8');
-      return JSON.parse(content);
-    } catch (error) {
-      throw new Error(
-        `Failed to read config file: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-      );
-    }
-  }
-
-  private writeConfig(config: RawiConfig): void {
-    this.ensureConfigDir();
-
-    try {
-      const content = JSON.stringify(config, null, 2);
-      writeFileSync(this.configFile, content, 'utf-8');
-    } catch (error) {
-      throw new Error(
-        `Failed to write config file: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-      );
-    }
-  }
-
-  getCredentials(profile = DEFAULT_PROFILE): RawiCredentials | null {
-    try {
-      const config = this.readConfig();
-      return config[profile] || null;
-    } catch (error) {
-      console.error(chalk.red(`Error reading credentials: ${error}`));
-      return null;
-    }
-  }
-
-  setCredentials(
-    credentials: RawiCredentials,
-    profile = DEFAULT_PROFILE,
-  ): void {
-    const config = this.readConfig();
-    config[profile] = credentials;
-    this.writeConfig(config);
-  }
-
-  listProfiles(): string[] {
-    try {
-      const config = this.readConfig();
-      return Object.keys(config);
-    } catch {
-      return [];
-    }
-  }
-
-  deleteProfile(profile: string): boolean {
-    try {
-      const config = this.readConfig();
-      if (!(profile in config)) {
-        return false;
-      }
-
-      delete config[profile];
-      this.writeConfig(config);
-      return true;
-    } catch (error) {
-      console.error(chalk.red(`Error deleting profile: ${error}`));
-      return false;
-    }
-  }
+export class ConfigManager extends BaseConfigManager {
+  private readonly interactive = new InteractiveConfigManager();
+  private readonly providerConfig = new ProviderConfigManager();
+  private readonly display = new ConfigDisplayManager();
 
   async interactiveConfigure(options: ConfigureOptions = {}): Promise<void> {
     console.log(chalk.bold.blue('\n🔧 Configuring Rawi'));
     console.log(chalk.gray('Please provide your AI service configuration:\n'));
 
     try {
-      const profile = await this.getProfile(options.profile);
+      const profile = await this.interactive.getProfile(options.profile);
 
       spinnerManager.start('config-load', 'Loading existing configuration...');
       const existingCredentials = this.getCredentials(profile);
@@ -154,10 +50,21 @@ export class ConfigManager {
       }
 
       try {
-        const provider = await this.selectProvider(
+        const provider = await this.interactive.selectProvider(
           options.provider || existingCredentials?.provider,
         );
-        const model = await this.selectModel(
+
+        spinnerManager.start(
+          'provider-validation',
+          `Validating ${provider} provider configuration...`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        spinnerManager.succeed(
+          'provider-validation',
+          `${provider} provider validated`,
+        );
+
+        const model = await this.interactive.selectModel(
           provider,
           options.model || existingCredentials?.model,
         );
@@ -165,286 +72,30 @@ export class ConfigManager {
         const credentials: RawiCredentials = {
           provider,
           model,
-          temperature: await this.getTemperature(
+          temperature: await this.interactive.getTemperature(
             options.temperature ??
               existingCredentials?.temperature ??
               DEFAULT_TEMPERATURE,
           ),
-          maxTokens: await this.getMaxTokens(
+          maxTokens: await this.interactive.getMaxTokens(
             options.maxTokens ??
               existingCredentials?.maxTokens ??
               DEFAULT_MAX_TOKENS,
           ),
-          language: await this.getLanguage(
+          language: await this.interactive.getLanguage(
             options.language ??
               existingCredentials?.language ??
               DEFAULT_LANGUAGE,
           ),
         };
 
-        if (provider === 'ollama') {
-          const baseURL = await this.getBaseURL(
-            options.baseURL ||
-              (existingCredentials?.providerSettings &&
-              'baseURL' in existingCredentials.providerSettings
-                ? existingCredentials.providerSettings.baseURL
-                : undefined),
-          );
-
-          if (baseURL) {
-            credentials.providerSettings = {
-              baseURL,
-            };
-          }
-        } else if (provider === 'lmstudio') {
-          const baseURL = await this.getBaseURLLMStudio(
-            options.baseURL ||
-              (existingCredentials?.providerSettings &&
-              'baseURL' in existingCredentials.providerSettings
-                ? existingCredentials.providerSettings.baseURL
-                : undefined),
-          );
-
-          if (baseURL) {
-            credentials.providerSettings = {
-              baseURL,
-            };
-          }
-        } else if (provider === 'azure') {
-          const resourceName = await this.getResourceName(
-            options.resourceName ||
-              (existingCredentials?.providerSettings &&
-              'resourceName' in existingCredentials.providerSettings
-                ? existingCredentials.providerSettings.resourceName
-                : undefined),
-          );
-
-          if (resourceName) {
-            credentials.providerSettings = {
-              resourceName,
-            };
-          }
-
-          const apiVersion = await this.getApiVersion(
-            options.apiVersion ||
-              (existingCredentials?.providerSettings &&
-              'apiVersion' in existingCredentials.providerSettings
-                ? existingCredentials.providerSettings.apiVersion
-                : undefined),
-          );
-
-          if (apiVersion) {
-            credentials.providerSettings = {
-              ...(credentials.providerSettings as AzureSettings),
-              apiVersion,
-            };
-          }
-        } else if (provider === 'bedrock') {
-          const useProviderChain = await this.getUseProviderChain(
-            options.useProviderChain ||
-              (existingCredentials?.providerSettings &&
-              'useProviderChain' in existingCredentials.providerSettings
-                ? existingCredentials.providerSettings.useProviderChain
-                : undefined),
-          );
-
-          const providerSettings: BedrockSettings = {};
-
-          const region = await this.getRegion(
-            options.region ||
-              (existingCredentials?.providerSettings &&
-              'region' in existingCredentials.providerSettings
-                ? existingCredentials.providerSettings.region
-                : undefined),
-          );
-
-          if (region) {
-            providerSettings.region = region;
-          }
-
-          if (useProviderChain) {
-            providerSettings.useProviderChain = true;
-          } else {
-            const accessKeyId = await this.getAccessKeyId(
-              options.accessKeyId ||
-                (existingCredentials?.providerSettings &&
-                'accessKeyId' in existingCredentials.providerSettings
-                  ? existingCredentials.providerSettings.accessKeyId
-                  : undefined),
-            );
-
-            const secretAccessKey = await this.getSecretAccessKey(
-              options.secretAccessKey ||
-                (existingCredentials?.providerSettings &&
-                'secretAccessKey' in existingCredentials.providerSettings
-                  ? existingCredentials.providerSettings.secretAccessKey
-                  : undefined),
-            );
-
-            const sessionToken = await this.getSessionToken(
-              options.sessionToken ||
-                (existingCredentials?.providerSettings &&
-                'sessionToken' in existingCredentials.providerSettings
-                  ? existingCredentials.providerSettings.sessionToken
-                  : undefined),
-            );
-
-            providerSettings.accessKeyId = accessKeyId;
-            providerSettings.secretAccessKey = secretAccessKey;
-            if (sessionToken) {
-              providerSettings.sessionToken = sessionToken;
-            }
-          }
-
-          if (Object.keys(providerSettings).length > 0) {
-            credentials.providerSettings = providerSettings;
-          }
-        } else if (provider === 'qwen') {
-          const existingApiKey =
-            existingCredentials?.providerSettings &&
-            'apiKey' in existingCredentials.providerSettings
-              ? existingCredentials.providerSettings.apiKey
-              : existingCredentials?.apiKey;
-
-          const apiKey = await this.getApiKey(
-            options.apiKey || existingApiKey,
-            provider,
-          );
-
-          const baseURL = await this.getQwenBaseURL(
-            options.baseURL ||
-              (existingCredentials?.providerSettings &&
-              'baseURL' in existingCredentials.providerSettings
-                ? existingCredentials.providerSettings.baseURL
-                : undefined),
-          );
-
-          const providerSettings: QwenSettings = {
-            apiKey: apiKey,
-          };
-          if (baseURL) {
-            providerSettings.baseURL = baseURL;
-          }
-
-          credentials.providerSettings = providerSettings;
-        } else if (provider === 'xai') {
-          const existingApiKey =
-            existingCredentials?.providerSettings &&
-            'apiKey' in existingCredentials.providerSettings
-              ? existingCredentials.providerSettings.apiKey
-              : existingCredentials?.apiKey;
-
-          const apiKey = await this.getApiKey(
-            options.apiKey || existingApiKey,
-            provider,
-          );
-
-          const baseURL = await this.getXaiBaseURL(
-            options.baseURL ||
-              (existingCredentials?.providerSettings &&
-              'baseURL' in existingCredentials.providerSettings
-                ? existingCredentials.providerSettings.baseURL
-                : undefined),
-          );
-
-          const providerSettings: XAISettings = {
-            apiKey: apiKey,
-          };
-          if (baseURL) {
-            providerSettings.baseURL = baseURL;
-          }
-
-          credentials.providerSettings = providerSettings;
-        } else if (provider === 'openai') {
-          const existingApiKey =
-            existingCredentials?.providerSettings &&
-            'apiKey' in existingCredentials.providerSettings
-              ? existingCredentials.providerSettings.apiKey
-              : existingCredentials?.apiKey;
-
-          const apiKey = await this.getApiKey(
-            options.apiKey || existingApiKey,
-            provider,
-          );
-
-          const baseURL = await this.getOpenAIBaseURL(
-            options.baseURL ||
-              (existingCredentials?.providerSettings &&
-              'baseURL' in existingCredentials.providerSettings
-                ? existingCredentials.providerSettings.baseURL
-                : undefined),
-          );
-
-          const providerSettings: OpenAISettings = {
-            apiKey: apiKey,
-          };
-          if (baseURL) {
-            providerSettings.baseURL = baseURL;
-          }
-
-          credentials.providerSettings = providerSettings;
-        } else if (provider === 'anthropic') {
-          const existingApiKey =
-            existingCredentials?.providerSettings &&
-            'apiKey' in existingCredentials.providerSettings
-              ? existingCredentials.providerSettings.apiKey
-              : existingCredentials?.apiKey;
-
-          const apiKey = await this.getApiKey(
-            options.apiKey || existingApiKey,
-            provider,
-          );
-
-          const baseURL = await this.getAnthropicBaseURL(
-            options.baseURL ||
-              (existingCredentials?.providerSettings &&
-              'baseURL' in existingCredentials.providerSettings
-                ? existingCredentials.providerSettings.baseURL
-                : undefined),
-          );
-
-          const providerSettings: AnthropicSettings = {
-            apiKey: apiKey,
-          };
-          if (baseURL) {
-            providerSettings.baseURL = baseURL;
-          }
-
-          credentials.providerSettings = providerSettings;
-        } else if (provider === 'google') {
-          const existingApiKey =
-            existingCredentials?.providerSettings &&
-            'apiKey' in existingCredentials.providerSettings
-              ? existingCredentials.providerSettings.apiKey
-              : existingCredentials?.apiKey;
-
-          const apiKey = await this.getApiKey(
-            options.apiKey || existingApiKey,
-            provider,
-          );
-
-          const baseURL = await this.getGoogleBaseURL(
-            options.baseURL ||
-              (existingCredentials?.providerSettings &&
-              'baseURL' in existingCredentials.providerSettings
-                ? existingCredentials.providerSettings.baseURL
-                : undefined),
-          );
-
-          const providerSettings: GoogleSettings = {
-            apiKey: apiKey,
-          };
-          if (baseURL) {
-            providerSettings.baseURL = baseURL;
-          }
-
-          credentials.providerSettings = providerSettings;
-        } else {
-          credentials.apiKey = await this.getApiKey(
-            options.apiKey || existingCredentials?.apiKey,
-            provider,
-          );
-        }
+        // Configure provider-specific settings
+        await this.configureProviderSettings(
+          credentials,
+          provider,
+          options,
+          existingCredentials,
+        );
 
         this.setCredentials(credentials, profile);
 
@@ -457,7 +108,7 @@ export class ConfigManager {
           );
 
           console.log(chalk.gray(`Profile: ${profile}`));
-          this.displayConfigurationSummary(credentials);
+          this.display.displayConfigurationSummary(credentials);
           console.log(chalk.gray(`\nConfig file: ${this.configFile}`));
         } catch (error) {
           spinnerManager.fail('config-save', 'Failed to save configuration');
@@ -481,461 +132,346 @@ export class ConfigManager {
     }
   }
 
-  private async getProfile(profile?: string): Promise<string> {
-    if (profile) return profile;
-
-    return input({
-      message: 'Profile Name:',
-      default: DEFAULT_PROFILE,
-      validate: (input: string) => {
-        if (!input.trim()) {
-          return 'Profile name is required';
-        }
-        return true;
-      },
-    });
-  }
-
-  private async selectProvider(
-    defaultProvider?: SupportedProvider,
-  ): Promise<SupportedProvider> {
-    const providers = getAllProviders();
-    const choices = providers.map((provider) => ({
-      name: provider.displayName,
-      value: provider.name as SupportedProvider,
-    }));
-
-    const selectedProvider = await select<SupportedProvider>({
-      message: 'AI Provider:',
-      choices,
-      default: defaultProvider || 'openai',
-    });
-
-    spinnerManager.start(
-      'provider-validation',
-      `Validating ${selectedProvider} provider configuration...`,
-    );
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    spinnerManager.succeed(
-      'provider-validation',
-      `${selectedProvider} provider validated`,
-    );
-
-    return selectedProvider;
-  }
-
-  private async selectModel(
-    provider: SupportedProvider,
-    defaultModel?: string,
-  ): Promise<string> {
-    const providerConfig = getProvider(provider);
-
-    if (provider === 'azure') {
-      console.log(
-        chalk.gray(
-          '\nNote: For Azure OpenAI, you need to provide your deployment name.',
-        ),
-      );
-      console.log(
-        chalk.gray(
-          'This is the name you gave to your deployed model in the Azure OpenAI service.',
-        ),
-      );
-
-      return input({
-        message: 'Azure Deployment Name:',
-        default: defaultModel || '',
-        validate: (input: string) => {
-          if (!input.trim()) {
-            return 'Deployment name is required for Azure OpenAI';
-          }
-          return true;
-        },
-      });
-    }
-
-    const choices = providerConfig.models.map((model) => ({
-      name: model.displayName || model.name,
-      value: model.name,
-    }));
-
-    return select({
-      message: 'AI Model:',
-      choices,
-      default: defaultModel || choices[0]?.value,
-    });
-  }
-
-  private async getApiKey(
-    defaultApiKey?: string,
-    provider?: SupportedProvider,
-  ): Promise<string> {
-    if (provider === 'ollama') {
-      return '';
-    }
-
-    return input({
-      message: 'API Key:',
-      default: defaultApiKey || '',
-      validate: (input: string) => {
-        if (!validateApiKey(input)) {
-          return 'API Key is required';
-        }
-        return true;
-      },
-    });
-  }
-
-  private async getTemperature(defaultTemperature: number): Promise<number> {
-    const result = await input({
-      message: 'Temperature (0-2):',
-      default: defaultTemperature.toString(),
-      validate: (input: string) => {
-        const value = Number.parseFloat(input);
-        if (Number.isNaN(value) || !validateTemperature(value)) {
-          return 'Temperature must be a number between 0 and 2';
-        }
-        return true;
-      },
-      transformer: (input) => {
-        const value = Number.parseFloat(input);
-        return Number.isNaN(value) ? input : value.toString();
-      },
-    });
-
-    return Number.parseFloat(result);
-  }
-
-  private async getMaxTokens(defaultMaxTokens: number): Promise<number> {
-    const result = await input({
-      message: 'Max Tokens:',
-      default: defaultMaxTokens.toString(),
-      validate: (input: string) => {
-        const value = Number.parseInt(input, 10);
-        if (Number.isNaN(value) || !validateMaxTokens(value)) {
-          return 'Max tokens must be greater than 0';
-        }
-        return true;
-      },
-    });
-
-    return Number.parseInt(result, 10);
-  }
-
-  private async getLanguage(
-    defaultLanguage?: SupportedLanguage,
-  ): Promise<SupportedLanguage> {
-    return select<SupportedLanguage>({
-      message: 'Language:',
-      choices: [
-        {name: '🇺🇸 English', value: 'english'},
-        {name: '🇸🇦 Arabic', value: 'arabic'},
-      ],
-      default: defaultLanguage || DEFAULT_LANGUAGE,
-    });
-  }
-
-  private async getBaseURL(
-    defaultBaseURL?: string,
-  ): Promise<string | undefined> {
-    console.log(
-      chalk.gray(
-        '\nNote: The Base URL is where your Ollama server is running.',
-      ),
-    );
-    console.log(
-      chalk.gray(
-        'The default is "http://localhost:11434/api" which works for local installations.',
-      ),
-    );
-
-    const baseURL = await input({
-      message: 'Base URL for Ollama:',
-      default: defaultBaseURL || 'http://localhost:11434/api',
-    });
-
-    if (baseURL === 'http://localhost:11434/api') {
-      return undefined;
-    }
-
-    return baseURL;
-  }
-
-  private async getBaseURLLMStudio(
-    defaultBaseURL?: string,
-  ): Promise<string | undefined> {
-    console.log(
-      chalk.gray(
-        '\nNote: The Base URL is where your LM Studio server is running.',
-      ),
-    );
-    console.log(
-      chalk.gray(
-        'The default is "http://localhost:1234/v1" which works for local installations.',
-      ),
-    );
-
-    const baseURL = await input({
-      message: 'Base URL for LM Studio:',
-      default: defaultBaseURL || 'http://localhost:1234/v1',
-    });
-
-    if (baseURL === 'http://localhost:1234/v1') {
-      return undefined;
-    }
-
-    return baseURL;
-  }
-
-  private async getQwenBaseURL(
-    defaultBaseURL?: string,
-  ): Promise<string | undefined> {
-    console.log(chalk.gray('\nNote: The Base URL is the Qwen API endpoint.'));
-    console.log(
-      chalk.gray(
-        'The default is "https://dashscope-intl.aliyuncs.com/compatible-mode/v1" for Alibaba Cloud.',
-      ),
-    );
-
-    const baseURL = await input({
-      message: 'Base URL for Qwen:',
+  private async configureProviderSettings(
+    credentials: RawiCredentials,
+    provider: string,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    switch (provider) {
+      case 'ollama':
+        await this.configureOllama(credentials, options, existingCredentials);
+        break;
+      case 'lmstudio':
+        await this.configureLMStudio(credentials, options, existingCredentials);
+        break;
+      case 'azure':
+        await this.configureAzure(credentials, options, existingCredentials);
+        break;
+      case 'bedrock':
+        await this.configureBedrock(credentials, options, existingCredentials);
+        break;
+      case 'qwen':
+        await this.configureQwen(credentials, options, existingCredentials);
+        break;
+      case 'xai':
+        await this.configureXAI(credentials, options, existingCredentials);
+        break;
+      case 'openai':
+        await this.configureOpenAI(credentials, options, existingCredentials);
+        break;
+      case 'anthropic':
+        await this.configureAnthropic(
+          credentials,
+          options,
+          existingCredentials,
+        );
+        break;
+      case 'google':
+        await this.configureGoogle(credentials, options, existingCredentials);
+        break;
       default:
-        defaultBaseURL ||
-        'https://dashscope-intl.aliyuncs.com/compatible-mode/v1',
-    });
+        credentials.apiKey = await this.interactive.getApiKey(
+          options.apiKey || existingCredentials?.apiKey,
+          provider as any,
+        );
+        break;
+    }
+  }
 
-    if (baseURL === 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1') {
-      return undefined;
+  private async configureOllama(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    const baseURL = await this.providerConfig.getBaseURL(
+      options.baseURL ||
+        (existingCredentials?.providerSettings &&
+        'baseURL' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.baseURL
+          : undefined),
+    );
+
+    if (baseURL) {
+      credentials.providerSettings = {baseURL};
+    }
+  }
+
+  private async configureLMStudio(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    const baseURL = await this.providerConfig.getBaseURLLMStudio(
+      options.baseURL ||
+        (existingCredentials?.providerSettings &&
+        'baseURL' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.baseURL
+          : undefined),
+    );
+
+    if (baseURL) {
+      credentials.providerSettings = {baseURL};
+    }
+  }
+
+  private async configureAzure(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    const resourceName = await this.interactive.getResourceName(
+      options.resourceName ||
+        (existingCredentials?.providerSettings &&
+        'resourceName' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.resourceName
+          : undefined),
+    );
+
+    if (resourceName) {
+      credentials.providerSettings = {resourceName};
     }
 
-    return baseURL;
-  }
-
-  private async getXaiBaseURL(
-    defaultBaseURL?: string,
-  ): Promise<string | undefined> {
-    console.log(chalk.gray('\nNote: The Base URL is the xAI API endpoint.'));
-    console.log(
-      chalk.gray('The default is "https://api.x.ai/v1" for xAI services.'),
+    const apiVersion = await this.interactive.getApiVersion(
+      options.apiVersion ||
+        (existingCredentials?.providerSettings &&
+        'apiVersion' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.apiVersion
+          : undefined),
     );
 
-    const baseURL = await input({
-      message: 'Base URL for xAI:',
-      default: defaultBaseURL || 'https://api.x.ai/v1',
-    });
+    if (apiVersion) {
+      credentials.providerSettings = {
+        ...(credentials.providerSettings as AzureSettings),
+        apiVersion,
+      };
+    }
+  }
 
-    if (baseURL === 'https://api.x.ai/v1') {
-      return undefined;
+  private async configureBedrock(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    const useProviderChain = await this.interactive.getUseProviderChain(
+      options.useProviderChain ||
+        (existingCredentials?.providerSettings &&
+        'useProviderChain' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.useProviderChain
+          : undefined),
+    );
+
+    const providerSettings: BedrockSettings = {};
+
+    const region = await this.interactive.getRegion(
+      options.region ||
+        (existingCredentials?.providerSettings &&
+        'region' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.region
+          : undefined),
+    );
+
+    if (region) {
+      providerSettings.region = region;
     }
 
-    return baseURL;
-  }
+    if (useProviderChain) {
+      providerSettings.useProviderChain = true;
+    } else {
+      const accessKeyId = await this.interactive.getAccessKeyId(
+        options.accessKeyId ||
+          (existingCredentials?.providerSettings &&
+          'accessKeyId' in existingCredentials.providerSettings
+            ? existingCredentials.providerSettings.accessKeyId
+            : undefined),
+      );
 
-  private async getAnthropicBaseURL(
-    defaultBaseURL?: string,
-  ): Promise<string | undefined> {
-    console.log(
-      chalk.gray('\nNote: The Base URL is the Anthropic API endpoint.'),
-    );
-    console.log(
-      chalk.gray(
-        'The default is "https://api.anthropic.com" for Anthropic services.',
-      ),
-    );
+      const secretAccessKey = await this.interactive.getSecretAccessKey(
+        options.secretAccessKey ||
+          (existingCredentials?.providerSettings &&
+          'secretAccessKey' in existingCredentials.providerSettings
+            ? existingCredentials.providerSettings.secretAccessKey
+            : undefined),
+      );
 
-    const baseURL = await input({
-      message: 'Base URL for Anthropic:',
-      default: defaultBaseURL || 'https://api.anthropic.com',
-    });
+      const sessionToken = await this.interactive.getSessionToken(
+        options.sessionToken ||
+          (existingCredentials?.providerSettings &&
+          'sessionToken' in existingCredentials.providerSettings
+            ? existingCredentials.providerSettings.sessionToken
+            : undefined),
+      );
 
-    if (baseURL === 'https://api.anthropic.com') {
-      return undefined;
+      providerSettings.accessKeyId = accessKeyId;
+      providerSettings.secretAccessKey = secretAccessKey;
+      if (sessionToken) {
+        providerSettings.sessionToken = sessionToken;
+      }
     }
 
-    return baseURL;
+    if (Object.keys(providerSettings).length > 0) {
+      credentials.providerSettings = providerSettings;
+    }
   }
 
-  private async getOpenAIBaseURL(
-    defaultBaseURL?: string,
-  ): Promise<string | undefined> {
-    console.log(chalk.gray('\nNote: The Base URL is the OpenAI API endpoint.'));
-    console.log(
-      chalk.gray(
-        'The default is "https://api.openai.com/v1" for OpenAI services.',
-      ),
+  private async configureQwen(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    const existingApiKey =
+      existingCredentials?.providerSettings &&
+      'apiKey' in existingCredentials.providerSettings
+        ? existingCredentials.providerSettings.apiKey
+        : existingCredentials?.apiKey;
+
+    const apiKey = await this.interactive.getApiKey(
+      options.apiKey || existingApiKey,
+      'qwen',
     );
 
-    const baseURL = await input({
-      message: 'Base URL for OpenAI:',
-      default: defaultBaseURL || 'https://api.openai.com/v1',
-    });
+    const baseURL = await this.providerConfig.getQwenBaseURL(
+      options.baseURL ||
+        (existingCredentials?.providerSettings &&
+        'baseURL' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.baseURL
+          : undefined),
+    );
 
-    if (baseURL === 'https://api.openai.com/v1') {
-      return undefined;
+    const providerSettings: QwenSettings = {apiKey};
+    if (baseURL) {
+      providerSettings.baseURL = baseURL;
     }
 
-    return baseURL;
+    credentials.providerSettings = providerSettings;
   }
 
-  private async getResourceName(defaultResourceName?: string): Promise<string> {
-    console.log(
-      chalk.gray(
-        '\nNote: The Resource Name is your Azure OpenAI resource name.',
-      ),
-    );
-    console.log(
-      chalk.gray('This is required to connect to Azure OpenAI services.'),
-    );
+  private async configureXAI(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    const existingApiKey =
+      existingCredentials?.providerSettings &&
+      'apiKey' in existingCredentials.providerSettings
+        ? existingCredentials.providerSettings.apiKey
+        : existingCredentials?.apiKey;
 
-    const resourceName = await input({
-      message: 'Azure Resource Name:',
-      default: defaultResourceName || '',
-      validate: (input: string) => {
-        if (!input.trim()) {
-          return 'Resource Name is required for Azure OpenAI';
-        }
-        return true;
-      },
-    });
-
-    return resourceName;
-  }
-
-  private async getApiVersion(
-    defaultApiVersion?: string,
-  ): Promise<string | undefined> {
-    console.log(
-      chalk.gray('\nNote: The API Version is optional for Azure OpenAI.'),
-    );
-    console.log(
-      chalk.gray(
-        'The default is "2024-10-01-preview" which is the latest version.',
-      ),
+    const apiKey = await this.interactive.getApiKey(
+      options.apiKey || existingApiKey,
+      'xai',
     );
 
-    const apiVersion = await input({
-      message: 'Azure API Version (optional):',
-      default: defaultApiVersion || '2024-10-01-preview',
-    });
+    const baseURL = await this.providerConfig.getXaiBaseURL(
+      options.baseURL ||
+        (existingCredentials?.providerSettings &&
+        'baseURL' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.baseURL
+          : undefined),
+    );
 
-    if (apiVersion === '2024-10-01-preview') {
-      return undefined;
+    const providerSettings: XAISettings = {apiKey};
+    if (baseURL) {
+      providerSettings.baseURL = baseURL;
     }
 
-    return apiVersion;
+    credentials.providerSettings = providerSettings;
   }
 
-  private async getUseProviderChain(
-    defaultUseProviderChain?: boolean,
-  ): Promise<boolean> {
-    console.log(
-      chalk.gray(
-        '\nNote: You can use AWS credential provider chain (IAM roles, ECS, etc.)',
-      ),
-    );
-    console.log(
-      chalk.gray(
-        'or provide explicit AWS credentials. Provider chain is recommended for AWS environments.',
-      ),
-    );
+  private async configureOpenAI(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    const existingApiKey =
+      existingCredentials?.providerSettings &&
+      'apiKey' in existingCredentials.providerSettings
+        ? existingCredentials.providerSettings.apiKey
+        : existingCredentials?.apiKey;
 
-    return await confirm({
-      message: 'Use AWS credential provider chain?',
-      default: defaultUseProviderChain ?? false,
-    });
-  }
-
-  private async getRegion(defaultRegion?: string): Promise<string | undefined> {
-    console.log(
-      chalk.gray('\nNote: The AWS region for Amazon Bedrock services.'),
-    );
-    console.log(
-      chalk.gray('The default is "us-east-1" which has most models available.'),
+    const apiKey = await this.interactive.getApiKey(
+      options.apiKey || existingApiKey,
+      'openai',
     );
 
-    const region = await input({
-      message: 'AWS Region:',
-      default: defaultRegion || 'us-east-1',
-    });
+    const baseURL = await this.providerConfig.getOpenAIBaseURL(
+      options.baseURL ||
+        (existingCredentials?.providerSettings &&
+        'baseURL' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.baseURL
+          : undefined),
+    );
 
-    if (region === 'us-east-1') {
-      return undefined;
+    const providerSettings: OpenAISettings = {apiKey};
+    if (baseURL) {
+      providerSettings.baseURL = baseURL;
     }
 
-    return region;
+    credentials.providerSettings = providerSettings;
   }
 
-  private async getAccessKeyId(defaultAccessKeyId?: string): Promise<string> {
-    return await input({
-      message: 'AWS Access Key ID:',
-      default: defaultAccessKeyId || '',
-      validate: (input: string) => {
-        if (!input.trim()) {
-          return 'AWS Access Key ID is required';
-        }
-        return true;
-      },
-    });
-  }
+  private async configureAnthropic(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    const existingApiKey =
+      existingCredentials?.providerSettings &&
+      'apiKey' in existingCredentials.providerSettings
+        ? existingCredentials.providerSettings.apiKey
+        : existingCredentials?.apiKey;
 
-  private async getSecretAccessKey(
-    _defaultSecretAccessKey?: string,
-  ): Promise<string> {
-    return await password({
-      message: 'AWS Secret Access Key:',
-      mask: '*',
-      validate: (input: string) => {
-        if (!input.trim()) {
-          return 'AWS Secret Access Key is required';
-        }
-        return true;
-      },
-    });
-  }
-
-  private async getSessionToken(
-    defaultSessionToken?: string,
-  ): Promise<string | undefined> {
-    console.log(
-      chalk.gray('\nNote: AWS Session Token is optional and only needed for'),
-    );
-    console.log(chalk.gray('temporary credentials or assumed roles.'));
-
-    const sessionToken = await input({
-      message: 'AWS Session Token (optional):',
-      default: defaultSessionToken || '',
-    });
-
-    return sessionToken || undefined;
-  }
-
-  private async getGoogleBaseURL(
-    defaultBaseURL?: string,
-  ): Promise<string | undefined> {
-    console.log(
-      chalk.gray(
-        '\nNote: The Base URL is the Google Generative AI API endpoint.',
-      ),
-    );
-    console.log(
-      chalk.gray(
-        'The default is "https://generativelanguage.googleapis.com/v1beta" for Google services.',
-      ),
+    const apiKey = await this.interactive.getApiKey(
+      options.apiKey || existingApiKey,
+      'anthropic',
     );
 
-    const baseURL = await input({
-      message: 'Base URL for Google:',
-      default:
-        defaultBaseURL || 'https://generativelanguage.googleapis.com/v1beta',
-    });
+    const baseURL = await this.providerConfig.getAnthropicBaseURL(
+      options.baseURL ||
+        (existingCredentials?.providerSettings &&
+        'baseURL' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.baseURL
+          : undefined),
+    );
 
-    if (baseURL === 'https://generativelanguage.googleapis.com/v1beta') {
-      return undefined;
+    const providerSettings: AnthropicSettings = {apiKey};
+    if (baseURL) {
+      providerSettings.baseURL = baseURL;
     }
 
-    return baseURL;
+    credentials.providerSettings = providerSettings;
+  }
+
+  private async configureGoogle(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    const existingApiKey =
+      existingCredentials?.providerSettings &&
+      'apiKey' in existingCredentials.providerSettings
+        ? existingCredentials.providerSettings.apiKey
+        : existingCredentials?.apiKey;
+
+    const apiKey = await this.interactive.getApiKey(
+      options.apiKey || existingApiKey,
+      'google',
+    );
+
+    const baseURL = await this.providerConfig.getGoogleBaseURL(
+      options.baseURL ||
+        (existingCredentials?.providerSettings &&
+        'baseURL' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.baseURL
+          : undefined),
+    );
+
+    const providerSettings: GoogleSettings = {apiKey};
+    if (baseURL) {
+      providerSettings.baseURL = baseURL;
+    }
+
+    credentials.providerSettings = providerSettings;
   }
 
   manualConfigure(
@@ -951,7 +487,7 @@ export class ConfigManager {
         'Configuration saved successfully!',
       );
       console.log(chalk.gray(`Profile: ${profile}`));
-      this.displayConfigurationSummary(credentials);
+      this.display.displayConfigurationSummary(credentials);
       console.log(chalk.gray(`\nConfig file: ${this.configFile}`));
     } catch (error) {
       spinnerManager.fail('manual-config-save', 'Configuration failed');
@@ -979,7 +515,7 @@ export class ConfigManager {
         console.log(
           chalk.bold.blue(`\n📋 Configuration for '${profile}' profile:`),
         );
-        this.displayCredentials(credentials);
+        this.display.displayCredentials(credentials);
       } else {
         const config = this.readConfig();
         const profiles = Object.keys(config);
@@ -1001,586 +537,12 @@ export class ConfigManager {
         console.log(chalk.bold.blue('\n📋 All configurations:'));
         for (const profileName of profiles) {
           console.log(chalk.bold(`\n[${profileName}]`));
-          this.displayCredentials(config[profileName]!);
+          this.display.displayCredentials(config[profileName]!);
         }
       }
     } catch (error) {
       spinnerManager.fail('config-show', 'Failed to load configuration');
       console.error(chalk.red(`Error reading configuration: ${error}`));
-    }
-  }
-
-  private displayCredentials(credentials: RawiCredentials): void {
-    const masked = {...credentials};
-
-    if (masked.apiKey) {
-      masked.apiKey = maskApiKey(masked.apiKey);
-    }
-
-    const providerConfig = getProvider(masked.provider);
-    const providerDisplayName = providerConfig.displayName;
-
-    const modelInfo = providerConfig.models.find(
-      (m) => m.name === masked.model,
-    );
-    const modelDisplayName = modelInfo?.displayName || masked.model;
-
-    console.log(
-      chalk.blue('  Provider:') +
-        chalk.white(` ${providerDisplayName} (${masked.provider})`),
-    );
-    console.log(chalk.blue('  Model:') + chalk.white(` ${modelDisplayName}`));
-
-    if (
-      masked.apiKey ||
-      (masked.providerSettings &&
-        Object.keys(masked.providerSettings).length > 0)
-    ) {
-      console.log('');
-
-      if (masked.apiKey) {
-        console.log(
-          chalk.blue('  API Key:') + chalk.white(` ${masked.apiKey}`),
-        );
-      }
-
-      if (masked.providerSettings) {
-        if (
-          masked.provider === 'ollama' &&
-          'baseURL' in masked.providerSettings
-        ) {
-          console.log(
-            chalk.blue('  Base URL:') +
-              chalk.white(
-                ` ${masked.providerSettings.baseURL || 'http://localhost:11434/api'} ${!masked.providerSettings.baseURL ? '(default)' : ''}`,
-              ),
-          );
-        } else if (masked.provider === 'azure') {
-          if ('resourceName' in masked.providerSettings) {
-            console.log(
-              chalk.blue('  Resource Name:') +
-                chalk.white(` ${masked.providerSettings.resourceName}`),
-            );
-          }
-
-          if ('apiVersion' in masked.providerSettings) {
-            console.log(
-              chalk.blue('  API Version:') +
-                chalk.white(` ${masked.providerSettings.apiVersion}`),
-            );
-          }
-        } else if (masked.provider === 'bedrock') {
-          if ('region' in masked.providerSettings) {
-            console.log(
-              chalk.blue('  Region:') +
-                chalk.white(
-                  ` ${masked.providerSettings.region || 'us-east-1 (default)'}`,
-                ),
-            );
-          }
-
-          if (
-            'useProviderChain' in masked.providerSettings &&
-            masked.providerSettings.useProviderChain
-          ) {
-            console.log(
-              chalk.blue('  Credentials:') + chalk.white(' AWS Provider Chain'),
-            );
-          } else {
-            if (
-              'accessKeyId' in masked.providerSettings &&
-              masked.providerSettings.accessKeyId
-            ) {
-              console.log(
-                chalk.blue('  Access Key ID:') +
-                  chalk.white(
-                    ` ${maskApiKey(masked.providerSettings.accessKeyId)}`,
-                  ),
-              );
-            }
-            if (
-              'secretAccessKey' in masked.providerSettings &&
-              masked.providerSettings.secretAccessKey
-            ) {
-              console.log(
-                chalk.blue('  Secret Key:') +
-                  chalk.white(
-                    ` ${maskApiKey(masked.providerSettings.secretAccessKey)}`,
-                  ),
-              );
-            }
-            if (
-              'sessionToken' in masked.providerSettings &&
-              masked.providerSettings.sessionToken
-            ) {
-              console.log(
-                chalk.blue('  Session Token:') +
-                  chalk.white(
-                    ` ${maskApiKey(masked.providerSettings.sessionToken)}`,
-                  ),
-              );
-            }
-          }
-        } else if (
-          masked.provider === 'qwen' &&
-          masked.providerSettings &&
-          'apiKey' in masked.providerSettings
-        ) {
-          console.log(
-            chalk.blue('  API Key:') +
-              chalk.white(` ${maskApiKey(masked.providerSettings.apiKey)}`),
-          );
-          if ('baseURL' in masked.providerSettings) {
-            console.log(
-              chalk.blue('  Base URL:') +
-                chalk.white(
-                  ` ${masked.providerSettings.baseURL || 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1 (default)'}`,
-                ),
-            );
-          }
-        } else if (
-          masked.provider === 'xai' &&
-          masked.providerSettings &&
-          'apiKey' in masked.providerSettings
-        ) {
-          console.log(
-            chalk.blue('  API Key:') +
-              chalk.white(` ${maskApiKey(masked.providerSettings.apiKey)}`),
-          );
-          if ('baseURL' in masked.providerSettings) {
-            console.log(
-              chalk.blue('  Base URL:') +
-                chalk.white(
-                  ` ${masked.providerSettings.baseURL || 'https://api.x.ai/v1 (default)'}`,
-                ),
-            );
-          }
-        } else if (
-          masked.provider === 'openai' &&
-          masked.providerSettings &&
-          'apiKey' in masked.providerSettings
-        ) {
-          console.log(
-            chalk.blue('  API Key:') +
-              chalk.white(` ${maskApiKey(masked.providerSettings.apiKey)}`),
-          );
-          if ('baseURL' in masked.providerSettings) {
-            console.log(
-              chalk.blue('  Base URL:') +
-                chalk.white(
-                  ` ${masked.providerSettings.baseURL || 'https://api.openai.com/v1 (default)'}`,
-                ),
-            );
-          }
-        } else if (
-          masked.provider === 'anthropic' &&
-          masked.providerSettings &&
-          'apiKey' in masked.providerSettings
-        ) {
-          console.log(
-            chalk.blue('  API Key:') +
-              chalk.white(` ${maskApiKey(masked.providerSettings.apiKey)}`),
-          );
-          if ('baseURL' in masked.providerSettings) {
-            console.log(
-              chalk.blue('  Base URL:') +
-                chalk.white(
-                  ` ${masked.providerSettings.baseURL || 'https://api.anthropic.com (default)'}`,
-                ),
-            );
-          }
-        } else if (
-          masked.provider === 'google' &&
-          masked.providerSettings &&
-          'apiKey' in masked.providerSettings
-        ) {
-          console.log(
-            chalk.blue('  API Key:') +
-              chalk.white(` ${maskApiKey(masked.providerSettings.apiKey)}`),
-          );
-          if ('baseURL' in masked.providerSettings) {
-            console.log(
-              chalk.blue('  Base URL:') +
-                chalk.white(
-                  ` ${masked.providerSettings.baseURL || 'https://generativelanguage.googleapis.com/v1beta (default)'}`,
-                ),
-            );
-          }
-        }
-      }
-    }
-
-    console.log('');
-
-    if (masked.temperature) {
-      console.log(
-        chalk.blue('  Temperature:') +
-          chalk.white(` ${masked.temperature.toFixed(1)}`),
-      );
-    }
-
-    if (masked.maxTokens) {
-      console.log(
-        chalk.blue('  Max Tokens:') + chalk.white(` ${masked.maxTokens}`),
-      );
-    }
-
-    if (masked.language) {
-      console.log(
-        chalk.blue('  Language:') + chalk.white(` ${masked.language}`),
-      );
-    }
-  }
-
-  private displayConfigurationSummary(credentials: RawiCredentials): void {
-    const masked = {...credentials};
-
-    if (masked.apiKey) {
-      masked.apiKey = maskApiKey(masked.apiKey);
-    }
-
-    const providerConfig = getProvider(masked.provider);
-    const providerDisplayName = providerConfig.displayName;
-
-    const modelInfo = providerConfig.models.find(
-      (m) => m.name === masked.model,
-    );
-    const modelDisplayName = modelInfo?.displayName || masked.model;
-
-    console.log(chalk.bold('\n📋 Configuration Summary:'));
-
-    console.log(
-      chalk.blue('  Provider:') +
-        chalk.white(` ${providerDisplayName} (${masked.provider})`),
-    );
-    console.log(chalk.blue('  Model:') + chalk.white(` ${modelDisplayName}`));
-
-    if (
-      masked.apiKey ||
-      (masked.providerSettings &&
-        Object.keys(masked.providerSettings).length > 0)
-    ) {
-      console.log(chalk.bold('\n  Authentication:'));
-
-      if (masked.apiKey) {
-        console.log(
-          chalk.blue('    API Key:') + chalk.white(` ${masked.apiKey}`),
-        );
-      }
-
-      if (masked.providerSettings) {
-        if (
-          masked.provider === 'ollama' &&
-          'baseURL' in masked.providerSettings
-        ) {
-          console.log(
-            chalk.blue('    Base URL:') +
-              chalk.white(
-                ` ${masked.providerSettings.baseURL || 'http://localhost:11434/api'} (default)`,
-              ),
-          );
-        } else if (masked.provider === 'azure') {
-          if ('resourceName' in masked.providerSettings) {
-            console.log(
-              chalk.blue('    Resource Name:') +
-                chalk.white(` ${masked.providerSettings.resourceName}`),
-            );
-          }
-
-          if ('apiVersion' in masked.providerSettings) {
-            console.log(
-              chalk.blue('    API Version:') +
-                chalk.white(` ${masked.providerSettings.apiVersion}`),
-            );
-          }
-        } else if (masked.provider === 'bedrock') {
-          if ('region' in masked.providerSettings) {
-            console.log(
-              chalk.blue('    Region:') +
-                chalk.white(
-                  ` ${masked.providerSettings.region || 'us-east-1 (default)'}`,
-                ),
-            );
-          }
-
-          if (
-            'useProviderChain' in masked.providerSettings &&
-            masked.providerSettings.useProviderChain
-          ) {
-            console.log(
-              chalk.blue('    Credentials:') +
-                chalk.white(' AWS Provider Chain'),
-            );
-          } else {
-            if (
-              'accessKeyId' in masked.providerSettings &&
-              masked.providerSettings.accessKeyId
-            ) {
-              console.log(
-                chalk.blue('    Access Key ID:') +
-                  chalk.white(
-                    ` ${maskApiKey(masked.providerSettings.accessKeyId)}`,
-                  ),
-              );
-            }
-          }
-        } else if (
-          masked.provider === 'qwen' &&
-          'apiKey' in masked.providerSettings
-        ) {
-          console.log(
-            chalk.blue('    API Key:') +
-              chalk.white(` ${maskApiKey(masked.providerSettings.apiKey)}`),
-          );
-          if ('baseURL' in masked.providerSettings) {
-            console.log(
-              chalk.blue('    Base URL:') +
-                chalk.white(
-                  ` ${masked.providerSettings.baseURL || 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1 (default)'}`,
-                ),
-            );
-          }
-        } else if (
-          masked.provider === 'xai' &&
-          'apiKey' in masked.providerSettings
-        ) {
-          console.log(
-            chalk.blue('    API Key:') +
-              chalk.white(` ${maskApiKey(masked.providerSettings.apiKey)}`),
-          );
-          if ('baseURL' in masked.providerSettings) {
-            console.log(
-              chalk.blue('    Base URL:') +
-                chalk.white(
-                  ` ${masked.providerSettings.baseURL || 'https://api.x.ai/v1 (default)'}`,
-                ),
-            );
-          }
-        } else if (
-          masked.provider === 'openai' &&
-          'apiKey' in masked.providerSettings
-        ) {
-          console.log(
-            chalk.blue('    API Key:') +
-              chalk.white(` ${maskApiKey(masked.providerSettings.apiKey)}`),
-          );
-          if ('baseURL' in masked.providerSettings) {
-            console.log(
-              chalk.blue('    Base URL:') +
-                chalk.white(
-                  ` ${masked.providerSettings.baseURL || 'https://api.openai.com/v1 (default)'}`,
-                ),
-            );
-          }
-        } else if (
-          masked.provider === 'anthropic' &&
-          'apiKey' in masked.providerSettings
-        ) {
-          console.log(
-            chalk.blue('    API Key:') +
-              chalk.white(` ${maskApiKey(masked.providerSettings.apiKey)}`),
-          );
-          if ('baseURL' in masked.providerSettings) {
-            console.log(
-              chalk.blue('    Base URL:') +
-                chalk.white(
-                  ` ${masked.providerSettings.baseURL || 'https://api.anthropic.com (default)'}`,
-                ),
-            );
-          }
-        } else if (
-          masked.provider === 'google' &&
-          'apiKey' in masked.providerSettings
-        ) {
-          console.log(
-            chalk.blue('    API Key:') +
-              chalk.white(` ${maskApiKey(masked.providerSettings.apiKey)}`),
-          );
-          if ('baseURL' in masked.providerSettings) {
-            console.log(
-              chalk.blue('    Base URL:') +
-                chalk.white(
-                  ` ${masked.providerSettings.baseURL || 'https://generativelanguage.googleapis.com/v1beta (default)'}`,
-                ),
-            );
-          }
-        }
-      }
-    }
-
-    console.log(chalk.bold('\n  Generation Settings:'));
-
-    console.log(
-      chalk.blue('    Temperature:') +
-        chalk.white(
-          ` ${(masked.temperature || 0.7).toFixed(1)} ${!masked.temperature ? '(default)' : ''}`,
-        ),
-    );
-
-    console.log(
-      chalk.blue('    Max Tokens:') +
-        chalk.white(
-          ` ${masked.maxTokens || 2048} ${!masked.maxTokens ? '(default)' : ''}`,
-        ),
-    );
-
-    console.log(chalk.bold('\n  User Preferences:'));
-
-    console.log(
-      chalk.blue('    Language:') +
-        chalk.white(
-          ` ${masked.language || 'english'} ${!masked.language ? '(default)' : ''}`,
-        ),
-    );
-
-    if (masked.providerSettings) {
-      console.log(chalk.gray('  Provider Settings:'));
-
-      if (
-        masked.provider === 'ollama' &&
-        'baseURL' in masked.providerSettings
-      ) {
-        console.log(
-          chalk.gray(`    Base URL: ${masked.providerSettings.baseURL}`),
-        );
-      } else if (masked.provider === 'azure') {
-        if ('resourceName' in masked.providerSettings) {
-          console.log(
-            chalk.gray(
-              `    Resource Name: ${masked.providerSettings.resourceName}`,
-            ),
-          );
-        }
-
-        if ('apiVersion' in masked.providerSettings) {
-          console.log(
-            chalk.gray(
-              `    API Version: ${masked.providerSettings.apiVersion}`,
-            ),
-          );
-        }
-      } else if (masked.provider === 'bedrock') {
-        if ('region' in masked.providerSettings) {
-          console.log(
-            chalk.gray(
-              `    Region: ${masked.providerSettings.region || 'us-east-1'}`,
-            ),
-          );
-        }
-
-        if (
-          'useProviderChain' in masked.providerSettings &&
-          masked.providerSettings.useProviderChain
-        ) {
-          console.log(chalk.gray('    Credentials: AWS Provider Chain'));
-        } else {
-          if (
-            'accessKeyId' in masked.providerSettings &&
-            masked.providerSettings.accessKeyId
-          ) {
-            console.log(
-              chalk.gray(
-                `    Access Key ID: ${maskApiKey(masked.providerSettings.accessKeyId)}`,
-              ),
-            );
-          }
-          if (
-            'secretAccessKey' in masked.providerSettings &&
-            masked.providerSettings.secretAccessKey
-          ) {
-            console.log(
-              chalk.gray(
-                `    Secret Key: ${maskApiKey(masked.providerSettings.secretAccessKey)}`,
-              ),
-            );
-          }
-          if (
-            'sessionToken' in masked.providerSettings &&
-            masked.providerSettings.sessionToken
-          ) {
-            console.log(
-              chalk.gray(
-                `    Session Token: ${maskApiKey(masked.providerSettings.sessionToken)}`,
-              ),
-            );
-          }
-        }
-      } else if (masked.provider === 'qwen') {
-        if ('apiKey' in masked.providerSettings) {
-          console.log(
-            chalk.gray(
-              `    API Key: ${maskApiKey(masked.providerSettings.apiKey)}`,
-            ),
-          );
-        }
-        if ('baseURL' in masked.providerSettings) {
-          console.log(
-            chalk.gray(
-              `    Base URL: ${masked.providerSettings.baseURL || 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1'}`,
-            ),
-          );
-        }
-      } else if (masked.provider === 'xai') {
-        if ('apiKey' in masked.providerSettings) {
-          console.log(
-            chalk.gray(
-              `    API Key: ${maskApiKey(masked.providerSettings.apiKey)}`,
-            ),
-          );
-        }
-        if ('baseURL' in masked.providerSettings) {
-          console.log(
-            chalk.gray(
-              `    Base URL: ${masked.providerSettings.baseURL || 'https://api.x.ai/v1'}`,
-            ),
-          );
-        }
-      } else if (masked.provider === 'openai') {
-        if ('apiKey' in masked.providerSettings) {
-          console.log(
-            chalk.gray(
-              `    API Key: ${maskApiKey(masked.providerSettings.apiKey)}`,
-            ),
-          );
-        }
-        if ('baseURL' in masked.providerSettings) {
-          console.log(
-            chalk.gray(
-              `    Base URL: ${masked.providerSettings.baseURL || 'https://api.openai.com/v1'}`,
-            ),
-          );
-        }
-      } else if (masked.provider === 'anthropic') {
-        if ('apiKey' in masked.providerSettings) {
-          console.log(
-            chalk.gray(
-              `    API Key: ${maskApiKey(masked.providerSettings.apiKey)}`,
-            ),
-          );
-        }
-        if ('baseURL' in masked.providerSettings) {
-          console.log(
-            chalk.gray(
-              `    Base URL: ${masked.providerSettings.baseURL || 'https://api.anthropic.com'}`,
-            ),
-          );
-        }
-      } else if (masked.provider === 'google') {
-        if ('apiKey' in masked.providerSettings) {
-          console.log(
-            chalk.gray(
-              `    API Key: ${maskApiKey(masked.providerSettings.apiKey)}`,
-            ),
-          );
-        }
-        if ('baseURL' in masked.providerSettings) {
-          console.log(
-            chalk.gray(
-              `    Base URL: ${masked.providerSettings.baseURL || 'https://generativelanguage.googleapis.com/v1beta'}`,
-            ),
-          );
-        }
-      }
     }
   }
 }
