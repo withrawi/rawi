@@ -7,7 +7,7 @@ import {
   type SupportedLanguage,
   type SupportedProvider,
 } from '../../shared/index.js';
-import {ConfigValidator} from '../index.js';
+import {ConfigValidator} from '../validators/config.validator.js';
 
 export class InteractiveConfigManager {
   private readonly validator = new ConfigValidator();

@@ -1,6 +1,6 @@
 import {input} from '@inquirer/prompts';
 import chalk from 'chalk';
-import type {IProviderConfigManager} from '../index.js';
+import type {IProviderConfigManager} from '../interfaces/config-manager.interface.js';
 
 export class ProviderConfigManager implements IProviderConfigManager {
   async getBaseURL(defaultBaseURL?: string): Promise<string | undefined> {

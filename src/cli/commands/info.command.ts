@@ -1,11 +1,9 @@
 import chalk from 'chalk';
 import {Command} from 'commander';
-import {
-  ConfigManager,
-  getAllProviders,
-  packageInfo,
-  spinnerManager,
-} from '../../core/index.js';
+import {ConfigManager} from '../../core/configs/managers/config.manager.js';
+import {packageInfo} from '../../core/index.js';
+import {getAllProviders} from '../../core/providers/index.js';
+import {spinnerManager} from '../../core/shared/spinner.js';
 
 export const createInfoCommand = (): Command => {
   const command = new Command('info');

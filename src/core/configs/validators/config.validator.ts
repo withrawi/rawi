@@ -4,7 +4,10 @@ import {
   validateMaxTokens,
   validateTemperature,
 } from '../../shared/index.js';
-import type {IConfigValidator, ValidationResult} from '../index.js';
+import type {
+  IConfigValidator,
+  ValidationResult,
+} from '../interfaces/persistence.interface.js';
 
 export class ConfigValidator implements IConfigValidator {
   validateCredentials(credentials: RawiCredentials): ValidationResult {

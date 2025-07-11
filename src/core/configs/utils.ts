@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import {DEFAULT_PROFILE, type RawiCredentials} from '../shared/index.js';
-import {ConfigManager} from './index.js';
+import {ConfigManager} from './managers/config.manager.js';
 
 const configManager = new ConfigManager();
 

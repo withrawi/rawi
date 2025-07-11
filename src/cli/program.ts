@@ -35,13 +35,13 @@ export const createProgram = (): Command => {
         'Run `rawi <command> --help` for detailed usage of a command.',
       ].join('\n'),
     )
-    .version(versionString, '-V, --version', 'Show version information')
+    .version(versionString, '-v, --version', 'Show version information')
     .addHelpText(
       'afterAll',
       [
         '',
         'Global Options:',
-        '  -V, --version   Show version information',
+        '  -v, --version   Show version information',
         '  -h, --help      Show help for command',
         '',
         'Docs: https://rawi.mkabumattar.com',

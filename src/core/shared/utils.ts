@@ -1,6 +1,6 @@
 import {homedir} from 'node:os';
 import {join} from 'node:path';
-import {CONFIG_DIR_NAME, CREDENTIALS_FILE_NAME} from './index.js';
+import {CONFIG_DIR_NAME, CREDENTIALS_FILE_NAME} from './constants.js';
 
 export const DEBUG_MODE = false;
 

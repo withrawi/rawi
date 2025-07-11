@@ -1,22 +1,19 @@
 import chalk from 'chalk';
 import {Command} from 'commander';
-import {
-  applyActTemplate,
-  DatabaseManager,
-  DEFAULT_PROFILE,
-  generateWithAnthropic,
-  generateWithAzure,
-  generateWithBedrock,
-  generateWithGoogle,
-  generateWithLMStudio,
-  generateWithOllama,
-  generateWithOpenAI,
-  generateWithQwen,
-  generateWithXAI,
-  getCredentials,
-  isConfigured,
-  spinnerManager,
-} from '../../core/index.js';
+import {getCredentials, isConfigured} from '../../core/configs/utils.js';
+import {DatabaseManager} from '../../core/database/manager.js';
+import {generateWithBedrock} from '../../core/providers/amazon-bedrock.provider.js';
+import {generateWithAnthropic} from '../../core/providers/anthropic.provider.js';
+import {generateWithAzure} from '../../core/providers/azura.provider.js';
+import {generateWithGoogle} from '../../core/providers/google.provider.js';
+import {generateWithLMStudio} from '../../core/providers/lmstudio.provider.js';
+import {generateWithOllama} from '../../core/providers/ollama.provider.js';
+import {generateWithOpenAI} from '../../core/providers/openai.provider.js';
+import {generateWithQwen} from '../../core/providers/qwen.provider.js';
+import {generateWithXAI} from '../../core/providers/xai.provider.js';
+import {DEFAULT_PROFILE} from '../../core/shared/constants.js';
+import {spinnerManager} from '../../core/shared/spinner.js';
+import {applyActTemplate} from '../../core/templates/utils.js';
 
 const readStdin = (): Promise<string> => {
   return new Promise((resolve) => {
