@@ -49,7 +49,7 @@ rawi [global-options]
 
 > Display help information for commands.
 
-`-V, --version`
+`-v, --version`
 
 > Display the version of Rawi.
 

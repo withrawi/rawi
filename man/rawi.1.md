@@ -36,7 +36,7 @@ Rawi (راوي) is a modern, developer-friendly CLI tool for interacting with mu
 
 ## GLOBAL OPTIONS
 
-**-V, --version**
+**-v, --version**
 
 Show version information including platform and Node.js version
 
