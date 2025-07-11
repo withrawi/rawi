@@ -4,7 +4,7 @@ import type {
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
-} from '../../shared/types.js';
+} from '../shared/types.js';
 
 type LooseLMStudioModelId = string;
 export type LMStudioModelId = LooseToStrict<LooseLMStudioModelId>;

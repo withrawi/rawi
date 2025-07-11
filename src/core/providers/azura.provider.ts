@@ -5,7 +5,7 @@ import type {
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
-} from '../../shared/types.js';
+} from '../shared/types.js';
 
 type LooseAzureModelId = Parameters<typeof azure>[0];
 export type AzureModelId = LooseToStrict<LooseAzureModelId>;

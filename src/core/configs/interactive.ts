@@ -1,5 +1,6 @@
 import {confirm, input, password, select} from '@inquirer/prompts';
 import chalk from 'chalk';
+import {getAllProviders, getProvider} from '../providers/index.js';
 import {DEFAULT_LANGUAGE, DEFAULT_PROFILE} from '../shared/constants.js';
 import type {SupportedLanguage, SupportedProvider} from '../shared/types.js';
 import {
@@ -7,7 +8,6 @@ import {
   validateMaxTokens,
   validateTemperature,
 } from '../shared/utils.js';
-import {getAllProviders, getProvider} from './providers/index.js';
 
 export class InteractiveConfigManager {
   async getProfile(profile?: string): Promise<string> {

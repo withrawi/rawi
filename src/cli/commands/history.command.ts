@@ -5,11 +5,12 @@ import Table from 'cli-table3';
 import {Command} from 'commander';
 import {DatabaseManager} from '../../core/database/index.js';
 import {
+  type ChatHistoryOptions,
   DEFAULT_HISTORY_LIMIT,
   DEFAULT_PROFILE,
-} from '../../core/shared/constants.js';
-import type {ChatHistoryOptions} from '../../core/shared/types.js';
-import {formatRelativeTime, truncateText} from '../../core/shared/utils.js';
+  formatRelativeTime,
+  truncateText,
+} from '../../core/shared/index.js';
 
 export const createHistoryCommand = (): Command => {
   const historyCommand = new Command('history');

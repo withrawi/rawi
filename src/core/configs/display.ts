@@ -1,7 +1,7 @@
 import chalk from 'chalk';
+import {getProvider} from '../providers/index.js';
 import type {RawiCredentials} from '../shared/types.js';
 import {maskApiKey} from '../shared/utils.js';
-import {getProvider} from './providers/index.js';
 
 export class ConfigDisplayManager {
   displayCredentials(credentials: RawiCredentials): void {

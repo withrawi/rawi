@@ -6,7 +6,7 @@ import type {
   ModelInfo,
   OpenAISettings,
   RawiCredentials,
-} from '../../shared/types.js';
+} from '../shared/types.js';
 
 type LooseOpenAIModelId = Parameters<typeof openai>[0];
 export type OpenAIModelId = LooseToStrict<LooseOpenAIModelId>;

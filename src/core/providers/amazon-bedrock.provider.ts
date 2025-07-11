@@ -6,7 +6,7 @@ import type {
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
-} from '../../shared/types.js';
+} from '../shared/types.js';
 
 type LooseBedrockModelId = Parameters<typeof bedrock>[0];
 export type BedrockModelId = LooseToStrict<LooseBedrockModelId>;

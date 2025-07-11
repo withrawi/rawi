@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import {Command} from 'commander';
-import {ConfigManager} from '../../core/config/manager.js';
+import {ConfigManager} from '../../core/configs/index.js';
 import type {
   AnthropicSettings,
   AzureSettings,

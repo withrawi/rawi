@@ -2,10 +2,7 @@ import {select} from '@inquirer/prompts';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import {Command} from 'commander';
-import {
-  getAllProviders,
-  getProvider,
-} from '../../core/config/providers/index.js';
+import {getAllProviders, getProvider} from '../../core/providers/index.js';
 
 export const createProviderCommand = (): Command => {
   const command = new Command('provider');

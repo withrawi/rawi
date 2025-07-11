@@ -2,12 +2,13 @@ export * from './amazon-bedrock.provider.js';
 export * from './anthropic.provider.js';
 export * from './azura.provider.js';
 export * from './google.provider.js';
+export * from './lmstudio.provider.js';
 export * from './ollama.provider.js';
 export * from './openai.provider.js';
 export * from './qwen.provider.js';
 export * from './xai.provider.js';
 
-import type {ProviderConfig, SupportedProvider} from '../../shared/types.js';
+import type {ProviderConfig, SupportedProvider} from '../shared/types.js';
 import {bedrockProvider} from './amazon-bedrock.provider.js';
 import {anthropicProvider} from './anthropic.provider.js';
 import {azureProvider} from './azura.provider.js';

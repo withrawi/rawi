@@ -6,7 +6,7 @@ import type {
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
-} from '../../shared/types.js';
+} from '../shared/types.js';
 
 type LooseAnthropicModelId = Parameters<typeof anthropic>[0];
 export type AnthropicModelId = LooseToStrict<LooseAnthropicModelId>;
