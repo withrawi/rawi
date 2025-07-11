@@ -36,7 +36,7 @@
   </a>
 </div>
 
-[🌐 Website](https://rawi.mkabumattar.com) • [📚 Documentation](https://rawi.mkabumattar.com/docs) • [🚀 Quick Start](#-quick-start) • [💬 Support](https://github.com/withrawi/rawi/issues)
+[🌐 Website](https://rawi.mkabumattar.com) • [📚 Documentation](https://rawi.mkabumattar.com/userguide) • [🚀 Quick Start](#-quick-start) • [💬 Support](https://github.com/withrawi/rawi/issues)
 
 </div>
 
@@ -568,14 +568,11 @@ We welcome contributions! Here's how you can help:
 
 ## 📚 Documentation
 
-- **[📖 Getting Started](https://rawi.mkabumattar.com/docs/getting-started)** — Complete setup guide
-- **[⚙️ Configuration](https://rawi.mkabumattar.com/docs/configuration)** — Provider setup and options
-- **[🛠️ Commands](https://rawi.mkabumattar.com/docs/commands)** — Detailed command reference
-- **[🤖 Providers](https://rawi.mkabumattar.com/docs/providers)** — AI provider guides
-- **[🎭 Templates](https://rawi.mkabumattar.com/docs/templates)** — Act template library
-- **[🔧 API Reference](https://rawi.mkabumattar.com/docs/api)** — For developers
-- **[❓ FAQ](https://rawi.mkabumattar.com/docs/faq)** — Common questions
-- **[🛠️ Troubleshooting](https://rawi.mkabumattar.com/docs/troubleshooting)** — Fix common issues
+- **[📖 Getting Started](https://rawi.mkabumattar.com/getting-started/)** — Complete setup guide
+- **[⚙️ Configuration](https://rawi.mkabumattar.com/configure/)** — Provider setup and options
+- **[🛠️ Commands](https://rawi.mkabumattar.com/reference/)** — Detailed command reference
+- **[❓ FAQ](https://rawi.mkabumattar.com/help/faq)** — Common questions
+- **[🛠️ Troubleshooting](https://rawi.mkabumattar.com/help/troubleshooting/)** — Fix common issues
 
 ---
 
@@ -611,6 +608,6 @@ If Rawi helps you be more productive, consider:
 
 **Made with ❤️ for developers worldwide**
 
-[🌐 Website](https://rawi.mkabumattar.com) • [📚 Docs](https://rawi.mkabumattar.com/docs) • [💬 Discussions](https://github.com/withrawi/rawi/discussions) • [🐛 Issues](https://github.com/withrawi/rawi/issues)
+[🌐 Website](https://rawi.mkabumattar.com) • [📚 Docs](https://rawi.mkabumattar.com/userguide) • [💬 Discussions](https://github.com/withrawi/rawi/discussions) • [🐛 Issues](https://github.com/withrawi/rawi/issues)
 
 </div>
