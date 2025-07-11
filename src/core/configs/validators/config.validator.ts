@@ -1,13 +1,10 @@
-import type {RawiCredentials} from '../../shared/types.js';
 import {
+  type RawiCredentials,
   validateApiKey as utilValidateApiKey,
   validateMaxTokens,
   validateTemperature,
-} from '../../shared/utils.js';
-import type {
-  IConfigValidator,
-  ValidationResult,
-} from '../interfaces/persistence.interface.js';
+} from '../../shared/index.js';
+import type {IConfigValidator, ValidationResult} from '../index.js';
 
 export class ConfigValidator implements IConfigValidator {
   validateCredentials(credentials: RawiCredentials): ValidationResult {

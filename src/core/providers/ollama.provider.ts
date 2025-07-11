@@ -5,7 +5,7 @@ import type {
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
-} from '../shared/types.js';
+} from '../shared/index.js';
 
 type LooseOllamaModelId = Parameters<typeof ollama>[0];
 export type OllamaModelId = LooseToStrict<LooseOllamaModelId>;

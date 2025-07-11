@@ -6,7 +6,7 @@ import type {
   ModelInfo,
   RawiCredentials,
   XAISettings,
-} from '../shared/types.js';
+} from '../shared/index.js';
 
 type LooseXaiModelId = Parameters<typeof xai>[0];
 export type XaiModelId = LooseToStrict<LooseXaiModelId>;

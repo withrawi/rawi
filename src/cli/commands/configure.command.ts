@@ -1,20 +1,20 @@
 import chalk from 'chalk';
 import {Command} from 'commander';
-import {ConfigManager} from '../../core/configs/index.js';
-import type {
-  AnthropicSettings,
-  AzureSettings,
-  BedrockSettings,
-  ConfigureOptions,
-  GoogleSettings,
-  LMStudioSettings,
-  OllamaSettings,
-  OpenAISettings,
-  QwenSettings,
-  RawiCredentials,
-  SupportedLanguage,
-  XAISettings,
-} from '../../core/shared/types.js';
+import {
+  type AnthropicSettings,
+  type AzureSettings,
+  type BedrockSettings,
+  ConfigManager,
+  type ConfigureOptions,
+  type GoogleSettings,
+  type LMStudioSettings,
+  type OllamaSettings,
+  type OpenAISettings,
+  type QwenSettings,
+  type RawiCredentials,
+  type SupportedLanguage,
+  type XAISettings,
+} from '../../core/index.js';
 
 export const createConfigureCommand = (): Command => {
   const command = new Command('configure');

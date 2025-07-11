@@ -124,7 +124,7 @@ if (notifier.update) {
   );
 }
 
-import {createProgram} from './cli/program.js';
+import {createProgram} from './cli/index.js';
 
 process.on('uncaughtException', (error) => {
   if (error instanceof Error && error.name === 'ExitPromptError') {

@@ -1,9 +1,13 @@
 import {confirm, input, password, select} from '@inquirer/prompts';
 import chalk from 'chalk';
 import {getAllProviders, getProvider} from '../../providers/index.js';
-import {DEFAULT_LANGUAGE, DEFAULT_PROFILE} from '../../shared/constants.js';
-import type {SupportedLanguage, SupportedProvider} from '../../shared/types.js';
-import {ConfigValidator} from '../validators/index.js';
+import {
+  DEFAULT_LANGUAGE,
+  DEFAULT_PROFILE,
+  type SupportedLanguage,
+  type SupportedProvider,
+} from '../../shared/index.js';
+import {ConfigValidator} from '../index.js';
 
 export class InteractiveConfigManager {
   private readonly validator = new ConfigValidator();

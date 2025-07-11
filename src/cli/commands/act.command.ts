@@ -2,8 +2,7 @@ import {select} from '@inquirer/prompts';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import {Command} from 'commander';
-import {actTemplates} from '../../core/templates/act.js';
-import {showActTemplate} from '../../core/templates/utils.js';
+import {actTemplates, showActTemplate} from '../../core/index.js';
 
 export const createActCommand = (): Command => {
   const actCommand = new Command('act');

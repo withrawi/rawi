@@ -6,7 +6,7 @@ import type {
   ModelInfo,
   QwenSettings,
   RawiCredentials,
-} from '../shared/types.js';
+} from '../shared/index.js';
 
 type LooseQwenModelId = Parameters<typeof qwen>[0];
 export type QwenModelId = LooseToStrict<LooseQwenModelId>;

@@ -6,7 +6,7 @@ import type {
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
-} from '../shared/types.js';
+} from '../shared/index.js';
 
 type LooseGoogleModelId = Parameters<typeof google>[0];
 export type GoogleModelId = LooseToStrict<LooseGoogleModelId>;

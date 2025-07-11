@@ -1,23 +1,20 @@
 import chalk from 'chalk';
 import {
+  type AnthropicSettings,
+  type AzureSettings,
+  type BedrockSettings,
+  type ConfigureOptions,
   DEFAULT_LANGUAGE,
   DEFAULT_MAX_TOKENS,
   DEFAULT_TEMPERATURE,
-} from '../../shared/constants.js';
-import {spinnerManager} from '../../shared/spinner.js';
-import type {
-  AnthropicSettings,
-  AzureSettings,
-  BedrockSettings,
-  ConfigureOptions,
-  GoogleSettings,
-  OpenAISettings,
-  QwenSettings,
-  RawiCredentials,
-  XAISettings,
-} from '../../shared/types.js';
-import type {IInteractiveConfigManager} from '../interfaces/index.js';
-import {ConfigValidator} from '../validators/index.js';
+  type GoogleSettings,
+  type OpenAISettings,
+  type QwenSettings,
+  type RawiCredentials,
+  spinnerManager,
+  type XAISettings,
+} from '../../shared/index.js';
+import {ConfigValidator, type IInteractiveConfigManager} from '../index.js';
 import {
   BaseConfigManager,
   ConfigDisplayManager,

@@ -1,4 +1,4 @@
-import type {ConfigureOptions, RawiCredentials} from '../../shared/types.js';
+import type {ConfigureOptions, RawiCredentials} from '../../shared/index.js';
 
 export interface IConfigManager {
   getCredentials(profile?: string): RawiCredentials | null;

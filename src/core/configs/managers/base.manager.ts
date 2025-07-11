@@ -7,9 +7,13 @@ import {
 } from 'node:fs';
 import {join} from 'node:path';
 import chalk from 'chalk';
-import {DEFAULT_PROFILE} from '../../shared/constants.js';
-import type {RawiConfig, RawiCredentials} from '../../shared/types.js';
-import {getConfigDir, getCredentialsFilePath} from '../../shared/utils.js';
+import {
+  DEFAULT_PROFILE,
+  getConfigDir,
+  getCredentialsFilePath,
+  type RawiConfig,
+  type RawiCredentials,
+} from '../../shared/index.js';
 import type {IConfigManager, IConfigPersistence} from '../interfaces/index.js';
 
 export class BaseConfigManager implements IConfigManager, IConfigPersistence {

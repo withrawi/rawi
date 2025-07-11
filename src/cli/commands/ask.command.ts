@@ -1,8 +1,9 @@
 import chalk from 'chalk';
 import {Command} from 'commander';
-import {getCredentials, isConfigured} from '../../core/configs/index.js';
-import {DatabaseManager} from '../../core/database/index.js';
 import {
+  applyActTemplate,
+  DatabaseManager,
+  DEFAULT_PROFILE,
   generateWithAnthropic,
   generateWithAzure,
   generateWithBedrock,
@@ -12,9 +13,10 @@ import {
   generateWithOpenAI,
   generateWithQwen,
   generateWithXAI,
-} from '../../core/providers/index.js';
-import {DEFAULT_PROFILE, spinnerManager} from '../../core/shared/index.js';
-import {applyActTemplate} from '../../core/templates/index.js';
+  getCredentials,
+  isConfigured,
+  spinnerManager,
+} from '../../core/index.js';
 
 const readStdin = (): Promise<string> => {
   return new Promise((resolve) => {

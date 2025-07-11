@@ -1,11 +1,11 @@
 import {v4 as uuidv4} from 'uuid';
-import type {
-  ChatHistoryOptions,
-  ChatMessage,
-  ChatSession,
-  HistoryStats,
-} from '../shared/types.js';
-import {debugLog} from '../shared/utils.js';
+import {
+  type ChatHistoryOptions,
+  type ChatMessage,
+  type ChatSession,
+  debugLog,
+  type HistoryStats,
+} from '../shared/index.js';
 import {DatabaseAdapter} from './adapter.js';
 
 export class DatabaseManager {

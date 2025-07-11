@@ -1,7 +1,7 @@
 import {select} from '@inquirer/prompts';
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import {type ActTemplate, actTemplates} from './act.js';
+import {type ActTemplate, actTemplates} from './index.js';
 
 export const findActTemplate = (id: string): ActTemplate | undefined => {
   return actTemplates.find((template) => template.id === id);

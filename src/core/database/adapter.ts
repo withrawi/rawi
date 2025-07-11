@@ -9,16 +9,16 @@ import {
 import {dirname} from 'node:path';
 import {createClient} from '@libsql/client';
 import {v4 as uuidv4} from 'uuid';
-
-import {DEFAULT_SESSION_TITLE_LENGTH} from '../shared/constants.js';
-import type {
-  ChatHistoryOptions,
-  ChatMessage,
-  ChatSession,
-  HistoryStats,
-  SupportedProvider,
-} from '../shared/types.js';
-import {debugLog, getConfigDir} from '../shared/utils.js';
+import {
+  type ChatHistoryOptions,
+  type ChatMessage,
+  type ChatSession,
+  DEFAULT_SESSION_TITLE_LENGTH,
+  debugLog,
+  getConfigDir,
+  type HistoryStats,
+  type SupportedProvider,
+} from '../shared/index.js';
 import {getDatabaseFilePath} from './config/paths.js';
 
 export class DatabaseAdapter {
