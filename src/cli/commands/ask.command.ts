@@ -1,22 +1,19 @@
 import chalk from 'chalk';
 import {Command} from 'commander';
-import {generateWithBedrock} from '../../config/providers/amazon-bedrock.provider.js';
-import {generateWithAnthropic} from '../../config/providers/anthropic.provider.js';
-import {generateWithAzure} from '../../config/providers/azura.provider.js';
-import {generateWithGoogle} from '../../config/providers/google.provider.js';
-import {generateWithOllama} from '../../config/providers/ollama.provider.js';
-import {generateWithOpenAI} from '../../config/providers/openai.provider.js';
-import {generateWithQwen} from '../../config/providers/qwen.provider.js';
-import {generateWithXAI} from '../../config/providers/xai.provider.js';
-import {getCredentials, isConfigured} from '../../config/utils.js';
-import {DatabaseManager} from '../../database/index.js';
-import {DEFAULT_PROFILE} from '../../shared/constants.js';
-import {spinnerManager} from '../../shared/spinner.js';
-import {
-  applyActTemplate,
-  listActTemplates,
-  showActTemplate,
-} from '../../template/index.js';
+import {getCredentials, isConfigured} from '../../core/configs/utils.js';
+import {DatabaseManager} from '../../core/database/manager.js';
+import {generateWithBedrock} from '../../core/providers/amazon-bedrock.provider.js';
+import {generateWithAnthropic} from '../../core/providers/anthropic.provider.js';
+import {generateWithAzure} from '../../core/providers/azura.provider.js';
+import {generateWithGoogle} from '../../core/providers/google.provider.js';
+import {generateWithLMStudio} from '../../core/providers/lmstudio.provider.js';
+import {generateWithOllama} from '../../core/providers/ollama.provider.js';
+import {generateWithOpenAI} from '../../core/providers/openai.provider.js';
+import {generateWithQwen} from '../../core/providers/qwen.provider.js';
+import {generateWithXAI} from '../../core/providers/xai.provider.js';
+import {DEFAULT_PROFILE} from '../../core/shared/constants.js';
+import {spinnerManager} from '../../core/shared/spinner.js';
+import {applyActTemplate} from '../../core/templates/utils.js';
 
 const readStdin = (): Promise<string> => {
   return new Promise((resolve) => {
@@ -44,57 +41,52 @@ export const createAskCommand = (): Command => {
 
   askCommand
     .description(
-      'Ask AI a question and get a response. Supports piped input from stdin.',
+      [
+        chalk.bold('Ask AI a question and get a response.'),
+        '',
+        chalk.gray('Supports piped input from stdin.'),
+        chalk.gray('Use --act <template> for expert prompt templates.'),
+        chalk.gray('See all templates with "rawi act --list".'),
+      ].join('\n'),
     )
     .argument(
       '[query]',
-      'The question or prompt to send to the AI (can be combined with piped input)',
+      chalk.white(
+        'The question or prompt to send to the AI (can be combined with piped input)',
+      ),
     )
     .option(
       '-p, --profile <profile>',
-      'Profile to use for AI configuration',
+      chalk.white('Profile to use for AI configuration'),
       DEFAULT_PROFILE,
     )
-    .option('--session <sessionId>', 'Continue an existing chat session')
-    .option('--new-session', 'Start a new chat session')
+    .option(
+      '-s, --session <sessionId>',
+      chalk.white('Continue an existing chat session'),
+    )
+    .option('-n, --new-session', chalk.white('Start a new chat session'))
     .option(
       '--act <template>',
-      'Use an act template (e.g., ethereum-developer)',
+      chalk.white('Use an act template (e.g., ethereum-developer)'),
     )
-    .option('--list-acts', 'List all available act templates')
     .option(
-      '--show',
-      'Show details of the specified act template (use with --act)',
+      '--verbose',
+      chalk.white('Show detailed status and debug information'),
     )
-    .option('--verbose', 'Show detailed status and debug information')
-    .action(async (query, options) => {
+    .addHelpText(
+      'after',
+      [
+        chalk.bold.cyan('\nSee also:'),
+        chalk.gray('  rawi act --list'),
+        chalk.gray('  rawi provider --list'),
+        chalk.gray('  rawi configure --show'),
+        chalk.gray('  rawi ask --help'),
+      ].join('\n'),
+    )
+    .action(async (query: string, options: any) => {
       let dbManager: DatabaseManager | null = null;
 
       try {
-        if (options.listActs) {
-          listActTemplates();
-          return;
-        }
-
-        if (options.show && options.act) {
-          showActTemplate(options.act);
-          return;
-        }
-
-        if (options.show && !options.act) {
-          if (options.verbose) {
-            console.error(
-              chalk.red('❌ --show option requires --act <template-id>'),
-            );
-            console.log(
-              chalk.yellow(
-                '💡 Use "rawi ask --list-acts" to see available templates.',
-              ),
-            );
-          }
-          return;
-        }
-
         const stdinContent = await readStdin();
 
         let finalQuery: string;
@@ -124,7 +116,7 @@ export const createAskCommand = (): Command => {
               console.error(chalk.red(`❌ ${errorMessage}`));
               console.log(
                 chalk.yellow(
-                  '💡 Use "rawi ask --list-acts" to see available templates.',
+                  '💡 Use "rawi act --list" to see available templates.',
                 ),
               );
             }
@@ -263,6 +255,8 @@ export const createAskCommand = (): Command => {
             response = await generateWithBedrock(credentials, finalQuery);
           } else if (credentials.provider === 'qwen') {
             response = await generateWithQwen(credentials, finalQuery);
+          } else if (credentials.provider === 'lmstudio') {
+            response = await generateWithLMStudio(credentials, finalQuery);
           } else {
             if (options.verbose) {
               spinnerManager.fail('generation', 'Unsupported provider');
@@ -272,7 +266,7 @@ export const createAskCommand = (): Command => {
                 ),
               );
             }
-            response = `Unsupported provider: ${credentials.provider}. Please configure a supported provider (OpenAI, Anthropic, Google, Ollama, xAI, Azure, Bedrock, or Qwen).`;
+            response = `Unsupported provider: ${credentials.provider}. Please configure a supported provider (OpenAI, Anthropic, Google, Ollama, xAI, Azure, Bedrock, Qwen, or LM Studio).`;
           }
 
           await dbManager.addMessage(

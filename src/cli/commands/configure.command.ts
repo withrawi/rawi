@@ -1,91 +1,122 @@
+import chalk from 'chalk';
 import {Command} from 'commander';
-import {ConfigManager} from '../../config/manager.js';
-import {
-  getAllProviders,
-  getProvider,
-  getProviderNames,
-} from '../../config/providers/index.js';
+import {ConfigManager} from '../../core/configs/managers/config.manager.js';
 import type {
   AnthropicSettings,
   AzureSettings,
   BedrockSettings,
   ConfigureOptions,
   GoogleSettings,
+  LMStudioSettings,
   OllamaSettings,
   OpenAISettings,
   QwenSettings,
   RawiCredentials,
   SupportedLanguage,
-  SupportedProvider,
   XAISettings,
-} from '../../shared/types.js';
+} from '../../core/shared/types.js';
 
 export const createConfigureCommand = (): Command => {
   const command = new Command('configure');
 
   command
-    .description('Configure Rawi AI settings')
-    .option('-p, --profile <profile>', 'Configuration profile name', 'default')
+    .description(
+      [
+        chalk.bold('Configure AI provider settings and manage profiles.'),
+        '',
+        chalk.gray(
+          'Set up providers, models, credentials, and advanced options.',
+        ),
+        chalk.gray('Supports interactive and manual configuration.'),
+        chalk.gray('Use --list to see all profiles, --show for details.'),
+      ].join('\n'),
+    )
+    .option(
+      '-p, --profile <profile>',
+      chalk.white('Profile name to configure'),
+      'default',
+    )
     .option(
       '--provider <provider>',
-      'AI provider (openai, anthropic, google, ollama, xai, azure, bedrock, qwen)',
+      chalk.white(
+        'AI provider (openai, anthropic, google, ollama, xai, azure, bedrock, qwen)',
+      ),
     )
-    .option('--model <model>', 'AI model name')
+    .option('--model <model>', chalk.white('AI model name'))
     .option(
       '--api-key <apiKey>',
-      'API key for the provider (not needed for Ollama)',
+      chalk.white('API key for the provider (not needed for Ollama)'),
     )
     .option(
       '--base-url <baseURL>',
-      'Base URL for Ollama (default: http://localhost:11434/api), OpenAI (default: https://api.openai.com/v1), Anthropic (default: https://api.anthropic.com), Google (default: https://generativelanguage.googleapis.com/v1beta), Qwen (default: https://dashscope-intl.aliyuncs.com/compatible-mode/v1), or xAI (default: https://api.x.ai/v1)',
+      chalk.white('Base URL for provider API (see docs for defaults)'),
     )
     .option(
       '--resource-name <resourceName>',
-      'Resource name for Azure OpenAI (required for Azure)',
+      chalk.white('Resource name for Azure OpenAI (required for Azure)'),
     )
     .option(
       '--api-version <apiVersion>',
-      'API version for Azure OpenAI (default: 2024-10-01-preview)',
+      chalk.white('API version for Azure OpenAI (default: 2024-10-01-preview)'),
     )
     .option(
       '--region <region>',
-      'AWS region for Amazon Bedrock (default: us-east-1)',
+      chalk.white('AWS region for Amazon Bedrock (default: us-east-1)'),
     )
     .option(
       '--access-key-id <accessKeyId>',
-      'AWS access key ID for Amazon Bedrock',
+      chalk.white('AWS access key ID for Amazon Bedrock'),
     )
     .option(
       '--secret-access-key <secretAccessKey>',
-      'AWS secret access key for Amazon Bedrock',
+      chalk.white('AWS secret access key for Amazon Bedrock'),
     )
     .option(
       '--session-token <sessionToken>',
-      'AWS session token for Amazon Bedrock (optional)',
+      chalk.white('AWS session token for Amazon Bedrock (optional)'),
     )
     .option(
       '--use-provider-chain',
-      'Use AWS credential provider chain instead of explicit credentials',
+      chalk.white(
+        'Use AWS credential provider chain instead of explicit credentials',
+      ),
     )
     .option(
       '--temperature <temperature>',
-      'Temperature value (0-2)',
+      chalk.white('Sampling temperature (0-2, higher = more creative)'),
       Number.parseFloat,
     )
-    .option('--max-tokens <maxTokens>', 'Maximum tokens', Number.parseInt)
+    .option(
+      '--max-tokens <maxTokens>',
+      chalk.white('Maximum tokens for response'),
+      Number.parseInt,
+    )
     .option(
       '--language <language>',
-      'Language setting (english, arabic)',
+      chalk.white('Language (english, arabic)'),
       'english',
     )
-    .option('--show', 'Show current configuration')
-    .option('--list', 'List all profiles')
-    .option('--list-providers', 'List all available AI providers')
     .option(
-      '--list-models <provider>',
-      'List all models for a specific provider',
+      '-s, --show',
+      chalk.white('Show current configuration for the selected profile'),
     )
-    .option('--delete <profile>', 'Delete a configuration profile')
+    .option('-l, --list', chalk.white('List all configuration profiles'))
+    .option(
+      '-d, --delete <profile>',
+      chalk.white('Delete a configuration profile'),
+    )
+    .addHelpText(
+      'after',
+      [
+        chalk.bold.cyan('\nSee also:'),
+        chalk.gray('  rawi provider --list'),
+        chalk.gray('  rawi act --list'),
+        chalk.gray('  rawi ask --profile <profile>'),
+        chalk.gray('  rawi configure --show --profile <profile>'),
+        '',
+        chalk.dim('For more examples, see: docs/configuration.md'),
+      ].join('\n'),
+    )
     .action(async (options) => {
       const configManager = new ConfigManager();
 
@@ -100,50 +131,24 @@ export const createConfigureCommand = (): Command => {
         if (options.list) {
           const profiles = configManager.listProfiles();
           if (profiles.length === 0) {
-            console.log('No profiles found.');
+            console.log(chalk.yellow('No configuration profiles found.'));
             return;
           }
-
-          console.log('Available profiles:');
+          console.log(chalk.bold('Available profiles:'));
           profiles.forEach((profile) => console.log(`  - ${profile}`));
-          return;
-        }
-
-        if (options.listProviders) {
-          const providers = getAllProviders();
-          console.log('Available AI providers:');
-          providers.forEach((provider) => {
-            console.log(`  ${provider.displayName} (${provider.name})`);
-          });
-          return;
-        }
-
-        if (options.listModels) {
-          const providerName = options.listModels as SupportedProvider;
-          const providerNames = getProviderNames();
-
-          if (!providerNames.includes(providerName)) {
-            console.error(`Invalid provider: ${providerName}`);
-            console.log('Available providers:', providerNames.join(', '));
-            return;
-          }
-
-          const provider = getProvider(providerName);
-          console.log(`Available models for ${provider.displayName}:`);
-          provider.models.forEach((model) => {
-            console.log(
-              `  - ${model.name}${model.displayName && model.displayName !== model.name ? ` (${model.displayName})` : ''}`,
-            );
-          });
           return;
         }
 
         if (options.delete) {
           const success = configManager.deleteProfile(options.delete);
           if (success) {
-            console.log(`Profile '${options.delete}' deleted successfully.`);
+            console.log(
+              chalk.green(`Profile '${options.delete}' deleted successfully.`),
+            );
           } else {
-            console.log(`Profile '${options.delete}' not found.`);
+            console.log(
+              chalk.red(`Failed to delete profile '${options.delete}'.`),
+            );
           }
           return;
         }
@@ -151,8 +156,11 @@ export const createConfigureCommand = (): Command => {
         if (options.language) {
           const validLanguages: SupportedLanguage[] = ['english', 'arabic'];
           if (!validLanguages.includes(options.language as SupportedLanguage)) {
-            console.error(`Invalid language: ${options.language}`);
-            console.log('Available languages:', validLanguages.join(', '));
+            console.error(chalk.red(`Invalid language: ${options.language}`));
+            console.log(
+              chalk.yellow('Available languages:'),
+              validLanguages.join(', '),
+            );
             return;
           }
         }
@@ -385,6 +393,26 @@ export const createConfigureCommand = (): Command => {
               language: (options.language as SupportedLanguage) || 'english',
               providerSettings: providerSettings,
             };
+          } else if (options.provider === 'lmstudio') {
+            requiredOptions = Boolean(options.model);
+
+            const providerSettings: LMStudioSettings = {};
+            if (options.baseUrl) {
+              providerSettings.baseURL = options.baseUrl;
+            }
+
+            credentials = {
+              provider: options.provider,
+              model: options.model,
+              temperature: options.temperature || 0.7,
+              maxTokens: options.maxTokens || 2048,
+            };
+
+            if (Object.keys(providerSettings).length > 0) {
+              credentials.providerSettings = providerSettings;
+            } else {
+              credentials.providerSettings = undefined;
+            }
           } else {
             requiredOptions = Boolean(
               options.provider && options.model && options.apiKey,

@@ -1,393 +1,439 @@
 # Frequently Asked Questions (FAQ)
 
-## 🤔 General Questions
+Common questions and answers about Rawi usage, configuration, and troubleshooting.
 
-### What is Rawi?
+## Navigation
 
-Rawi (راوي) is a developer-friendly AI-powered CLI tool that provides direct access to multiple AI providers from your terminal. It supports conversation history, profile management, and seamless integration with shell workflows.
-
-### Why use Rawi instead of web interfaces?
-
-- **Terminal Integration**: Perfect for developer workflows
-- **Shell Automation**: Pipe results, redirect output, use in scripts
-- **Multi-Provider**: Switch between AI providers easily
-- **Profile Management**: Different configs for different projects
-- **Privacy**: Local AI support with Ollama
-- **Persistence**: Chat history and session management
-
-### Is Rawi free to use?
-
-Rawi itself is free and open-source. However, most AI providers (OpenAI, Anthropic, Google, etc.) require API keys and charge for usage. Ollama is completely free and runs locally.
+- [📖 Wiki Home](README.md)
+- [🚀 Quick Start](quickstart.md)
+- [🔧 Troubleshooting](troubleshooting.md)
+- [⚙️ Configuration](commands/configure.md)
 
 ---
 
-## 🔧 Installation & Setup
+## General Questions
+
+### What is Rawi?
+
+Rawi is a powerful command-line interface (CLI) tool that brings AI assistance directly to your terminal. It allows you to interact with various AI providers (OpenAI, Anthropic, Google, etc.) to help with coding, writing, analysis, and many other tasks.
+
+### How is Rawi different from other AI tools?
+
+- **Terminal-native**: Works directly in your command line
+- **Multiple providers**: Support for OpenAI, Anthropic, Google, Ollama, and more
+- **Session management**: Maintain conversation context across commands
+- **Act templates**: Pre-built prompts for specific tasks
+- **Shell integration**: Pipe data in/out of other commands
+- **Profile support**: Different configurations for different use cases
+
+### Is Rawi free to use?
+
+Rawi itself is free and open-source. However, you'll need API access to AI providers:
+
+- **Free options**: Ollama (local), some providers offer free tiers
+- **Paid options**: OpenAI, Anthropic, Google (pay per usage)
+- **Cost**: Typically cents per request for most use cases
+
+---
+
+## Installation and Setup
+
+### What are the system requirements?
+
+- **Node.js**: Version 16 or higher
+- **Operating System**: Windows, macOS, or Linux
+- **Internet**: Required for cloud AI providers (not needed for local providers like Ollama)
+- **API Keys**: Required for cloud providers
 
 ### How do I install Rawi?
 
 ```bash
 # Install globally via npm
-npm install -g rawi
+npm install -g @withrawi/rawi
 
-# Or use with npx (no installation)
-npx rawi ask "Your question"
+# Verify installation
+rawi --version
 ```
 
-### Which AI provider should I choose?
+See our [Installation Guide](installation.md) for detailed instructions.
 
-- **For coding**: OpenAI GPT-4o, Claude 3.5 Sonnet, or Ollama CodeLlama
-- **For privacy**: Ollama (runs locally)
-- **For cost-effectiveness**: OpenAI GPT-4o-mini or Google Gemini Flash
-- **For reasoning**: Claude 3.5 Sonnet or OpenAI O1
-- **For enterprise**: Azure OpenAI or Amazon Bedrock
+### Can I use Rawi without an internet connection?
 
-### Can I use multiple providers?
+Yes, but with limitations:
 
-Yes! Create different profiles for different providers:
+- **Local providers**: Use Ollama for offline AI capabilities
+- **Cloud providers**: Require internet connection
+- **Setup**: `rawi provider set ollama` (requires Ollama installation)
 
-```bash
-rawi configure --profile work --provider openai --model gpt-4o
-rawi configure --profile personal --provider anthropic --model claude-3-sonnet-20240229
-rawi configure --profile local --provider ollama --model llama3.2
-```
+### How do I get an API key?
+
+**OpenAI**:
+
+1. Visit [platform.openai.com](https://platform.openai.com)
+2. Sign up and navigate to API keys
+3. Create a new key (starts with `sk-`)
+
+**Anthropic**:
+
+1. Visit [console.anthropic.com](https://console.anthropic.com)
+2. Sign up and go to API keys
+3. Create a new key (starts with `sk-ant-`)
+
+**Google**:
+
+1. Visit [Google AI Studio](https://aistudio.google.com)
+2. Create an API key
+3. Key starts with `AIza`
 
 ---
 
-## 💻 Usage Questions
+## Configuration Questions
 
-### How do I switch between profiles?
+### How do I configure Rawi for the first time?
 
 ```bash
-# Use specific profile
-rawi ask "Your question" --profile work
+# Interactive setup
+rawi configure
 
-# Set default profile
-rawi configure --profile work  # This becomes default
+# Or set provider and API key directly
+rawi provider set openai
+rawi configure --api-key your-api-key
+```
 
-# List all profiles
-rawi configure --list
+### Can I use multiple AI providers?
+
+Yes! Rawi supports multiple providers:
+
+```bash
+# Switch providers anytime
+rawi provider set openai
+rawi provider set anthropic
+rawi provider set google
+
+# Use profiles for different providers
+rawi configure --profile work
+rawi provider set openai --profile work
+```
+
+### How do I reset my configuration?
+
+```bash
+# Reset everything to defaults
+rawi configure --reset
+
+# Reset specific profile
+rawi configure --reset --profile work
+```
+
+### Where is my configuration stored?
+
+- **Linux/macOS**: `~/.config/rawi/`
+- **Windows**: `%APPDATA%\rawi\`
+
+Files include:
+
+- `config.json` - Main configuration
+- `history/` - Conversation history
+- `profiles/` - Profile-specific settings
+
+---
+
+## Usage Questions
+
+### How do I ask a basic question?
+
+```bash
+# Simple question
+rawi ask "What is TypeScript?"
+
+# With file input
+rawi ask "Explain this code:" < script.js
+
+# From pipe
+echo "Hello world" | rawi ask "Translate to Spanish"
+```
+
+### How do I maintain conversation context?
+
+Use sessions to maintain context:
+
+```bash
+# Start a session
+rawi ask "I'm building a web app" --session webapp
+
+# Continue the conversation
+rawi ask "What database should I use?" --session webapp
+rawi ask "How do I connect to it?" --session webapp
+```
+
+### What are Act templates?
+
+Act templates are pre-built prompts for specific roles:
+
+```bash
+# Available templates
+rawi act --list
+
+# Use a template
+rawi act developer "Help me debug this function"
+rawi act writer "Help me write a blog post about AI"
+rawi act translator "Translate this to French: Hello world"
+```
+
+### How do I work with files?
+
+```bash
+# Analyze a file
+rawi ask "Review this code for bugs:" < script.js
+
+# Multiple files
+rawi ask "Compare these files:" file1.txt file2.txt
+
+# Pipe output
+rawi ask "Generate tests for this:" < code.js > tests.js
 ```
 
 ### Can I use Rawi in scripts?
 
-Absolutely! Rawi is designed for automation:
+Yes! Rawi works great in automation:
 
 ```bash
-# Pipe files to Rawi
-cat code.js | rawi ask "Review this code"
+#!/bin/bash
+# Automated code review
+git diff | rawi ask "Review these changes" > review.txt
 
-# Save output to file
-rawi ask "Explain Docker" > docker-explanation.md
-
-# Use in conditional statements
-if rawi ask "Is this code secure?" | grep -q "secure"; then
-  echo "Code looks good!"
-fi
+# Generate documentation
+rawi ask "Create README for this project:" < package.json > README.md
 ```
 
-### How do I view my chat history?
+---
+
+## Advanced Features
+
+### How do profiles work?
+
+Profiles allow different configurations:
 
 ```bash
-# List recent sessions
+# Create profiles
+rawi configure --profile work    # For work projects
+rawi configure --profile personal # For personal use
+
+# Switch between profiles
+rawi ask "Question" --profile work
+rawi provider set anthropic --profile personal
+```
+
+### How do I manage conversation history?
+
+```bash
+# View recent history
 rawi history
 
 # View specific session
-rawi history --session <session-id>
-
-# Search chat history
-rawi history --search "docker"
+rawi history --session webapp
 
 # Export history
-rawi history --export history.json
+rawi history --session webapp --format markdown > session.md
+
+# Clear old history
+rawi history --clear --older-than 30d
 ```
 
-### Can I adjust AI model parameters?
+### Can I customize the output format?
 
-Yes, during configuration:
+Yes, Rawi supports different output formats:
 
 ```bash
-rawi configure \
-  --provider openai \
-  --model gpt-4o \
-  --temperature 0.7 \
-  --max-tokens 2048
+# Markdown output
+rawi ask "Explain APIs" --format markdown
+
+# JSON output (for scripts)
+rawi ask "List benefits of TypeScript" --format json
+
+# Plain text (default)
+rawi ask "What is Node.js?"
+```
+
+### How do I integrate with my shell?
+
+Enable shell integration for enhanced features:
+
+```bash
+# Enable integration
+rawi configure --shell-integration
+
+# Use enhanced features
+rawi ask "Explain this error:" < error.log
+git log --oneline | rawi ask "Summarize recent changes"
 ```
 
 ---
 
-## 🔐 Security & Privacy
+## Troubleshooting
 
-### Where are my API keys stored?
+### Why am I getting "command not found"?
 
-API keys are stored locally in:
+1. **Check installation**: `npm list -g @withrawi/rawi`
+2. **Check PATH**: `echo $PATH` should include npm global bin
+3. **Use npx**: `npx @withrawi/rawi --version`
+4. **Reinstall**: `npm install -g @withrawi/rawi`
 
-- **Linux/macOS**: `~/.config/rawi/credentials.json`
-- **Windows**: `%APPDATA%\rawi\credentials.json`
+### Why are my API calls failing?
 
-The file is readable only by your user account.
+1. **Check API key**: `rawi info`
+2. **Verify provider**: `rawi provider list`
+3. **Test connection**: `rawi ask "test" --debug`
+4. **Check credits**: Visit your provider's dashboard
 
-### How secure is Rawi?
+### Why is Rawi slow?
 
-- API keys are stored locally (never sent to Rawi servers)
-- No telemetry or usage tracking
-- Direct communication with AI providers
-- Open-source code for transparency
-
-### Can I use Rawi completely offline?
-
-Yes, with Ollama! Install Ollama and download models locally:
-
-```bash
-# Install Ollama
-brew install ollama  # macOS
-# or visit ollama.com for other platforms
-
-# Download a model
-ollama pull llama3.2
-
-# Configure Rawi
-rawi configure --provider ollama --model llama3.2
-```
-
----
-
-## 🛠️ Troubleshooting
-
-### "Command not found" error
-
-If you get `rawi: command not found`:
-
-1. Ensure global installation: `npm install -g rawi`
-2. Check npm global path: `npm config get prefix`
-3. Add to PATH if needed: `export PATH="$(npm config get prefix)/bin:$PATH"`
-
-### API key issues
-
-```bash
-# Check current configuration
-rawi configure --show
-
-# Test connection
-rawi ask "Hello" --profile your-profile
-
-# Reconfigure if needed
-rawi configure --profile your-profile
-```
-
-### "Model not available" error
-
-1. Check available models: `rawi configure --list-models openai`
-2. Verify model name spelling
-3. Some models require special access (GPT-4, Claude-3)
-
-### Ollama connection issues
-
-```bash
-# Start Ollama service
-ollama serve
-
-# Check if model is downloaded
-ollama list
-
-# Download model if missing
-ollama pull llama3.2
-
-# Test connection
-rawi configure --provider ollama --model llama3.2 --base-url http://localhost:11434/api
-```
-
----
-
-## 🔄 Provider-Specific Questions
-
-### OpenAI
-
-**Q: Which OpenAI model should I use?**
-
-- `gpt-4o` - Best overall (reasoning + speed)
-- `gpt-4o-mini` - Cost-effective, fast
-- `o1-preview` - Complex reasoning tasks
-- `gpt-4` - High-quality, slower
-
-**Q: Why am I getting rate limit errors?**
-
-- Check your OpenAI tier/limits
-- Use `--max-tokens` to reduce token usage
-- Consider `gpt-4o-mini` for higher rate limits
-
-### Anthropic
-
-**Q: What's the difference between Claude models?**
-
-- `claude-3-5-sonnet-20241022` - Latest, most capable
-- `claude-3-5-haiku-20241022` - Fast, cost-effective
-- `claude-3-sonnet-20240229` - Balanced capability
-
-### Ollama
-
-**Q: Which Ollama model should I start with?**
-
-- `llama3.2` - Good balance (3B/7B versions)
-- `codellama` - Optimized for code
-- `mistral` - Fast and efficient
-- `qwen2.5` - Great for multilingual
-
-**Q: How do I run Ollama on a different port?**
-
-```bash
-# Start Ollama on custom port
-OLLAMA_HOST=0.0.0.0:8080 ollama serve
-
-# Configure Rawi
-rawi configure --provider ollama --model llama3.2 --base-url http://localhost:8080/api
-```
-
-### Azure OpenAI
-
-**Q: What's the difference between model name and deployment name?**
-
-- **Model name**: `gpt-4o` (the actual AI model)
-- **Deployment name**: `my-gpt4-deployment` (your Azure deployment)
-- Use deployment name with `--model` in Rawi
-
-### Amazon Bedrock
-
-**Q: How do I request model access?**
-
-1. Go to AWS Bedrock console
-2. Navigate to "Model access"
-3. Request access for desired models
-4. Wait for approval (usually instant for most models)
-
----
-
-## 📊 Performance & Optimization
-
-### How can I make responses faster?
-
-1. Use faster models (GPT-4o-mini, Gemini Flash, Claude Haiku)
-2. Reduce `--max-tokens`
-3. Use Ollama for local inference
-4. Set higher `--temperature` for less careful responses
-
-### How can I reduce costs?
-
-1. Use cost-effective models:
-   - OpenAI: `gpt-4o-mini`
-   - Google: `gemini-1.5-flash`
-   - Anthropic: `claude-3-5-haiku`
-2. Set lower `--max-tokens`
-3. Use Ollama (completely free)
-
-### Can I use Rawi for large documents?
-
-Yes, but be aware of token limits:
-
-- Most models: 4K-8K tokens input
-- Extended models: 32K-200K tokens
-- Use `cat large-file.txt | head -100 | rawi ask "Summarize"`
-
----
-
-## 🔗 Integration Questions
-
-### Can I integrate Rawi with my IDE?
-
-Yes! Many ways:
-
-- **VS Code**: Terminal integration
-- **Vim/Neovim**: Shell commands
-- **Shell aliases**: Create shortcuts
-
-```bash
-# Add to ~/.bashrc or ~/.zshrc
-alias explain="rawi ask 'Explain this code:'"
-alias review="rawi ask 'Review this code for issues:'"
-```
-
-### Can I use Rawi in CI/CD?
-
-Absolutely! Use environment variables:
-
-```bash
-# Set in CI environment
-export RAWI_OPENAI_API_KEY="sk-..."
-export RAWI_PROVIDER="openai"
-export RAWI_MODEL="gpt-4o-mini"
-
-# Use in pipeline
-rawi ask "Review this pull request" < changes.diff
-```
-
-### How do I backup my configuration?
-
-```bash
-# Copy configuration files
-cp -r ~/.config/rawi ~/backups/
-
-# Or export specific profile
-rawi configure --show --profile work > work-profile.txt
-```
-
----
-
-## 🆕 Updates & Support
-
-### How do I update Rawi?
-
-```bash
-# Update to latest version
-npm update -g rawi
-
-# Check current version
-rawi info
-```
-
-### Where can I get help?
-
-1. **Documentation**: Full guides in `/docs`
-2. **Issues**: GitHub repository
-3. **Troubleshooting**: [troubleshooting.md](./troubleshooting.md)
+1. **Try different provider**: `rawi provider set anthropic`
+2. **Check network**: Test internet speed
+3. **Use shorter prompts**: Be more concise
+4. **Use local provider**: `rawi provider set ollama`
 
 ### How do I report bugs?
 
-1. Check existing issues on GitHub
-2. Include version: `rawi info`
-3. Include configuration: `rawi configure --show`
-4. Include error messages and steps to reproduce
+1. **Check troubleshooting**: [Troubleshooting Guide](troubleshooting.md)
+2. **Gather info**: `rawi --version`, `rawi info`
+3. **Reproduce**: Document exact steps
+4. **Report**: Submit to GitHub issues
 
 ---
 
-## 🔮 Advanced Questions
+## Best Practices
 
-### Can I extend Rawi with custom providers?
+### How should I write effective prompts?
 
-Currently, no plugin system exists, but you can:
+1. **Be specific**: "Review this TypeScript function for performance issues"
+2. **Provide context**: "In the context of a React app..."
+3. **Use examples**: "Like this: [example]"
+4. **Be clear about output**: "Provide bullet points"
 
-1. Fork the repository
-2. Add provider in `src/config/providers/`
-3. Follow the [development guide](./development.md)
+### How can I save costs?
 
-### Can I use custom prompts?
+1. **Use appropriate models**: Smaller models for simple tasks
+2. **Be concise**: Shorter prompts cost less
+3. **Use sessions**: Maintain context without repeating information
+4. **Local providers**: Use Ollama for free local processing
+5. **Monitor usage**: Check your provider's usage dashboard
 
-Not directly, but you can:
+### What are security best practices?
+
+1. **Protect API keys**: Never share or commit them
+2. **Use environment variables**: `export RAWI_API_KEY="key"`
+3. **Review permissions**: Limit API key permissions when possible
+4. **Regular rotation**: Change API keys periodically
+5. **Monitor usage**: Watch for unexpected usage patterns
+
+### How should I organize my workflows?
+
+1. **Use profiles**: Separate work/personal configurations
+2. **Use sessions**: Group related conversations
+3. **Use templates**: Standardize common tasks
+4. **Export important**: Save valuable conversations
+5. **Clean up**: Remove old history periodically
+
+---
+
+## Limitations and Considerations
+
+### What are Rawi's limitations?
+
+1. **Internet dependency**: Most providers require internet
+2. **API costs**: Cloud providers charge per usage
+3. **Rate limits**: Providers have usage limits
+4. **Context limits**: Models have maximum input sizes
+5. **File size limits**: Large files may exceed limits
+
+### What about data privacy?
+
+1. **Cloud providers**: Data sent to third-party APIs
+2. **Local providers**: Data stays on your machine (Ollama)
+3. **History storage**: Conversations stored locally
+4. **API policies**: Review provider privacy policies
+5. **Sensitive data**: Avoid sending confidential information
+
+### Can I use Rawi commercially?
+
+Yes, but consider:
+
+1. **License**: Check Rawi's license terms
+2. **Provider terms**: Review API provider terms of service
+3. **Data handling**: Ensure compliance with your policies
+4. **Cost management**: Monitor and budget API usage
+
+---
+
+## Getting Help
+
+### Where can I find more information?
+
+- [📖 Main Documentation](README.md) - Complete wiki
+- [🚀 Quick Start](quickstart.md) - Get started quickly
+- [📚 Commands Reference](commands/README.md) - All commands
+- [🔧 Troubleshooting](troubleshooting.md) - Problem solving
+- [🛠️ Configuration](commands/configure.md) - Setup guide
+
+### How do I contribute or get support?
+
+1. **GitHub Issues**: Bug reports and feature requests
+2. **Documentation**: Contribute to this wiki
+3. **Community**: Share tips and workflows
+4. **Code**: Submit pull requests
+
+### What's the roadmap for Rawi?
+
+Check the GitHub repository for:
+
+- Planned features
+- Release notes
+- Development progress
+- Community discussions
+
+---
+
+## Quick Reference
+
+### Essential Commands
 
 ```bash
-# Create alias with custom prompt
-alias code-review='rawi ask "As a senior developer, review this code for security, performance, and best practices:"'
+# Setup
+rawi configure                    # Interactive setup
+rawi provider set openai         # Set AI provider
 
-# Use with input
-cat mycode.js | code-review
+# Basic usage
+rawi ask "question"              # Ask a question
+rawi ask "question" --session s1 # Use session
+rawi act developer "help"        # Use template
+
+# Management
+rawi history                     # View history
+rawi info                       # Show configuration
+rawi provider list              # List providers
+
+# Help
+rawi --help                     # General help
+rawi ask --help                 # Command help
 ```
 
-### How does Rawi handle rate limits?
+### Common Workflows
 
-Rawi respects provider rate limits but doesn't implement automatic retry. If you hit limits:
+```bash
+# Code review
+git diff | rawi ask "Review changes"
 
-1. Wait before retrying
-2. Use different model/provider
-3. Consider upgrading your API tier
+# Documentation
+rawi ask "Create README:" < package.json
+
+# Learning
+rawi ask "Explain this concept:" < article.txt
+
+# Writing
+rawi act writer "Help with blog post about AI"
+```
 
 ---
 
-_For more detailed information, see our [complete documentation](./README.md)._
+_Part of the [Rawi Documentation Wiki](README.md)_

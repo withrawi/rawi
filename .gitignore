@@ -127,6 +127,7 @@ dist
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+.tsbuildinfo
 
 man/*
 !man/*.md

@@ -1,34 +1,64 @@
 import {writeFile} from 'node:fs/promises';
+import {select} from '@inquirer/prompts';
 import chalk from 'chalk';
+import Table from 'cli-table3';
 import {Command} from 'commander';
-import {DatabaseManager} from '../../database/index.js';
+import {DatabaseManager} from '../../core/database/manager.js';
 import {
   DEFAULT_HISTORY_LIMIT,
   DEFAULT_PROFILE,
-} from '../../shared/constants.js';
-import type {ChatHistoryOptions} from '../../shared/types.js';
-import {formatRelativeTime, truncateText} from '../../shared/utils.js';
+} from '../../core/shared/constants.js';
+import type {ChatHistoryOptions} from '../../core/shared/types.js';
+import {formatRelativeTime, truncateText} from '../../core/shared/utils.js';
 
 export const createHistoryCommand = (): Command => {
   const historyCommand = new Command('history');
 
   historyCommand
-    .description('Manage chat history')
+    .description(
+      [
+        chalk.bold('Manage chat history and sessions.'),
+        '',
+        chalk.gray(
+          'Search, filter, export, and clean up your AI chat history.',
+        ),
+        chalk.gray('Use --limit for pagination, --search for filtering.'),
+      ].join('\n'),
+    )
     .option(
       '-p, --profile <profile>',
-      'Profile to show history for',
+      chalk.white('Profile to show history for'),
       DEFAULT_PROFILE,
     )
     .option(
       '-l, --limit <number>',
-      'Number of sessions to show',
+      chalk.white('Number of sessions to show'),
       DEFAULT_HISTORY_LIMIT.toString(),
     )
-    .option('-s, --search <query>', 'Search messages containing text')
-    .option('--provider <provider>', 'Filter by AI provider')
-    .option('--model <model>', 'Filter by AI model')
-    .option('--from <date>', 'Show sessions from date (YYYY-MM-DD)')
-    .option('--to <date>', 'Show sessions to date (YYYY-MM-DD)')
+    .option('--all', chalk.white('Show all sessions without pagination limit'))
+    .option('--all-profiles', chalk.white('Show sessions from all profiles'))
+    .option(
+      '-s, --search <query>',
+      chalk.white('Search messages containing text'),
+    )
+    .option('--provider <provider>', chalk.white('Filter by AI provider'))
+    .option('--model <model>', chalk.white('Filter by AI model'))
+    .option(
+      '--from <date>',
+      chalk.white('Show sessions from date (YYYY-MM-DD)'),
+    )
+    .option('--to <date>', chalk.white('Show sessions to date (YYYY-MM-DD)'))
+    .addHelpText(
+      'after',
+      [
+        chalk.bold.cyan('\nSee also:'),
+        chalk.gray('  rawi history sessions'),
+        chalk.gray('  rawi history show <sessionId>'),
+        chalk.gray('  rawi history stats'),
+        chalk.gray('  rawi history cleanup'),
+        chalk.gray('  rawi history export'),
+      ].join('\n'),
+    )
     .action(async (options) => {
       let dbManager: DatabaseManager | null = null;
 
@@ -36,8 +66,10 @@ export const createHistoryCommand = (): Command => {
         dbManager = new DatabaseManager();
 
         const searchOptions: ChatHistoryOptions = {
-          profile: options.profile,
-          limit: Number.parseInt(options.limit) || DEFAULT_HISTORY_LIMIT,
+          profile: options.allProfiles ? undefined : options.profile,
+          limit: options.all
+            ? 1000
+            : Number.parseInt(options.limit) || DEFAULT_HISTORY_LIMIT,
           search: options.search,
           provider: options.provider,
           model: options.model,
@@ -45,44 +77,50 @@ export const createHistoryCommand = (): Command => {
           toDate: options.to,
         };
 
+        const pageSize = 10;
+
         if (options.search) {
           const messages = await dbManager.searchMessages(searchOptions);
-
           if (messages.length === 0) {
             console.log(
               chalk.yellow('📭 No messages found matching your search.'),
             );
             return;
           }
-
           console.log(chalk.cyan(`🔍 Found ${messages.length} messages:`));
           console.log();
-
-          for (const message of messages) {
-            const session = await dbManager.getSession(message.sessionId);
-            const sessionTitle = session?.title || 'Untitled Session';
-
-            console.log(
-              chalk.dim(
-                `Session: ${truncateText(sessionTitle, 40)} (${message.sessionId})`,
-              ),
-            );
-            console.log(
-              chalk.bold(
-                `${message.role === 'user' ? '👤' : '🤖'} ${message.role}:`,
-              ),
-            );
-            console.log(truncateText(message.content, 200));
-            console.log(
-              chalk.dim(
-                `${formatRelativeTime(message.timestamp)} • ${message.provider}/${message.model}`,
-              ),
-            );
-            console.log(chalk.dim('─'.repeat(60)));
-          }
+          const table = new Table({
+            head: [
+              chalk.cyan('Session'),
+              chalk.cyan('Role'),
+              chalk.cyan('Content'),
+              chalk.cyan('Time'),
+              chalk.cyan('Provider/Model'),
+            ],
+            style: {head: ['cyan']},
+            colWidths: [18, 8, 40, 16, 22],
+            wordWrap: true,
+          });
+          messages.forEach((message) => {
+            table.push([
+              truncateText(message.sessionId, 16),
+              message.role === 'user'
+                ? chalk.blue('👤 user')
+                : chalk.green('🤖 assistant'),
+              truncateText(message.content, 38),
+              formatRelativeTime(message.timestamp),
+              `${message.provider}/${message.model}`,
+            ]);
+          });
+          console.log(table.toString());
         } else {
+          const profileMessage = options.allProfiles
+            ? 'all profiles'
+            : `profile: ${searchOptions.profile}`;
+          console.log(
+            chalk.dim(`Searching for sessions with ${profileMessage}`),
+          );
           const sessions = await dbManager.getSessions(searchOptions);
-
           if (sessions.length === 0) {
             console.log(chalk.yellow('📭 No chat sessions found.'));
             console.log(
@@ -92,24 +130,56 @@ export const createHistoryCommand = (): Command => {
             );
             return;
           }
-
-          console.log(
-            chalk.cyan(`📚 Chat History (${sessions.length} sessions):`),
-          );
-          console.log();
-
-          for (const session of sessions) {
-            const title = session.title || 'Untitled Session';
-            const preview = truncateText(title, 50);
-
-            console.log(chalk.bold(`📝 ${preview}`));
-            console.log(chalk.dim(`   ID: ${session.id}`));
-            console.log(chalk.dim(`   Profile: ${session.profile}`));
-            console.log(chalk.dim(`   Messages: ${session.messageCount}`));
-            console.log(
-              chalk.dim(`   Updated: ${formatRelativeTime(session.updatedAt)}`),
-            );
-            console.log();
+          const totalPages = Math.ceil(sessions.length / pageSize);
+          let page = 0;
+          const renderPage = (pageIdx: number) => {
+            const table = new Table({
+              head: [
+                chalk.cyan('Title'),
+                chalk.cyan('ID'),
+                chalk.cyan('Profile'),
+                chalk.cyan('Messages'),
+                chalk.cyan('Updated'),
+              ],
+              style: {head: ['cyan']},
+              colWidths: [22, 38, 12, 10, 18],
+              wordWrap: true,
+            });
+            sessions
+              .slice(pageIdx * pageSize, (pageIdx + 1) * pageSize)
+              .forEach((session) => {
+                table.push([
+                  truncateText(session.title || 'Untitled', 20),
+                  session.id,
+                  session.profile,
+                  session.messageCount,
+                  formatRelativeTime(session.updatedAt),
+                ]);
+              });
+            console.log(table.toString());
+            console.log(chalk.gray(`Page ${pageIdx + 1} of ${totalPages}`));
+          };
+          if (sessions.length > pageSize) {
+            let exit = false;
+            while (!exit) {
+              renderPage(page);
+              const choices = [];
+              if (page > 0) choices.push({name: 'Previous', value: 'prev'});
+              if (page < totalPages - 1)
+                choices.push({name: 'Next', value: 'next'});
+              choices.push({name: 'Exit', value: 'exit'});
+              const nav = await select({
+                message: 'Navigate pages:',
+                choices,
+                default: page < totalPages - 1 ? 'next' : 'exit',
+              });
+              if (nav === 'prev') page--;
+              else if (nav === 'next') page++;
+              else exit = true;
+              if (!exit) console.clear();
+            }
+          } else {
+            renderPage(0);
           }
         }
 
@@ -139,17 +209,24 @@ export const createHistoryCommand = (): Command => {
 
   historyCommand
     .command('sessions')
-    .description('List and manage chat sessions')
+    .description(
+      [
+        chalk.bold('List and manage chat sessions.'),
+        '',
+        chalk.gray('View, filter, and manage your chat sessions.'),
+      ].join('\n'),
+    )
     .option(
       '-p, --profile <profile>',
-      'Profile to show sessions for',
+      chalk.white('Profile to show sessions for'),
       DEFAULT_PROFILE,
     )
     .option(
       '-l, --limit <number>',
-      'Number of sessions to show',
+      chalk.white('Number of sessions to show'),
       DEFAULT_HISTORY_LIMIT.toString(),
     )
+    .option('--all', chalk.white('Show all sessions without pagination limit'))
     .action(async (options) => {
       let dbManager: DatabaseManager | null = null;
 
@@ -157,7 +234,9 @@ export const createHistoryCommand = (): Command => {
         dbManager = new DatabaseManager();
         const sessions = await dbManager.getSessions({
           profile: options.profile,
-          limit: Number.parseInt(options.limit) || DEFAULT_HISTORY_LIMIT,
+          limit: options.all
+            ? 1000
+            : Number.parseInt(options.limit) || DEFAULT_HISTORY_LIMIT,
         });
 
         if (sessions.length === 0) {
@@ -200,7 +279,13 @@ export const createHistoryCommand = (): Command => {
 
   historyCommand
     .command('show <sessionId>')
-    .description('Show all messages in a specific session')
+    .description(
+      [
+        chalk.bold('Show all messages in a specific session.'),
+        '',
+        chalk.gray('Display the full conversation for a session.'),
+      ].join('\n'),
+    )
     .action(async (sessionId) => {
       let dbManager: DatabaseManager | null = null;
 
@@ -255,7 +340,13 @@ export const createHistoryCommand = (): Command => {
 
   historyCommand
     .command('delete <sessionId>')
-    .description('Delete a specific session')
+    .description(
+      [
+        chalk.bold('Delete a specific session.'),
+        '',
+        chalk.gray('Remove a chat session and its messages.'),
+      ].join('\n'),
+    )
     .action(async (sessionId) => {
       let dbManager: DatabaseManager | null = null;
 
@@ -295,8 +386,14 @@ export const createHistoryCommand = (): Command => {
 
   historyCommand
     .command('stats')
-    .description('Show usage statistics')
-    .option('-p, --profile <profile>', 'Profile to show stats for')
+    .description(
+      [
+        chalk.bold('Show usage statistics.'),
+        '',
+        chalk.gray('Display usage stats for your chat history.'),
+      ].join('\n'),
+    )
+    .option('-p, --profile <profile>', chalk.white('Profile to show stats for'))
     .action(async (options) => {
       let dbManager: DatabaseManager | null = null;
 
@@ -374,10 +471,24 @@ export const createHistoryCommand = (): Command => {
 
   historyCommand
     .command('cleanup')
-    .description('Clean up old sessions')
-    .option('-p, --profile <profile>', 'Profile to clean up', DEFAULT_PROFILE)
-    .option('-d, --days <number>', 'Delete sessions older than N days', '30')
-    .option('--confirm', 'Confirm deletion without prompt')
+    .description(
+      [
+        chalk.bold('Clean up old sessions.'),
+        '',
+        chalk.gray('Delete sessions older than a specified number of days.'),
+      ].join('\n'),
+    )
+    .option(
+      '-p, --profile <profile>',
+      chalk.white('Profile to clean up'),
+      DEFAULT_PROFILE,
+    )
+    .option(
+      '-d, --days <number>',
+      chalk.white('Delete sessions older than N days'),
+      '30',
+    )
+    .option('--confirm', chalk.white('Confirm deletion without prompt'))
     .action(async (options) => {
       let dbManager: DatabaseManager | null = null;
 
@@ -423,11 +534,17 @@ export const createHistoryCommand = (): Command => {
 
   historyCommand
     .command('export')
-    .description('Export chat history to JSON')
-    .option('-p, --profile <profile>', 'Profile to export')
+    .description(
+      [
+        chalk.bold('Export chat history to JSON.'),
+        '',
+        chalk.gray('Save your chat history to a file for backup or analysis.'),
+      ].join('\n'),
+    )
+    .option('-p, --profile <profile>', chalk.white('Profile to export'))
     .option(
       '-o, --output <file>',
-      'Output file path',
+      chalk.white('Output file path'),
       'rawi-history-export.json',
     )
     .action(async (options) => {

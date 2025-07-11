@@ -1,746 +1,653 @@
 # Troubleshooting Guide
 
-Common issues and solutions for Rawi users and developers.
+This guide helps you diagnose and resolve common issues with Rawi.
 
-## 🔧 Installation Issues
+## Navigation
 
-### Node.js Version Errors
+- [📖 Wiki Home](README.md)
+- [⚙️ Configuration](commands/configure.md)
+- [🔧 Installation](installation.md)
+- [🚀 Quick Start](quickstart.md)
 
-**Problem**: Getting errors about Node.js version compatibility
+---
 
-```
-error: The engine "node" is incompatible with this module
-```
+## Quick Diagnostics
 
-**Solution**:
-
-```bash
-# Check your Node.js version
-node --version
-
-# Update to Node.js 18+ (recommended: use nvm)
-nvm install 18
-nvm use 18
-
-# Or download from nodejs.org
-```
-
-### Package Installation Failures
-
-**Problem**: `npm install` or `pnpm install` fails
-
-**Solution**:
+### Check Rawi Status
 
 ```bash
-# Clear package manager cache
+# Check if Rawi is properly installed
+rawi --version
+
+# View current configuration
+rawi info
+
+# Test basic functionality
+rawi ask "Hello, are you working?"
+```
+
+### Common Quick Fixes
+
+Before diving into specific issues, try these common solutions:
+
+1. **Update Rawi**: `npm update -g rawi`
+2. **Clear configuration**: `rawi configure --reset`
+3. **Restart terminal**: Close and reopen your terminal
+4. **Check permissions**: Ensure proper file permissions for config directory
+
+---
+
+## Installation Issues
+
+### Installation Fails
+
+**Problem**: `npm install -g rawi` fails
+
+**Solutions**:
+
+```bash
+# Try with elevated permissions (Linux/macOS)
+sudo npm install -g rawi
+
+# Use npm with different registry
+npm install -g rawi --registry https://registry.npmjs.org/
+
+# Clear npm cache and retry
 npm cache clean --force
-# or
-pnpm store prune
+npm install -g rawi
 
-# Delete node_modules and lock file
-rm -rf node_modules package-lock.json
+# Use different package manager
+pnpm add -g rawi
 # or
-rm -rf node_modules pnpm-lock.yaml
-
-# Reinstall
-npm install
-# or
-pnpm install
+yarn global add rawi
 ```
 
-### Global Installation Issues
+### Command Not Found
 
-**Problem**: `rawi` command not found after global installation
+**Problem**: `rawi: command not found` after installation
 
-**Solution**:
+**Solutions**:
 
 ```bash
 # Check if npm global bin is in PATH
 npm config get prefix
-echo $PATH
+# Add to PATH if needed (add to ~/.bashrc or ~/.zshrc)
+export PATH="$(npm config get prefix)/bin:$PATH"
 
-# Add npm global bin to PATH (add to ~/.bashrc or ~/.zshrc)
-export PATH=$PATH:$(npm config get prefix)/bin
+# Alternative: Use npx
+npx rawi --version
 
-# Or use npx
-npx rawi --help
-```
-
----
-
-## ⚙️ Configuration Issues
-
-### Configuration File Not Found
-
-**Problem**:
-
-```
-❌ No configuration found for profile 'default'. Run 'rawi configure' to set up.
-```
-
-**Solution**:
-
-```bash
-# Run interactive configuration
-rawi configure
-
-# Or manual configuration
-rawi configure --provider openai --model gpt-4o --api-key your-key
-
-# Check configuration location
-ls -la ~/.rawi/
-```
-
-### Invalid API Key Errors
-
-**Problem**:
-
-```
-❌ Unable to load credentials for profile 'default'
-❌ Invalid API key format
-```
-
-**Solutions**:
-
-#### OpenAI API Key Issues
-
-```bash
-# Verify API key format (should start with 'sk-')
-echo $OPENAI_API_KEY
-
-# Regenerate API key at https://platform.openai.com/api-keys
-rawi configure --provider openai --model gpt-4o --api-key sk-new-key
-```
-
-#### Anthropic API Key Issues
-
-```bash
-# Verify API key format (should start with 'sk-ant-')
-rawi configure --provider anthropic --model claude-3-sonnet-20240229 --api-key sk-ant-your-key
-```
-
-#### Google API Key Issues
-
-```bash
-# Verify API key format (should start with 'AIza')
-rawi configure --provider google --model gemini-1.5-pro --api-key AIza-your-key
-```
-
-### Profile Management Issues
-
-**Problem**: Cannot switch between profiles or profiles not found
-
-**Solution**:
-
-```bash
-# List all profiles
-rawi configure --list
-
-# Show specific profile
-rawi configure --show --profile work
-
-# Create new profile
-rawi configure --profile work --provider anthropic --model claude-3-sonnet-20240229
-
-# Delete problematic profile
-rawi configure --delete broken-profile
+# Check installation location
+which rawi
+ls -la $(npm config get prefix)/bin/rawi
 ```
 
 ### Permission Errors
 
-**Problem**:
-
-```
-Error: EACCES: permission denied, open '~/.rawi/credentials'
-```
-
-**Solution**:
-
-```bash
-# Fix file permissions
-chmod 600 ~/.rawi/credentials
-chown $USER ~/.rawi/credentials
-
-# Or recreate configuration directory
-rm -rf ~/.rawi
-rawi configure
-```
-
----
-
-## 🤖 Provider-Specific Issues
-
-### OpenAI Issues
-
-#### Rate Limit Errors
-
-**Problem**:
-
-```
-Error: Rate limit exceeded
-```
-
-**Solution**:
-
-```bash
-# Wait and retry
-# Upgrade OpenAI plan for higher limits
-# Use different model (gpt-3.5-turbo has higher limits)
-rawi configure --model gpt-3.5-turbo
-```
-
-#### Model Access Issues
-
-**Problem**:
-
-```
-Error: The model 'gpt-4' does not exist or you do not have access to it
-```
-
-**Solution**:
-
-```bash
-# Check available models
-rawi configure --list-models openai
-
-# Use available model
-rawi configure --model gpt-3.5-turbo
-
-# Request access to GPT-4 from OpenAI
-```
-
-### Anthropic Issues
-
-#### Claude Model Access
-
-**Problem**: Claude models returning access errors
-
-**Solution**:
-
-```bash
-# Verify Anthropic account has Claude access
-# Use correct model name
-rawi configure --list-models anthropic
-
-# Update to latest model
-rawi configure --model claude-3-5-sonnet-20241022
-```
-
-### Google Issues
-
-#### Gemini API Setup
-
-**Problem**: Google API returning authentication errors
-
-**Solution**:
-
-```bash
-# Verify API key is enabled for Generative AI
-# Check Google Cloud Console for API restrictions
-# Ensure correct base URL
-rawi configure --provider google --base-url https://generativelanguage.googleapis.com/v1beta
-```
-
-### Ollama Issues
-
-#### Service Not Running
-
-**Problem**:
-
-```
-Error: connect ECONNREFUSED 127.0.0.1:11434
-```
-
-**Solution**:
-
-```bash
-# Start Ollama service
-ollama serve
-
-# Check if Ollama is running
-curl http://localhost:11434/api/tags
-
-# Verify model is pulled
-ollama list
-ollama pull llama3.2
-```
-
-#### Model Not Found
-
-**Problem**:
-
-```
-Error: model 'llama3.2' not found
-```
-
-**Solution**:
-
-```bash
-# Pull the model
-ollama pull llama3.2
-
-# List available models
-ollama list
-
-# Use available model
-rawi configure --provider ollama --model available-model-name
-```
-
-#### Custom Ollama Host
-
-**Problem**: Ollama running on different host/port
-
-**Solution**:
-
-```bash
-# Configure custom base URL
-rawi configure --provider ollama --model llama3.2 --base-url http://192.168.1.100:11434/api
-
-# Or set environment variable
-export OLLAMA_HOST=192.168.1.100:11434
-```
-
-### Azure OpenAI Issues
-
-#### Resource Configuration
-
-**Problem**: Azure OpenAI configuration errors
-
-**Solution**:
-
-```bash
-# Verify all required parameters
-rawi configure \
-  --provider azure \
-  --model your-deployment-name \
-  --api-key your-azure-key \
-  --resource-name your-resource-name \
-  --api-version 2024-10-01-preview
-
-# Check Azure portal for correct values
-# Ensure deployment is active
-```
-
-### Amazon Bedrock Issues
-
-#### AWS Credentials
-
-**Problem**: AWS credential errors
-
-**Solution**:
-
-```bash
-# Use AWS credential provider chain
-aws configure
-rawi configure --provider bedrock --model anthropic.claude-3-sonnet-20240229-v1:0 --use-provider-chain
-
-# Or explicit credentials
-rawi configure \
-  --provider bedrock \
-  --model anthropic.claude-3-sonnet-20240229-v1:0 \
-  --access-key-id AKIA... \
-  --secret-access-key your-secret \
-  --region us-east-1
-```
-
-#### Model Access
-
-**Problem**: Model access denied in Bedrock
-
-**Solution**:
-
-```bash
-# Request model access in AWS Console
-# Go to Amazon Bedrock > Model access
-# Request access for required models
-# Wait for approval (can take time)
-```
-
----
-
-## 🗄️ Database and History Issues
-
-### Database Corruption
-
-**Problem**: History commands failing or returning errors
-
-**Solution**:
-
-```bash
-# Backup current database
-cp ~/.rawi/history.db ~/.rawi/history.db.backup
-
-# Remove corrupted database (will recreate)
-rm ~/.rawi/history.db
-
-# Test with new session
-rawi ask "test" --new-session
-```
-
-### Session Management Issues
-
-**Problem**: Cannot continue sessions or session not found
-
-**Solution**:
-
-```bash
-# List all sessions
-rawi history sessions
-
-# Use correct session ID
-rawi ask "follow up" --session correct-session-id
-
-# Start new session if needed
-rawi ask "new conversation" --new-session
-```
-
-### History Search Problems
-
-**Problem**: Search not finding expected results
-
-**Solution**:
-
-```bash
-# Try different search terms
-rawi history --search "typescript"
-rawi history --search "react"
-
-# Use broader search
-rawi history --search "code"
-
-# Check specific date range
-rawi history --from 2024-01-01 --to 2024-01-31
-```
-
----
-
-## 🌐 Network and API Issues
-
-### Connection Timeouts
-
-**Problem**: API requests timing out
-
-**Solution**:
-
-```bash
-# Check internet connection
-ping google.com
-
-# Try different provider
-rawi ask "test" --profile ollama-local
-
-# Check firewall/proxy settings
-# Some corporate networks block AI API endpoints
-```
-
-### SSL/TLS Errors
-
-**Problem**: Certificate or SSL errors
-
-**Solution**:
-
-```bash
-# Update Node.js and certificates
-npm update -g
-
-# Check system time (SSL certificates are time-sensitive)
-date
-
-# Try with different provider
-```
-
-### Proxy Configuration
-
-**Problem**: Requests failing behind corporate proxy
-
-**Solution**:
-
-```bash
-# Set proxy environment variables
-export HTTP_PROXY=http://proxy.company.com:8080
-export HTTPS_PROXY=http://proxy.company.com:8080
-
-# Or configure npm proxy
-npm config set proxy http://proxy.company.com:8080
-npm config set https-proxy http://proxy.company.com:8080
-```
-
----
-
-## 💾 Performance Issues
-
-### Slow Response Times
-
-**Problem**: AI responses taking too long
+**Problem**: Permission denied during installation or usage
 
 **Solutions**:
 
-#### Use Faster Models
-
 ```bash
-# Switch to faster models
-rawi configure --model gpt-3.5-turbo  # OpenAI
-rawi configure --model claude-3-haiku-20240307  # Anthropic
-rawi configure --model gemini-1.5-flash  # Google
+# Fix npm permissions (preferred method)
+mkdir ~/.npm-global
+npm config set prefix '~/.npm-global'
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+
+# Alternative: Change npm permissions
+sudo chown -R $(whoami) $(npm config get prefix)/{lib/node_modules,bin,share}
+
+# For config directory permissions
+chmod -R 755 ~/.config/rawi
 ```
 
-#### Reduce Token Limits
+---
+
+## Configuration Issues
+
+### Provider Setup Problems
+
+**Problem**: Cannot configure AI provider
+
+**Solutions**:
 
 ```bash
-# Reduce max tokens for faster responses
-rawi configure --max-tokens 1024
+# Reset configuration
+rawi configure --reset
+
+# Check available providers
+rawi provider list
+
+# Set provider with verbose output
+rawi provider set openai --verbose
+
+# Verify API key format
+rawi configure --show | grep -i api
+
+# Test provider connection
+rawi ask "Test message" --debug
 ```
 
-#### Use Local Models
+### API Key Issues
+
+**Problem**: Invalid or missing API key
+
+**Solutions**:
 
 ```bash
-# Switch to local Ollama for fastest responses
-ollama pull llama3.2:3b  # Smaller model
-rawi configure --provider ollama --model llama3.2:3b
+# Check current API key (masked)
+rawi info
+
+# Set API key correctly
+rawi configure --api-key YOUR_API_KEY
+
+# Use environment variable
+export RAWI_API_KEY="your-api-key"
+rawi ask "Test"
+
+# Check key format (provider-specific)
+# OpenAI: sk-...
+# Anthropic: sk-ant-...
+# Google: AIza...
+```
+
+### Configuration File Corruption
+
+**Problem**: Config file is corrupted or unreadable
+
+**Solutions**:
+
+```bash
+# Backup current config
+cp ~/.config/rawi/config.json ~/.config/rawi/config.json.backup
+
+# Reset to defaults
+rawi configure --reset
+
+# Manually edit config
+nano ~/.config/rawi/config.json
+
+# Validate JSON syntax
+cat ~/.config/rawi/config.json | jq .
+```
+
+---
+
+## Connection and Network Issues
+
+### API Connection Failures
+
+**Problem**: Cannot connect to AI provider APIs
+
+**Diagnostic Commands**:
+
+```bash
+# Test connectivity
+rawi ask "Hello" --debug
+
+# Check network connectivity
+ping api.openai.com
+curl -I https://api.anthropic.com
+
+# Test with verbose output
+rawi ask "Test" --verbose --provider openai
+```
+
+**Solutions**:
+
+```bash
+# Configure proxy if needed
+export HTTPS_PROXY=http://proxy.company.com:8080
+export HTTP_PROXY=http://proxy.company.com:8080
+
+# Use different provider
+rawi provider set anthropic
+
+# Check firewall settings
+# Ensure outbound HTTPS (443) is allowed
+
+# Try different network
+# Test on different WiFi/connection
+```
+
+### Timeout Issues
+
+**Problem**: Requests timeout frequently
+
+**Solutions**:
+
+```bash
+# Increase timeout (if available in future versions)
+rawi configure --timeout 60
+
+# Use shorter prompts
+rawi ask "Brief answer please: [your question]"
+
+# Try different provider
+rawi provider set anthropic  # Often faster responses
+
+# Check network stability
+ping -c 10 8.8.8.8
+```
+
+### Rate Limiting
+
+**Problem**: Too many requests / rate limited
+
+**Solutions**:
+
+```bash
+# Wait before retrying (respect rate limits)
+sleep 60 && rawi ask "Your question"
+
+# Use different provider
+rawi provider set ollama  # Local provider, no rate limits
+
+# Check provider limits
+rawi info  # Shows current provider info
+
+# Use sessions to maintain context without multiple API calls
+rawi ask "Question 1" --session work
+rawi ask "Follow-up question" --session work
+```
+
+---
+
+## Command-Specific Issues
+
+### Ask Command Issues
+
+**Problem**: `rawi ask` not working as expected
+
+**Diagnostics**:
+
+```bash
+# Test basic functionality
+rawi ask "Hello"
+
+# Check with debug output
+rawi ask "Test" --debug
+
+# Try different input methods
+echo "Hello" | rawi ask
+rawi ask "Hello" < input.txt
+```
+
+**Solutions**:
+
+```bash
+# Escape special characters
+rawi ask "What is 2+2?"  # Use quotes for complex queries
+
+# Check input encoding
+file input.txt  # Ensure UTF-8 encoding
+
+# Try without piping first
+rawi ask "Your question directly"
+```
+
+### History Command Issues
+
+**Problem**: History not working or empty
+
+**Solutions**:
+
+```bash
+# Check if history directory exists
+ls -la ~/.config/rawi/
+
+# Verify history files
+ls -la ~/.config/rawi/history/
+
+# Test history functionality
+rawi ask "Test for history" --session test
+rawi history --session test
+
+# Reset history if corrupted
+rm -rf ~/.config/rawi/history/
+rawi ask "New test"
+```
+
+### Act Command Issues
+
+**Problem**: Act templates not working
+
+**Solutions**:
+
+```bash
+# List available templates
+rawi act --list
+
+# Test basic template
+rawi act assistant "Help me with this"
+
+# Check template syntax
+rawi act --help
+
+# Try with debug output
+rawi act developer "Code help" --debug
+```
+
+---
+
+## Performance Issues
+
+### Slow Response Times
+
+**Problem**: Rawi responses are very slow
+
+**Solutions**:
+
+```bash
+# Try different provider
+rawi provider set anthropic  # Often faster
+
+# Use shorter, more specific prompts
+rawi ask "Brief: What is Node.js?"
+
+# Check network speed
+speedtest-cli  # or use online speed test
+
+# Use local provider if available
+rawi provider set ollama  # Requires local Ollama installation
 ```
 
 ### High Memory Usage
 
 **Problem**: Rawi using too much memory
 
-**Solution**:
+**Solutions**:
 
 ```bash
-# Use smaller models
-# Limit conversation history
-rawi history cleanup --days 7
+# Clear session history periodically
+rawi history --clear --older-than 30d
 
-# Clear old sessions
-rawi history cleanup --confirm
+# Use shorter sessions
+rawi ask "Question" --session temp
+# Start new session frequently
+
+# Limit session size (conceptual)
+# Keep individual conversations focused
 ```
 
 ---
 
-## 🖥️ Platform-Specific Issues
+## File and Permission Issues
 
-### Windows Issues
+### Cannot Read/Write Files
 
-#### PowerShell Execution Policy
+**Problem**: File permission errors
 
-**Problem**: Cannot run scripts in PowerShell
-
-**Solution**:
-
-```powershell
-# Set execution policy
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-
-# Or run with bypass
-powershell -ExecutionPolicy Bypass -Command "rawi ask 'test'"
-```
-
-#### Path Issues
-
-**Problem**: Command not found on Windows
-
-**Solution**:
-
-```cmd
-# Add npm global to PATH
-set PATH=%PATH%;%APPDATA%\npm
-
-# Or use full path
-%APPDATA%\npm\rawi.cmd ask "test"
-```
-
-### macOS Issues
-
-#### Permission Errors
-
-**Problem**: Permission denied errors on macOS
-
-**Solution**:
+**Solutions**:
 
 ```bash
-# Fix npm permissions
-sudo chown -R $(whoami) $(npm config get prefix)/{lib/node_modules,bin,share}
+# Check file permissions
+ls -la input.txt
 
-# Or use nvm
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-nvm install node
+# Fix permissions
+chmod 644 input.txt
+
+# Check directory permissions
+ls -la ~/.config/rawi/
+
+# Fix config directory
+chmod -R 755 ~/.config/rawi/
 ```
 
-### Linux Issues
+### Configuration Directory Issues
 
-#### Package Manager Conflicts
+**Problem**: Cannot create or access config directory
 
-**Problem**: Conflicts with system package managers
-
-**Solution**:
+**Solutions**:
 
 ```bash
-# Use nvm instead of system Node.js
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-nvm install 18
-nvm use 18
+# Create config directory manually
+mkdir -p ~/.config/rawi
 
-# Or use isolated installation
-npm install -g rawi --prefix ~/.local
-export PATH=$PATH:~/.local/bin
+# Set proper permissions
+chmod 755 ~/.config/rawi
+
+# Check disk space
+df -h ~/.config
+
+# Check for symlink issues
+ls -la ~/.config/rawi
 ```
 
 ---
 
-## 🔧 Development Issues
+## Provider-Specific Issues
 
-### TypeScript Compilation Errors
+### OpenAI Issues
 
-**Problem**: Build failing with TypeScript errors
+**Common Problems**:
 
-**Solution**:
+- Invalid API key format
+- Insufficient credits
+- Model access restrictions
+
+**Solutions**:
 
 ```bash
-# Check TypeScript version
-npx tsc --version
+# Verify API key format (starts with sk-)
+rawi info | grep -i key
 
-# Clear TypeScript cache
-rm -rf .tsbuildinfo
+# Test with curl
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"model":"gpt-3.5-turbo","messages":[{"role":"user","content":"Hello"}]}' \
+     https://api.openai.com/v1/chat/completions
 
-# Rebuild
-pnpm run build
-
-# Check for type errors
-pnpm run typecheck
+# Check account status at platform.openai.com
 ```
 
-### Import/Export Issues
+### Anthropic Issues
 
-**Problem**: Module import errors
+**Common Problems**:
 
-**Solution**:
+- API key format (starts with sk-ant-)
+- Region restrictions
+- Model availability
+
+**Solutions**:
 
 ```bash
-# Ensure .js extensions in imports (ESM requirement)
-import { config } from './config.js';  // ✅
-import { config } from './config';     // ❌
+# Verify Anthropic key format
+rawi configure --show | grep -i anthropic
 
-# Check package.json type field
-"type": "module"
+# Test direct API access
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"model":"claude-3-sonnet-20240229","messages":[{"role":"user","content":"Hello"}]}' \
+     https://api.anthropic.com/v1/messages
 ```
 
-### Test Failures
+### Local Provider Issues (Ollama)
 
-**Problem**: Tests failing unexpectedly
+**Problem**: Cannot connect to local Ollama
 
-**Solution**:
+**Solutions**:
 
 ```bash
-# Run tests with verbose output
-pnpm test --reporter=verbose
+# Check if Ollama is running
+curl http://localhost:11434/api/tags
 
-# Run specific test
-pnpm test src/config/manager.test.ts
+# Start Ollama service
+ollama serve
 
-# Clear test cache
-rm -rf node_modules/.vite
+# Check available models
+ollama list
+
+# Pull a model if needed
+ollama pull llama2
+
+# Configure Rawi for Ollama
+rawi provider set ollama
 ```
 
 ---
 
-## 🔍 Debugging Techniques
+## Debugging and Diagnostics
 
 ### Enable Debug Mode
 
 ```bash
-# Set debug environment variable
-export DEBUG=rawi:*
-rawi ask "test"
+# Run with debug output
+rawi ask "Test" --debug
 
-# Or for specific modules
-export DEBUG=rawi:config,rawi:database
+# Enable verbose logging
+rawi ask "Test" --verbose
+
+# Check log files (if available)
+tail -f ~/.config/rawi/logs/rawi.log
 ```
 
-### Verbose Logging
+### Collect Diagnostic Information
 
 ```bash
-# Add temporary logging
-console.log('Debug: Current config:', config);
-console.error('Error details:', error);
+# System information
+echo "OS: $(uname -a)"
+echo "Node: $(node --version)"
+echo "NPM: $(npm --version)"
+echo "Rawi: $(rawi --version)"
 
-# Use Node.js debugging
-node --inspect-brk dist/index.js ask "test"
+# Configuration dump
+rawi info --verbose
+
+# Network test
+curl -I https://api.openai.com
+curl -I https://api.anthropic.com
+
+# Permission check
+ls -la ~/.config/rawi/
 ```
 
-### Configuration Inspection
+### Generate Support Information
 
 ```bash
-# Check configuration file
-cat ~/.rawi/credentials | jq .
-
-# Verify file permissions
-ls -la ~/.rawi/
-
-# Check environment variables
-env | grep -i rawi
+# Create diagnostic report
+{
+  echo "=== Rawi Diagnostic Report ==="
+  echo "Date: $(date)"
+  echo "OS: $(uname -a)"
+  echo "Node: $(node --version)"
+  echo "NPM: $(npm --version)"
+  echo "Rawi: $(rawi --version)"
+  echo ""
+  echo "=== Configuration ==="
+  rawi info
+  echo ""
+  echo "=== Directory Structure ==="
+  ls -la ~/.config/rawi/
+  echo ""
+  echo "=== Recent History ==="
+  rawi history --last 3
+} > rawi-diagnostic.txt
 ```
 
 ---
 
-## 🆘 Getting Help
+## Getting Help
 
-### Before Reporting Issues
+### Before Seeking Help
 
-1. **Check existing issues**: Search GitHub issues for similar problems
-2. **Update to latest version**: `npm update -g rawi`
-3. **Try different providers**: Test with Ollama (local) if API issues
-4. **Check configuration**: Verify with `rawi configure --show`
+1. Check this troubleshooting guide
+2. Review the [Quick Start](quickstart.md) guide
+3. Verify your [installation](installation.md)
+4. Check [configuration documentation](commands/configure.md)
 
-### Information to Include
+### Reporting Issues
 
 When reporting issues, include:
 
-```bash
-# System information
-node --version
-npm --version
-rawi --version
+1. **Environment Information**:
 
-# Operating system
-uname -a  # Linux/macOS
-# or
-systeminfo  # Windows
+   ```bash
+   rawi --version
+   node --version
+   npm --version
+   uname -a
+   ```
 
-# Configuration (remove sensitive data)
-rawi configure --show
+2. **Configuration Details**:
 
-# Error output
-rawi ask "test" 2>&1 | tee error.log
-```
+   ```bash
+   rawi info
+   ```
 
-### Community Support
+3. **Error Messages**: Full error output with `--debug` flag
 
-- **GitHub Issues**: https://github.com/MKAbuMattar/rawi/issues
-- **Discussions**: https://github.com/MKAbuMattar/rawi/discussions
-- **Documentation**: https://rawi.mkabumattar.com/
+4. **Steps to Reproduce**: Exact commands that cause the issue
 
-### Quick Fixes Checklist
+5. **Expected vs Actual Behavior**: What you expected vs what happened
 
-- [ ] Restart terminal/shell
-- [ ] Update Node.js to latest LTS
-- [ ] Clear npm/pnpm cache
-- [ ] Reconfigure with `rawi configure`
-- [ ] Test with local provider (Ollama)
-- [ ] Check internet connection
-- [ ] Verify API key permissions
-- [ ] Try different profile
-- [ ] Check file permissions on ~/.rawi/
+### Community Resources
 
-### Emergency Reset
+- **GitHub Issues**: Report bugs and feature requests
+- **Documentation Wiki**: [Main documentation](README.md)
+- **Command Reference**: [All commands](commands/README.md)
+- **Configuration Guide**: [Setup and configuration](commands/configure.md)
 
-If everything is broken:
+---
+
+## Prevention and Best Practices
+
+### Regular Maintenance
 
 ```bash
-# Complete reset
-rm -rf ~/.rawi
-npm uninstall -g rawi
-npm cache clean --force
-npm install -g rawi
-rawi configure
+# Update Rawi regularly
+npm update -g rawi
+
+# Clean old history periodically
+rawi history --clear --older-than 30d
+
+# Backup configuration
+cp ~/.config/rawi/config.json ~/.config/rawi/config.json.backup
+
+# Test configuration after updates
+rawi ask "Test after update"
 ```
 
-Most issues can be resolved by following this troubleshooting guide. If you're still experiencing problems, please create an issue on GitHub with detailed information about your setup and the error messages you're seeing.
+### Configuration Best Practices
+
+1. **Use environment variables for sensitive data**:
+
+   ```bash
+   export RAWI_API_KEY="your-key"
+   # Instead of storing in config file
+   ```
+
+2. **Use profiles for different contexts**:
+
+   ```bash
+   rawi configure --profile work
+   rawi configure --profile personal
+   ```
+
+3. **Regular backups**:
+   ```bash
+   tar -czf rawi-config-backup.tar.gz ~/.config/rawi/
+   ```
+
+### Error Prevention
+
+1. **Always use quotes for complex prompts**
+2. **Test new configurations with simple commands**
+3. **Keep API keys secure and don't share them**
+4. **Monitor API usage and costs**
+5. **Use appropriate models for your tasks**
+
+---
+
+## Related Documentation
+
+- [🚀 Quick Start Guide](quickstart.md) - Get started quickly
+- [⚙️ Configuration Guide](commands/configure.md) - Detailed configuration
+- [🔧 Installation Guide](installation.md) - Installation instructions
+- [📚 Commands Reference](commands/README.md) - All available commands
+- [📖 Main Documentation](README.md) - Return to main wiki
+
+---
+
+_Part of the [Rawi Documentation Wiki](README.md)_
