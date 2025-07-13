@@ -1,10 +1,11 @@
 import type {azure} from '@ai-sdk/azure';
 import {createAzure} from '@ai-sdk/azure';
-import {generateText} from 'ai';
+import {streamText} from 'ai';
 import type {
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
+  StreamingResponse,
 } from '../shared/index.js';
 
 type LooseAzureModelId = Parameters<typeof azure>[0];
@@ -18,10 +19,10 @@ export const azureProvider = {
   models: azureModels,
 };
 
-export const generateWithAzure = async (
+export const streamWithAzure = async (
   credentials: RawiCredentials,
   prompt: string,
-): Promise<string> => {
+): Promise<StreamingResponse> => {
   try {
     if (!credentials.apiKey) {
       throw new Error('API key is required for Azure OpenAI');
@@ -46,14 +47,17 @@ export const generateWithAzure = async (
       apiVersion: apiVersion,
     });
 
-    const result = await generateText({
+    const result = streamText({
       model: azureProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
       maxTokens: credentials.maxTokens || 2048,
     });
 
-    return result.text;
+    return {
+      textStream: result.textStream,
+      fullResponse: result.text,
+    };
   } catch (error) {
     if (
       error instanceof Error &&
@@ -62,14 +66,14 @@ export const generateWithAzure = async (
         error.message.includes('deployment'))
     ) {
       throw new Error(
-        `Error calling Azure OpenAI API: Deployment "${credentials.model}" not found. ` +
+        `Error calling Azure OpenAI streaming API: Deployment "${credentials.model}" not found. ` +
           `Make sure you've correctly entered your deployment name (not the model name like "gpt-4"). ` +
           `Original error: ${error.message}`,
       );
     }
 
     throw new Error(
-      `Error calling Azure OpenAI API: ${
+      `Error calling Azure OpenAI streaming API: ${
         error instanceof Error ? error.message : String(error)
       }`,
     );

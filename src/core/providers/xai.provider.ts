@@ -1,10 +1,11 @@
 import type {xai} from '@ai-sdk/xai';
 import {createXai} from '@ai-sdk/xai';
-import {generateText} from 'ai';
+import {streamText} from 'ai';
 import type {
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
+  StreamingResponse,
   XAISettings,
 } from '../shared/index.js';
 
@@ -44,10 +45,10 @@ export const xaiProvider = {
   models: xaiModels,
 };
 
-export const generateWithXAI = async (
+export const streamWithXAI = async (
   credentials: RawiCredentials,
   prompt: string,
-): Promise<string> => {
+): Promise<StreamingResponse> => {
   try {
     const settings = credentials.providerSettings as XAISettings | undefined;
 
@@ -63,17 +64,20 @@ export const generateWithXAI = async (
       baseURL: baseURL,
     });
 
-    const result = await generateText({
+    const result = streamText({
       model: xaiProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
       maxTokens: credentials.maxTokens || 2048,
     });
 
-    return result.text;
+    return {
+      textStream: result.textStream,
+      fullResponse: result.text,
+    };
   } catch (error) {
     throw new Error(
-      `Error calling xAI API: ${
+      `Error calling xAI streaming API: ${
         error instanceof Error ? error.message : String(error)
       }`,
     );

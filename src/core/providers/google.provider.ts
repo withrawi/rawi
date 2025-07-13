@@ -1,11 +1,12 @@
 import type {GoogleGenerativeAIProvider, google} from '@ai-sdk/google';
 import {createGoogleGenerativeAI} from '@ai-sdk/google';
-import {generateText} from 'ai';
+import {streamText} from 'ai';
 import type {
   GoogleSettings,
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
+  StreamingResponse,
 } from '../shared/index.js';
 
 type LooseGoogleModelId = Parameters<typeof google>[0];
@@ -49,10 +50,10 @@ export const googleProvider = {
   models: googleModels,
 };
 
-export const generateWithGoogle = async (
+export const streamWithGoogle = async (
   credentials: RawiCredentials,
   prompt: string,
-): Promise<string> => {
+): Promise<StreamingResponse> => {
   try {
     const settings = credentials.providerSettings as GoogleSettings | undefined;
 
@@ -71,17 +72,20 @@ export const generateWithGoogle = async (
       },
     );
 
-    const result = await generateText({
+    const result = streamText({
       model: googleProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
       maxTokens: credentials.maxTokens || 2048,
     });
 
-    return result.text;
+    return {
+      textStream: result.textStream,
+      fullResponse: result.text,
+    };
   } catch (error) {
     throw new Error(
-      `Error calling Google AI API: ${
+      `Error calling Google AI streaming API: ${
         error instanceof Error ? error.message : String(error)
       }`,
     );

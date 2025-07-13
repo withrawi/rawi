@@ -6,6 +6,24 @@ export type LooseToStrict<T> = T extends any
 
 export type SupportedLanguage = 'english' | 'arabic';
 
+// Streaming interfaces
+export interface StreamingResponse {
+  textStream: AsyncIterable<string>;
+  fullResponse: Promise<string>;
+}
+
+export interface GenerateOptions {
+  prompt: string;
+  temperature?: number;
+  maxTokens?: number;
+}
+
+export interface StreamOptions extends GenerateOptions {
+  onChunk?: (chunk: string) => void;
+  onComplete?: (fullResponse: string) => void;
+  onError?: (error: Error) => void;
+}
+
 export interface ModelInfo {
   name: string;
   displayName?: string;

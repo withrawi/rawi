@@ -1,10 +1,11 @@
 import type {ollama} from '@ai-sdk-community/ollama';
 import {createOllama} from '@ai-sdk-community/ollama';
-import {generateText} from 'ai';
+import {streamText} from 'ai';
 import type {
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
+  StreamingResponse,
 } from '../shared/index.js';
 
 type LooseOllamaModelId = Parameters<typeof ollama>[0];
@@ -204,10 +205,10 @@ export const ollamaProvider = {
   models: ollamaModels,
 } as const;
 
-export const generateWithOllama = async (
+export const streamWithOllama = async (
   credentials: RawiCredentials,
   prompt: string,
-): Promise<string> => {
+): Promise<StreamingResponse> => {
   try {
     const ollamaSettings: Record<string, any> = {};
 
@@ -222,17 +223,20 @@ export const generateWithOllama = async (
       Object.keys(ollamaSettings).length > 0 ? ollamaSettings : undefined,
     );
 
-    const result = await generateText({
+    const result = streamText({
       model: ollamaProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
       maxTokens: credentials.maxTokens || 2048,
     });
 
-    return result.text;
+    return {
+      textStream: result.textStream,
+      fullResponse: result.text,
+    };
   } catch (error) {
     throw new Error(
-      `Error calling Ollama API: ${
+      `Error calling Ollama streaming API: ${
         error instanceof Error ? error.message : String(error)
       }`,
     );
