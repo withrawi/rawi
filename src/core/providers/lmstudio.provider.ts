@@ -1,9 +1,10 @@
 import {createOpenAICompatible as createLMStudio} from '@ai-sdk/lmstudio';
-import {generateText} from 'ai';
+import {streamText} from 'ai';
 import type {
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
+  StreamingResponse,
 } from '../shared/index.js';
 
 type LooseLMStudioModelId = string;
@@ -53,10 +54,10 @@ export const lmstudioProvider = {
   models: lmstudioModels,
 } as const;
 
-export const generateWithLMStudio = async (
+export const streamWithLMStudio = async (
   credentials: RawiCredentials,
   prompt: string,
-): Promise<string> => {
+): Promise<StreamingResponse> => {
   try {
     const settings = credentials.providerSettings as
       | {baseURL?: string}
@@ -68,17 +69,20 @@ export const generateWithLMStudio = async (
       name: 'lmstudio',
     });
 
-    const result = await generateText({
+    const result = streamText({
       model: lmstudio.chatModel(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
       maxTokens: credentials.maxTokens || 2048,
     });
 
-    return result.text;
+    return {
+      textStream: result.textStream,
+      fullResponse: result.text,
+    };
   } catch (error) {
     throw new Error(
-      `Error calling LM Studio API: ${
+      `Error calling LM Studio streaming API: ${
         error instanceof Error ? error.message : String(error)
       }`,
     );

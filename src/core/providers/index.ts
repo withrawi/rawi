@@ -6,6 +6,7 @@ export * from './lmstudio.provider.js';
 export * from './ollama.provider.js';
 export * from './openai.provider.js';
 export * from './qwen.provider.js';
+export * from './utils.js';
 export * from './xai.provider.js';
 
 import type {ProviderConfig, SupportedProvider} from '../shared/types.js';

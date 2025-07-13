@@ -2,15 +2,7 @@ import chalk from 'chalk';
 import {Command} from 'commander';
 import {getCredentials, isConfigured} from '../../core/configs/utils.js';
 import {DatabaseManager} from '../../core/database/manager.js';
-import {generateWithBedrock} from '../../core/providers/amazon-bedrock.provider.js';
-import {generateWithAnthropic} from '../../core/providers/anthropic.provider.js';
-import {generateWithAzure} from '../../core/providers/azura.provider.js';
-import {generateWithGoogle} from '../../core/providers/google.provider.js';
-import {generateWithLMStudio} from '../../core/providers/lmstudio.provider.js';
-import {generateWithOllama} from '../../core/providers/ollama.provider.js';
-import {generateWithOpenAI} from '../../core/providers/openai.provider.js';
-import {generateWithQwen} from '../../core/providers/qwen.provider.js';
-import {generateWithXAI} from '../../core/providers/xai.provider.js';
+import {processQuery} from '../../core/providers/utils.js';
 import {DEFAULT_PROFILE} from '../../core/shared/constants.js';
 import {spinnerManager} from '../../core/shared/spinner.js';
 import {applyActTemplate} from '../../core/templates/utils.js';
@@ -227,47 +219,47 @@ export const createAskCommand = (): Command => {
         if (options.verbose) {
           spinnerManager.start(
             'generation',
-            `Generating response using ${credentials.provider} (${credentials.model})...`,
+            `Streaming response using ${credentials.provider} (${credentials.model})...`,
             {color: 'cyan'},
           );
         }
 
-        if (!options.verbose) {
-          spinnerManager.start('result', `${chalk.cyan('Result:')}`);
-        }
+        console.log(`${chalk.cyan('Result:')}`);
 
         let response: string;
+        let hasStartedStreaming = false;
 
         try {
-          if (credentials.provider === 'google') {
-            response = await generateWithGoogle(credentials, finalQuery);
-          } else if (credentials.provider === 'ollama') {
-            response = await generateWithOllama(credentials, finalQuery);
-          } else if (credentials.provider === 'anthropic') {
-            response = await generateWithAnthropic(credentials, finalQuery);
-          } else if (credentials.provider === 'openai') {
-            response = await generateWithOpenAI(credentials, finalQuery);
-          } else if (credentials.provider === 'xai') {
-            response = await generateWithXAI(credentials, finalQuery);
-          } else if (credentials.provider === 'azure') {
-            response = await generateWithAzure(credentials, finalQuery);
-          } else if (credentials.provider === 'bedrock') {
-            response = await generateWithBedrock(credentials, finalQuery);
-          } else if (credentials.provider === 'qwen') {
-            response = await generateWithQwen(credentials, finalQuery);
-          } else if (credentials.provider === 'lmstudio') {
-            response = await generateWithLMStudio(credentials, finalQuery);
-          } else {
-            if (options.verbose) {
-              spinnerManager.fail('generation', 'Unsupported provider');
-              console.error(
-                chalk.red(
-                  `❌ Provider '${credentials.provider}' is not supported yet.`,
-                ),
-              );
-            }
-            response = `Unsupported provider: ${credentials.provider}. Please configure a supported provider (OpenAI, Anthropic, Google, Ollama, xAI, Azure, Bedrock, Qwen, or LM Studio).`;
-          }
+          response = await processQuery(credentials, finalQuery, {
+            streaming: true,
+            onChunk: (chunk: string) => {
+              if (!hasStartedStreaming) {
+                if (options.verbose) {
+                  spinnerManager.succeed(
+                    'generation',
+                    'Starting to stream response...',
+                  );
+                }
+                hasStartedStreaming = true;
+              }
+              process.stdout.write(chunk);
+            },
+            onComplete: () => {
+              console.log(); // Add newline after streaming
+              if (options.verbose) {
+                console.log(chalk.dim('✅ Streaming completed'));
+              }
+            },
+            onError: (error: Error) => {
+              if (options.verbose) {
+                spinnerManager.fail(
+                  'generation',
+                  'Failed to generate response',
+                );
+                console.error(chalk.red(`❌ ${error.message}`));
+              }
+            },
+          });
 
           await dbManager.addMessage(
             sessionId,
@@ -278,10 +270,11 @@ export const createAskCommand = (): Command => {
             credentials.temperature,
             credentials.maxTokens,
           );
+
           if (options.verbose) {
             spinnerManager.succeed(
               'generation',
-              'Response generated successfully!',
+              'Response streamed successfully!',
             );
           }
         } catch (error) {
@@ -307,17 +300,6 @@ export const createAskCommand = (): Command => {
           );
         }
 
-        if (options.verbose) {
-          console.log(`\n${chalk.cyan('Result:')}`);
-        }
-        if (!options.verbose) {
-          spinnerManager.succeed(
-            'result',
-            `${chalk.cyan('Result:')}\n${response}`,
-          );
-        } else {
-          console.log(response);
-        }
         if (options.verbose) {
           const session = await dbManager.getSession(sessionId);
           if (session) {

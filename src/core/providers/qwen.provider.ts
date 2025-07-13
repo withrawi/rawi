@@ -1,11 +1,12 @@
 import type {qwen} from '@ai-sdk-community/qwen';
 import {createQwen} from '@ai-sdk-community/qwen';
-import {generateText} from 'ai';
+import {streamText} from 'ai';
 import type {
   LooseToStrict,
   ModelInfo,
   QwenSettings,
   RawiCredentials,
+  StreamingResponse,
 } from '../shared/index.js';
 
 type LooseQwenModelId = Parameters<typeof qwen>[0];
@@ -46,10 +47,10 @@ export const qwenProvider = {
   models: qwenModels,
 };
 
-export const generateWithQwen = async (
+export const streamWithQwen = async (
   credentials: RawiCredentials,
   prompt: string,
-): Promise<string> => {
+): Promise<StreamingResponse> => {
   try {
     const settings = credentials.providerSettings as QwenSettings | undefined;
 
@@ -67,17 +68,20 @@ export const generateWithQwen = async (
       baseURL: baseURL,
     });
 
-    const result = await generateText({
+    const result = streamText({
       model: qwenProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
       maxTokens: credentials.maxTokens || 2048,
     });
 
-    return result.text;
+    return {
+      textStream: result.textStream,
+      fullResponse: result.text,
+    };
   } catch (error) {
     throw new Error(
-      `Error calling Qwen API: ${
+      `Error calling Qwen streaming API: ${
         error instanceof Error ? error.message : String(error)
       }`,
     );

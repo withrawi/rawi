@@ -1,11 +1,12 @@
 import type {anthropic} from '@ai-sdk/anthropic';
 import {createAnthropic} from '@ai-sdk/anthropic';
-import {generateText} from 'ai';
+import {streamText} from 'ai';
 import type {
   AnthropicSettings,
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
+  StreamingResponse,
 } from '../shared/index.js';
 
 type LooseAnthropicModelId = Parameters<typeof anthropic>[0];
@@ -37,10 +38,10 @@ export const anthropicProvider = {
   models: anthropicModels,
 };
 
-export const generateWithAnthropic = async (
+export const streamWithAnthropic = async (
   credentials: RawiCredentials,
   prompt: string,
-): Promise<string> => {
+): Promise<StreamingResponse> => {
   try {
     const settings = credentials.providerSettings as
       | AnthropicSettings
@@ -58,17 +59,20 @@ export const generateWithAnthropic = async (
       baseURL: baseURL,
     });
 
-    const result = await generateText({
+    const result = streamText({
       model: anthropicProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
       maxTokens: credentials.maxTokens || 2048,
     });
 
-    return result.text;
+    return {
+      textStream: result.textStream,
+      fullResponse: result.text,
+    };
   } catch (error) {
     throw new Error(
-      `Error calling Anthropic API: ${
+      `Error calling Anthropic streaming API: ${
         error instanceof Error ? error.message : String(error)
       }`,
     );

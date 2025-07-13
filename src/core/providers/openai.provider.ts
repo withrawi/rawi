@@ -1,11 +1,12 @@
 import type {openai} from '@ai-sdk/openai';
 import {createOpenAI} from '@ai-sdk/openai';
-import {generateText} from 'ai';
+import {streamText} from 'ai';
 import type {
   LooseToStrict,
   ModelInfo,
   OpenAISettings,
   RawiCredentials,
+  StreamingResponse,
 } from '../shared/index.js';
 
 type LooseOpenAIModelId = Parameters<typeof openai>[0];
@@ -69,10 +70,10 @@ export const openaiProvider = {
   models: openaiModels,
 };
 
-export const generateWithOpenAI = async (
+export const streamWithOpenAI = async (
   credentials: RawiCredentials,
   prompt: string,
-): Promise<string> => {
+): Promise<StreamingResponse> => {
   try {
     if (!credentials.apiKey) {
       throw new Error('API key is required for OpenAI');
@@ -88,17 +89,20 @@ export const generateWithOpenAI = async (
       baseURL: baseURL,
     });
 
-    const result = await generateText({
+    const result = streamText({
       model: openaiProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
       maxTokens: credentials.maxTokens || 2048,
     });
 
-    return result.text;
+    return {
+      textStream: result.textStream,
+      fullResponse: result.text,
+    };
   } catch (error) {
     throw new Error(
-      `Error calling OpenAI API: ${
+      `Error calling OpenAI streaming API: ${
         error instanceof Error ? error.message : String(error)
       }`,
     );
