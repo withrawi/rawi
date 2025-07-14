@@ -15,14 +15,17 @@ importers:
         specifier: npm:qwen-ai-provider@0.1.0
         version: qwen-ai-provider@0.1.0(zod@3.25.67)
       '@ai-sdk/amazon-bedrock':
-        specifier: 2.2.11
-        version: 2.2.11(zod@3.25.67)
+        specifier: 2.2.12
+        version: 2.2.12(zod@3.25.67)
       '@ai-sdk/anthropic':
         specifier: 1.2.12
         version: 1.2.12(zod@3.25.67)
       '@ai-sdk/azure':
         specifier: 1.3.24
         version: 1.3.24(zod@3.25.67)
+      '@ai-sdk/deepseek':
+        specifier: 0.2.15
+        version: 0.2.15(zod@3.25.67)
       '@ai-sdk/google':
         specifier: 1.2.22
         version: 1.2.22(zod@3.25.67)
@@ -45,11 +48,11 @@ importers:
         specifier: 0.15.9
         version: 0.15.9
       '@oclif/core':
-        specifier: 4.5.0
-        version: 4.5.0
+        specifier: 4.5.1
+        version: 4.5.1
       ai:
-        specifier: 4.3.17
-        version: 4.3.17(react@19.1.0)(zod@3.25.67)
+        specifier: 4.3.18
+        version: 4.3.18(react@19.1.0)(zod@3.25.67)
       boxen:
         specifier: 8.0.1
         version: 8.0.1
@@ -63,8 +66,8 @@ importers:
         specifier: 14.0.0
         version: 14.0.0
       drizzle-orm:
-        specifier: 0.44.2
-        version: 0.44.2(@libsql/client@0.15.9)(@opentelemetry/api@1.9.0)(sqlite3@5.1.7)
+        specifier: 0.44.3
+        version: 0.44.3(@libsql/client@0.15.9)(@opentelemetry/api@1.9.0)(sqlite3@5.1.7)
       leven:
         specifier: 4.0.0
         version: 4.0.0
@@ -114,8 +117,8 @@ importers:
 
 packages:
 
-  '@ai-sdk/amazon-bedrock@2.2.11':
-    resolution: {integrity: sha512-tZmJbOhihNfkhDnL4sVyscYiMXadXOoZ8QCqU3NVi7kho6czbNal05QZA+EMv1QL87NJAd0FZwcDIy60tor4SQ==}
+  '@ai-sdk/amazon-bedrock@2.2.12':
+    resolution: {integrity: sha512-m8gARnh45pr1s08Uu4J/Pm8913mwJPejPOm59b+kUqMsP9ilhUtH/bp8432Ra/v+vHuMoBrglG2ZvXtctAaH2g==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.0.0
@@ -128,6 +131,12 @@ packages:
 
   '@ai-sdk/azure@1.3.24':
     resolution: {integrity: sha512-6zOG8mwmd8esSL/L9oYFZSyZWORRTxuG6on9A3RdPe7MRJ607Q6BWsuvul79kecbLf5xQ4bfP7LzXaBizsd8OA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.0.0
+
+  '@ai-sdk/deepseek@0.2.15':
+    resolution: {integrity: sha512-ol7Rs89leMRTLcfTg9Ah68m/I5Q0OQwxqKvsFpnc9iohdP46hhB6fvftUE08OcWoTyTIwKNx1RBjHBVAElxd4Q==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.0.0
@@ -773,8 +782,8 @@ packages:
     engines: {node: '>=10'}
     deprecated: This functionality has been moved to @npmcli/fs
 
-  '@oclif/core@4.5.0':
-    resolution: {integrity: sha512-UYWyDFNKFyzgXVXO0DHfOvJ/8qpw4yPYe7fOHausDEVU44qjDr90ZnfYTljZPK8dhgMggxiZs9n+TFajnXRp7g==}
+  '@oclif/core@4.5.1':
+    resolution: {integrity: sha512-JAuARvXOzf75L7rqLL3TIP3OmuTf7N/cjRejkGASfRJH+09180+EGbSkPWSMCns+AaYpDMI+fdaJ6QCoa3f15A==}
     engines: {node: '>=18.0.0'}
 
   '@opentelemetry/api@1.9.0':
@@ -1158,8 +1167,8 @@ packages:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
     engines: {node: '>=8'}
 
-  ai@4.3.17:
-    resolution: {integrity: sha512-uWqIQ94Nb1GTYtYElGHegJMOzv3r2mCKNFlKrqkft9xrfvIahTI5OdcnD5U9612RFGuUNGmSDTO1/YRNFXobaQ==}
+  ai@4.3.18:
+    resolution: {integrity: sha512-Mn6JdNGB56GOyrfGJ746zzK6e0f6Ozr7lwfEYkQZjhf261wj1aAJgCvUsgML5/7pSiBJq3ytNEBVcR1oUKTCZw==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19 || ^19.0.0-rc
@@ -1424,8 +1433,8 @@ packages:
     resolution: {integrity: sha512-1gxPBJpI/pcjQhKgIU91II6Wkay+dLcN3M6rf2uwP8hRur3HtQXjVrdAK3sjC0piaEuxzMwjXChcETiJl47lAQ==}
     engines: {node: '>=18'}
 
-  drizzle-orm@0.44.2:
-    resolution: {integrity: sha512-zGAqBzWWkVSFjZpwPOrmCrgO++1kZ5H/rZ4qTGeGOe18iXGVJWf3WPfHOVwFIbmi8kHjfJstC6rJomzGx8g/dQ==}
+  drizzle-orm@0.44.3:
+    resolution: {integrity: sha512-8nIiYQxOpgUicEL04YFojJmvC4DNO4KoyXsEIqN44+g6gNBr6hmVpWk3uyAt4CaTiRGDwoU+alfqNNeonLAFOQ==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=4'
@@ -2735,7 +2744,7 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/amazon-bedrock@2.2.11(zod@3.25.67)':
+  '@ai-sdk/amazon-bedrock@2.2.12(zod@3.25.67)':
     dependencies:
       '@ai-sdk/provider': 1.1.3
       '@ai-sdk/provider-utils': 2.2.8(zod@3.25.67)
@@ -2753,6 +2762,13 @@ snapshots:
   '@ai-sdk/azure@1.3.24(zod@3.25.67)':
     dependencies:
       '@ai-sdk/openai': 1.3.23(zod@3.25.67)
+      '@ai-sdk/provider': 1.1.3
+      '@ai-sdk/provider-utils': 2.2.8(zod@3.25.67)
+      zod: 3.25.67
+
+  '@ai-sdk/deepseek@0.2.15(zod@3.25.67)':
+    dependencies:
+      '@ai-sdk/openai-compatible': 0.2.15(zod@3.25.67)
       '@ai-sdk/provider': 1.1.3
       '@ai-sdk/provider-utils': 2.2.8(zod@3.25.67)
       zod: 3.25.67
@@ -2818,7 +2834,7 @@ snapshots:
   '@aws-crypto/crc32@5.2.0':
     dependencies:
       '@aws-crypto/util': 5.2.0
-      '@aws-sdk/types': 3.821.0
+      '@aws-sdk/types': 3.840.0
       tslib: 2.8.1
 
   '@aws-crypto/sha256-browser@5.2.0':
@@ -3574,7 +3590,7 @@ snapshots:
       rimraf: 3.0.2
     optional: true
 
-  '@oclif/core@4.5.0':
+  '@oclif/core@4.5.1':
     dependencies:
       ansi-escapes: 4.3.2
       ansis: 3.17.0
@@ -4062,7 +4078,7 @@ snapshots:
       indent-string: 4.0.0
     optional: true
 
-  ai@4.3.17(react@19.1.0)(zod@3.25.67):
+  ai@4.3.18(react@19.1.0)(zod@3.25.67):
     dependencies:
       '@ai-sdk/provider': 1.1.3
       '@ai-sdk/provider-utils': 2.2.8(zod@3.25.67)
@@ -4338,7 +4354,7 @@ snapshots:
     dependencies:
       type-fest: 4.41.0
 
-  drizzle-orm@0.44.2(@libsql/client@0.15.9)(@opentelemetry/api@1.9.0)(sqlite3@5.1.7):
+  drizzle-orm@0.44.3(@libsql/client@0.15.9)(@opentelemetry/api@1.9.0)(sqlite3@5.1.7):
     optionalDependencies:
       '@libsql/client': 0.15.9
       '@opentelemetry/api': 1.9.0

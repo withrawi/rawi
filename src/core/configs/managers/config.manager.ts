@@ -7,6 +7,7 @@ import {
   DEFAULT_LANGUAGE,
   DEFAULT_MAX_TOKENS,
   DEFAULT_TEMPERATURE,
+  type DeepSeekSettings,
   type GoogleSettings,
   type OpenAISettings,
   type QwenSettings,
@@ -180,6 +181,9 @@ export class ConfigManager
       case 'xai':
         await this.configureXAI(credentials, options, existingCredentials);
         break;
+      case 'deepseek':
+        await this.configureDeepSeek(credentials, options, existingCredentials);
+        break;
       case 'openai':
         await this.configureOpenAI(credentials, options, existingCredentials);
         break;
@@ -337,6 +341,21 @@ export class ConfigManager
     );
 
     const settings: XAISettings = {apiKey};
+    credentials.apiKey = apiKey;
+    credentials.providerSettings = settings;
+  }
+
+  private async configureDeepSeek(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    const apiKey = await this.interactive.getApiKey(
+      options.apiKey || existingCredentials?.apiKey,
+      'deepseek',
+    );
+
+    const settings: DeepSeekSettings = {apiKey};
     credentials.apiKey = apiKey;
     credentials.providerSettings = settings;
   }

@@ -39,7 +39,7 @@ Welcome to the **Rawi (راوي)** documentation wiki! This comprehensive guide 
 
 ### Key Features
 
-- 🤖 **9 AI Providers** — OpenAI, Anthropic, Google, Ollama, LM Studio, Azure, Bedrock, Qwen, and xAI
+- 🤖 **10 AI Providers** — OpenAI, Anthropic, Google, DeepSeek, Ollama, LM Studio, Azure, Bedrock, Qwen, and xAI
 - 🛡️ **Privacy First** — Local AI support with Ollama and LM Studio
 - ⚡ **Developer Optimized** — Built specifically for coding workflows
 - 🎯 **200+ Templates** — Expert-level prompt templates

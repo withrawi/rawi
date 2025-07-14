@@ -13,7 +13,7 @@ Comprehensive guide to all AI providers supported by Rawi, their setup, and capa
 
 ## Overview
 
-Rawi supports **9 different AI providers**, ranging from cutting-edge cloud services to privacy-focused local solutions. Choose the provider that best fits your needs, budget, and privacy requirements.
+Rawi supports **10 different AI providers**, ranging from cutting-edge cloud services to privacy-focused local solutions. Choose the provider that best fits your needs, budget, and privacy requirements.
 
 ## Quick Provider Comparison
 
@@ -22,6 +22,7 @@ Rawi supports **9 different AI providers**, ranging from cutting-edge cloud serv
 | [**OpenAI**](#openai)                 | Cloud | Standard   | API Key  | General purpose, latest models  |
 | [**Anthropic**](#anthropic)           | Cloud | High       | API Key  | Safety, long context, reasoning |
 | [**Google**](#google)                 | Cloud | Standard   | API Key  | Multimodal, code generation     |
+| [**DeepSeek**](#deepseek)             | Cloud | Standard   | API Key  | Cost-effective, reasoning       |
 | [**Ollama**](#ollama)                 | Local | Maximum    | Install  | Privacy, offline, free          |
 | [**LM Studio**](#lm-studio)           | Local | Maximum    | Install  | GUI management, local models    |
 | [**Azure OpenAI**](#azure-openai)     | Cloud | Enterprise | API Key  | Enterprise, compliance          |
@@ -141,6 +142,45 @@ rawi configure --provider google --model gemini-pro --api-key your-google-api-ke
 1. Create Google Cloud project
 2. Enable Vertex AI API
 3. Generate API key or service account
+
+---
+
+### DeepSeek
+
+**Cost-effective AI with strong reasoning capabilities and competitive performance.**
+
+```bash
+# Quick setup
+rawi configure --provider deepseek --model deepseek-chat --api-key sk-your-deepseek-key
+```
+
+**Available Models:**
+
+- `deepseek-chat` — Versatile model for general use
+- `deepseek-reasoner` — Enhanced reasoning capabilities
+
+**Key Features:**
+
+- 💰 Highly cost-effective pricing
+- 🧠 Strong reasoning capabilities
+- ⚡ Fast inference speed
+- 📊 Competitive performance
+- 🔍 Context caching for efficiency
+
+**Setup Requirements:**
+
+1. Create account at [platform.deepseek.com](https://platform.deepseek.com)
+2. Generate API key
+3. Configure billing (pay-per-use)
+
+**Configuration Example:**
+
+```bash
+rawi configure --provider deepseek \
+  --model deepseek-chat \
+  --api-key sk-your-deepseek-key \
+  --profile deepseek
+```
 
 ---
 

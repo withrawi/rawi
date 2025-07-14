@@ -104,6 +104,13 @@ rawi configure --provider ollama --model llama3.2
 rawi configure --provider anthropic --model claude-3-5-sonnet-20241022 --api-key sk-ant-xxx
 ```
 
+**DeepSeek (Cost-effective with reasoning)**
+
+```bash
+# Get API key from: https://platform.deepseek.com/api_keys
+rawi configure --provider deepseek --model deepseek-chat --api-key sk-your-deepseek-key
+```
+
 ### 3. Start Using Rawi
 
 ```bash

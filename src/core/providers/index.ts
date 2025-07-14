@@ -1,6 +1,7 @@
 export * from './amazon-bedrock.provider.js';
 export * from './anthropic.provider.js';
 export * from './azura.provider.js';
+export * from './deepseek.provider.js';
 export * from './google.provider.js';
 export * from './lmstudio.provider.js';
 export * from './ollama.provider.js';
@@ -13,6 +14,7 @@ import type {ProviderConfig, SupportedProvider} from '../shared/types.js';
 import {bedrockProvider} from './amazon-bedrock.provider.js';
 import {anthropicProvider} from './anthropic.provider.js';
 import {azureProvider} from './azura.provider.js';
+import {deepSeekProvider} from './deepseek.provider.js';
 import {googleProvider} from './google.provider.js';
 import {lmstudioProvider} from './lmstudio.provider.js';
 import {ollamaProvider} from './ollama.provider.js';
@@ -24,6 +26,7 @@ export const providers: Record<SupportedProvider, ProviderConfig> = {
   anthropic: anthropicProvider,
   azure: azureProvider,
   bedrock: bedrockProvider,
+  deepseek: deepSeekProvider,
   google: googleProvider,
   ollama: ollamaProvider,
   openai: openaiProvider,

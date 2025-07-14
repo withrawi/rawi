@@ -225,6 +225,15 @@ rawi configure \
   --api-key xai-your-key
 ```
 
+#### DeepSeek
+
+```bash
+rawi configure \
+  --provider deepseek \
+  --model deepseek-chat \
+  --api-key sk-your-deepseek-key
+```
+
 #### Qwen
 
 ```bash
@@ -339,6 +348,21 @@ rawi configure \
   --provider google \
   --model gemini-2.0-flash-exp \
   --api-key AIza-your-key
+```
+
+### DeepSeek Setup
+
+1. **Get API Key**: Visit [DeepSeek Platform](https://platform.deepseek.com/api_keys)
+2. **Choose Model**: `deepseek-chat` or `deepseek-reasoner`
+3. **Configure**:
+
+```bash
+rawi configure \
+  --provider deepseek \
+  --model deepseek-chat \
+  --api-key sk-your-deepseek-key \
+  --temperature 0.7 \
+  --max-tokens 4096
 ```
 
 ### Ollama Setup (Local AI)

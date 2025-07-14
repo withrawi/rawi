@@ -45,7 +45,8 @@ export type SupportedProvider =
   | 'azure'
   | 'bedrock'
   | 'qwen'
-  | 'lmstudio';
+  | 'lmstudio'
+  | 'deepseek';
 
 export interface BaseCredentials {
   provider: SupportedProvider;
@@ -101,6 +102,11 @@ export interface QwenSettings {
   baseURL?: string;
 }
 
+export interface DeepSeekSettings {
+  apiKey: string;
+  baseURL?: string;
+}
+
 export type ProviderSettings =
   | OllamaSettings
   | GoogleSettings
@@ -110,7 +116,8 @@ export type ProviderSettings =
   | AzureSettings
   | BedrockSettings
   | QwenSettings
-  | LMStudioSettings;
+  | LMStudioSettings
+  | DeepSeekSettings;
 
 export interface RawiCredentials extends BaseCredentials {
   apiKey?: string;

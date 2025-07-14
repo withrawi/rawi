@@ -416,7 +416,8 @@ List all available models for a specific provider
 - **🔵 OpenAI** \- GPT models (gpt-4o, gpt-4-turbo, o1, etc.)
 - **🟣 Anthropic** \- Claude models (claude-3-opus, claude-3-sonnet, etc.)
 - **🔴 Google** \- Gemini models (gemini-pro, gemini-flash, etc.)
-- **🔷 Azure** \- Azure OpenAI service deployments
+- **� DeepSeek** \- DeepSeek models (deepseek-chat, deepseek-reasoner)
+- **�🔷 Azure** \- Azure OpenAI service deployments
 - **🟠 Bedrock** \- AWS-hosted AI models (Claude, Titan, etc.)
 - **🟢 Ollama** \- Local models (llama2, mistral, codellama, etc.)
 - **🤖 xAI** \- Grok models

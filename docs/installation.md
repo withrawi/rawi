@@ -133,6 +133,16 @@ rawi configure \
   --api-key sk-ant-your-key
 ```
 
+#### DeepSeek (Cost-Effective with Reasoning)
+
+```bash
+# Get API key from: https://platform.deepseek.com/api_keys
+rawi configure \
+  --provider deepseek \
+  --model deepseek-chat \
+  --api-key sk-your-deepseek-key
+```
+
 #### Google Gemini (Fast & Efficient)
 
 ```bash
