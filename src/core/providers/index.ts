@@ -1,6 +1,7 @@
 export * from './amazon-bedrock.provider.js';
 export * from './anthropic.provider.js';
 export * from './azura.provider.js';
+export * from './cerebras.provider.js';
 export * from './deepseek.provider.js';
 export * from './google.provider.js';
 export * from './lmstudio.provider.js';
@@ -15,6 +16,7 @@ import type {ProviderConfig, SupportedProvider} from '../shared/types.js';
 import {bedrockProvider} from './amazon-bedrock.provider.js';
 import {anthropicProvider} from './anthropic.provider.js';
 import {azureProvider} from './azura.provider.js';
+import {cerebrasProvider} from './cerebras.provider.js';
 import {deepSeekProvider} from './deepseek.provider.js';
 import {googleProvider} from './google.provider.js';
 import {lmstudioProvider} from './lmstudio.provider.js';
@@ -28,6 +30,7 @@ export const providers: Record<SupportedProvider, ProviderConfig> = {
   anthropic: anthropicProvider,
   azure: azureProvider,
   bedrock: bedrockProvider,
+  cerebras: cerebrasProvider,
   deepseek: deepSeekProvider,
   google: googleProvider,
   mistral: mistralProvider,

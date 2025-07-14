@@ -47,7 +47,8 @@ export type SupportedProvider =
   | 'qwen'
   | 'lmstudio'
   | 'deepseek'
-  | 'mistral';
+  | 'mistral'
+  | 'cerebras';
 
 export interface BaseCredentials {
   provider: SupportedProvider;
@@ -113,6 +114,11 @@ export interface MistralSettings {
   baseURL?: string;
 }
 
+export interface CerebrasSettings {
+  apiKey: string;
+  baseURL?: string;
+}
+
 export type ProviderSettings =
   | OllamaSettings
   | GoogleSettings
@@ -124,7 +130,8 @@ export type ProviderSettings =
   | QwenSettings
   | LMStudioSettings
   | DeepSeekSettings
-  | MistralSettings;
+  | MistralSettings
+  | CerebrasSettings;
 
 export interface RawiCredentials extends BaseCredentials {
   apiKey?: string;

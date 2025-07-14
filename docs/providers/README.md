@@ -13,7 +13,7 @@ Comprehensive guide to all AI providers supported by Rawi, their setup, and capa
 
 ## Overview
 
-Rawi supports **10 different AI providers**, ranging from cutting-edge cloud services to privacy-focused local solutions. Choose the provider that best fits your needs, budget, and privacy requirements.
+Rawi supports **12 different AI providers**, ranging from cutting-edge cloud services to privacy-focused local solutions. Choose the provider that best fits your needs, budget, and privacy requirements.
 
 ## Quick Provider Comparison
 
@@ -24,6 +24,7 @@ Rawi supports **10 different AI providers**, ranging from cutting-edge cloud ser
 | [**Google**](#google)                 | Cloud | Standard   | API Key  | Multimodal, code generation     |
 | [**DeepSeek**](#deepseek)             | Cloud | Standard   | API Key  | Cost-effective, reasoning       |
 | [**Mistral**](#mistral)               | Cloud | Standard   | API Key  | European AI, multilingual       |
+| [**Cerebras**](#cerebras)             | Cloud | Standard   | API Key  | Ultra-fast inference, speed     |
 | [**Ollama**](#ollama)                 | Local | Maximum    | Install  | Privacy, offline, free          |
 | [**LM Studio**](#lm-studio)           | Local | Maximum    | Install  | GUI management, local models    |
 | [**Azure OpenAI**](#azure-openai)     | Cloud | Enterprise | API Key  | Enterprise, compliance          |
@@ -224,6 +225,46 @@ rawi configure --provider mistral \
   --model mistral-large-latest \
   --api-key your-mistral-key \
   --profile mistral
+```
+
+---
+
+### Cerebras
+
+**Ultra-fast AI inference with Wafer-Scale Engine technology.**
+
+```bash
+# Quick setup
+rawi configure --provider cerebras --model llama3.1-70b --api-key csk-your-key
+```
+
+**Available Models:**
+
+- `llama3.1-70b` — Meta's Llama 3.1 70B model
+- `llama3.1-8b` — Meta's Llama 3.1 8B model
+- `llama-3.3-70b` — Latest Meta Llama 3.3 70B
+
+**Key Features:**
+
+- ⚡ Extremely fast inference speeds
+- 🔧 Wafer-Scale Engine (WSE) technology
+- 💰 Competitive pricing per token
+- 🛠️ OpenAI-compatible API
+- 📊 High throughput capabilities
+
+**Setup Requirements:**
+
+1. Create account at [cloud.cerebras.ai](https://cloud.cerebras.ai)
+2. Generate API key
+3. Configure billing (pay-per-use)
+
+**Configuration Example:**
+
+```bash
+rawi configure --provider cerebras \
+  --model llama3.1-70b \
+  --api-key csk-your-key-here \
+  --profile cerebras
 ```
 
 ---

@@ -3,6 +3,7 @@ import {
   streamWithAnthropic,
   streamWithAzure,
   streamWithBedrock,
+  streamWithCerebras,
   streamWithDeepSeek,
   streamWithGoogle,
   streamWithLMStudio,
@@ -40,6 +41,8 @@ export const streamResponse = async (
       return await streamWithDeepSeek(credentials, prompt);
     case 'mistral':
       return await streamWithMistral(credentials, prompt);
+    case 'cerebras':
+      return await streamWithCerebras(credentials, prompt);
     default:
       throw new Error(`Unsupported provider: ${credentials.provider}`);
   }
