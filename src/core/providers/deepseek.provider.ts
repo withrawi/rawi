@@ -29,15 +29,16 @@ export const streamWithDeepSeek = async (
   prompt: string,
 ): Promise<StreamingResponse> => {
   try {
-    if (!credentials.apiKey) {
-      throw new Error('API key is required for DeepSeek');
-    }
-
     const settings = credentials.providerSettings as
       | DeepSeekSettings
       | undefined;
 
     const apiKey = settings?.apiKey || credentials.apiKey;
+    
+    if (!credentials.apiKey) {
+      throw new Error('API key is required for DeepSeek');
+    }
+
     const baseURL = settings?.baseURL || 'https://api.deepseek.com/v1';
 
     const deepseekProvider = createDeepSeek({

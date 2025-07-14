@@ -143,6 +143,16 @@ rawi configure \
   --api-key sk-your-deepseek-key
 ```
 
+#### Mistral (European AI)
+
+```bash
+# Get API key from: https://console.mistral.ai/api-keys/
+rawi configure \
+  --provider mistral \
+  --model mistral-large-latest \
+  --api-key your-mistral-key
+```
+
 #### Google Gemini (Fast & Efficient)
 
 ```bash

@@ -44,6 +44,7 @@ export const createProviderCommand = (): Command => {
           deepseek: '🔵',
           google: '🔴',
           lmstudio: '🔗',
+          mistral: '🟠',
           ollama: '🟢',
           openai: '🔵',
           qwen: '🟡',

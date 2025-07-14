@@ -6,6 +6,7 @@ import {
   streamWithDeepSeek,
   streamWithGoogle,
   streamWithLMStudio,
+  streamWithMistral,
   streamWithOllama,
   streamWithOpenAI,
   streamWithQwen,
@@ -37,6 +38,8 @@ export const streamResponse = async (
       return await streamWithLMStudio(credentials, prompt);
     case 'deepseek':
       return await streamWithDeepSeek(credentials, prompt);
+    case 'mistral':
+      return await streamWithMistral(credentials, prompt);
     default:
       throw new Error(`Unsupported provider: ${credentials.provider}`);
   }

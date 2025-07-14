@@ -234,6 +234,15 @@ rawi configure \
   --api-key sk-your-deepseek-key
 ```
 
+#### Mistral
+
+```bash
+rawi configure \
+  --provider mistral \
+  --model mistral-large-latest \
+  --api-key your-mistral-key
+```
+
 #### Qwen
 
 ```bash
@@ -361,6 +370,21 @@ rawi configure \
   --provider deepseek \
   --model deepseek-chat \
   --api-key sk-your-deepseek-key \
+  --temperature 0.7 \
+  --max-tokens 4096
+```
+
+### Mistral Setup
+
+1. **Get API Key**: Visit [Mistral Console](https://console.mistral.ai/api-keys/)
+2. **Choose Model**: `mistral-large-latest` or `mistral-small-latest`
+3. **Configure**:
+
+```bash
+rawi configure \
+  --provider mistral \
+  --model mistral-large-latest \
+  --api-key your-mistral-key \
   --temperature 0.7 \
   --max-tokens 4096
 ```

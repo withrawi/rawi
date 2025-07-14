@@ -4,6 +4,7 @@ export * from './azura.provider.js';
 export * from './deepseek.provider.js';
 export * from './google.provider.js';
 export * from './lmstudio.provider.js';
+export * from './mistral.provider.js';
 export * from './ollama.provider.js';
 export * from './openai.provider.js';
 export * from './qwen.provider.js';
@@ -17,6 +18,7 @@ import {azureProvider} from './azura.provider.js';
 import {deepSeekProvider} from './deepseek.provider.js';
 import {googleProvider} from './google.provider.js';
 import {lmstudioProvider} from './lmstudio.provider.js';
+import {mistralProvider} from './mistral.provider.js';
 import {ollamaProvider} from './ollama.provider.js';
 import {openaiProvider} from './openai.provider.js';
 import {qwenProvider} from './qwen.provider.js';
@@ -28,6 +30,7 @@ export const providers: Record<SupportedProvider, ProviderConfig> = {
   bedrock: bedrockProvider,
   deepseek: deepSeekProvider,
   google: googleProvider,
+  mistral: mistralProvider,
   ollama: ollamaProvider,
   openai: openaiProvider,
   qwen: qwenProvider,

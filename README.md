@@ -42,7 +42,7 @@
 
 ---
 
-**Rawi (راوي)** is the developer-friendly AI CLI that brings the power of 9 major AI providers directly to your terminal. With seamless shell integration, persistent conversations, and 200+ specialized prompt templates, Rawi transforms your command line into an intelligent development workspace.
+**Rawi (راوي)** is the developer-friendly AI CLI that brings the power of 11 major AI providers directly to your terminal. With seamless shell integration, persistent conversations, and 200+ specialized prompt templates, Rawi transforms your command line into an intelligent development workspace.
 
 > _"راوي" means "storyteller" in Arabic — every great story starts with a question._
 
@@ -50,7 +50,7 @@
 
 Rawi isn't just another AI CLI tool — it's your complete AI-powered development environment:
 
-🔥 **10 AI Providers** — OpenAI, Anthropic, Google, DeepSeek, Ollama, LM Studio, Azure, Bedrock, Qwen, and xAI  
+🔥 **11 AI Providers** — OpenAI, Anthropic, Google, DeepSeek, Ollama, LM Studio, Azure, Bedrock, Qwen, Mistral, and xAI  
 🛡️ **Privacy First** — Local AI support with Ollama and LM Studio — no data leaves your machine  
 ⚡ **Developer Optimized** — Built specifically for coding workflows and technical tasks  
 🔄 **Shell Integration** — Perfect pipes, redirects, and script automation  
@@ -108,6 +108,7 @@ Access the best AI models through one unified interface:
 | **� DeepSeek**   | DeepSeek-Chat, DeepSeek-Reasoner      | ✅      | ❌    | Cost-effective, reasoning      |
 | **�🟢 Ollama**   | Llama 3.2, CodeLlama, Qwen, +100 more | ❌      | ✅    | Privacy, offline, free         |
 | **🔧 LM Studio** | Llama 3.3, Phi-4, Gemma-3, Qwen-3     | ❌      | ✅    | Local models, GUI management   |
+| **🟠 Mistral**   | Mistral Large, Mistral Small, Pixtral | ✅      | ❌    | European AI, multilingual      |
 | **🔷 Azure**     | Enterprise OpenAI deployments         | ✅      | ❌    | Enterprise, compliance         |
 | **🟠 Bedrock**   | Claude, Llama, Titan via AWS          | ✅      | ❌    | AWS integration, scale         |
 | **🟡 Qwen**      | Qwen-Max, Qwen-Plus, Qwen-Turbo       | ✅      | ❌    | Multilingual, Chinese          |

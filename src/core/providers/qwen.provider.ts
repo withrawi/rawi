@@ -55,6 +55,7 @@ export const streamWithQwen = async (
     const settings = credentials.providerSettings as QwenSettings | undefined;
 
     const apiKey = settings?.apiKey || credentials.apiKey;
+
     if (!apiKey) {
       throw new Error('API key is required for Qwen');
     }

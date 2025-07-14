@@ -9,6 +9,7 @@ import {
   DEFAULT_TEMPERATURE,
   type DeepSeekSettings,
   type GoogleSettings,
+  type MistralSettings,
   type OpenAISettings,
   type QwenSettings,
   type RawiCredentials,
@@ -184,6 +185,9 @@ export class ConfigManager
       case 'deepseek':
         await this.configureDeepSeek(credentials, options, existingCredentials);
         break;
+      case 'mistral':
+        await this.configureMistral(credentials, options, existingCredentials);
+        break;
       case 'openai':
         await this.configureOpenAI(credentials, options, existingCredentials);
         break;
@@ -357,6 +361,38 @@ export class ConfigManager
 
     const settings: DeepSeekSettings = {apiKey};
     credentials.apiKey = apiKey;
+    credentials.providerSettings = settings;
+  }
+  private async configureMistral(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    // For Mistral, check for API key in provider settings first
+    const existingApiKey =
+      options.apiKey ||
+      (existingCredentials?.providerSettings &&
+      'apiKey' in existingCredentials.providerSettings
+        ? existingCredentials.providerSettings.apiKey
+        : existingCredentials?.apiKey);
+
+    const apiKey = await this.interactive.getApiKey(existingApiKey, 'mistral');
+
+    const baseURL = await this.providerConfig.getBaseURL(
+      options.baseURL ||
+        (existingCredentials?.providerSettings &&
+        'baseURL' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.baseURL
+          : undefined),
+    );
+
+    const settings: MistralSettings = {apiKey};
+
+    if (baseURL) {
+      settings.baseURL = baseURL;
+    }
+
+    // Only store API key in provider settings, not in top-level credentials
     credentials.providerSettings = settings;
   }
 

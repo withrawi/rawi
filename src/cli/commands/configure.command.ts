@@ -9,6 +9,7 @@ import type {
   DeepSeekSettings,
   GoogleSettings,
   LMStudioSettings,
+  MistralSettings,
   OllamaSettings,
   OpenAISettings,
   QwenSettings,
@@ -40,7 +41,7 @@ export const createConfigureCommand = (): Command => {
     .option(
       '--provider <provider>',
       chalk.white(
-        'AI provider (openai, anthropic, google, ollama, xai, azure, bedrock, qwen, deepseek, lmstudio)',
+        'AI provider (openai, anthropic, google, ollama, xai, azure, bedrock, qwen, deepseek, mistral, lmstudio)',
       ),
     )
     .option('--model <model>', chalk.white('AI model name'))
@@ -398,6 +399,24 @@ export const createConfigureCommand = (): Command => {
             requiredOptions = Boolean(options.model && options.apiKey);
 
             const providerSettings: DeepSeekSettings = {
+              apiKey: options.apiKey,
+            };
+            if (options.baseUrl) {
+              providerSettings.baseURL = options.baseUrl;
+            }
+
+            credentials = {
+              provider: options.provider,
+              model: options.model,
+              temperature: options.temperature || 0.7,
+              maxTokens: options.maxTokens || 2048,
+              language: (options.language as SupportedLanguage) || 'english',
+              providerSettings: providerSettings,
+            };
+          } else if (options.provider === 'mistral') {
+            requiredOptions = Boolean(options.model && options.apiKey);
+
+            const providerSettings: MistralSettings = {
               apiKey: options.apiKey,
             };
             if (options.baseUrl) {

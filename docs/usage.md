@@ -111,6 +111,13 @@ rawi configure --provider anthropic --model claude-3-5-sonnet-20241022 --api-key
 rawi configure --provider deepseek --model deepseek-chat --api-key sk-your-deepseek-key
 ```
 
+**Mistral (European AI)**
+
+```bash
+# Get API key from: https://console.mistral.ai/api-keys/
+rawi configure --provider mistral --model mistral-large-latest --api-key your-mistral-key
+```
+
 ### 3. Start Using Rawi
 
 ```bash

@@ -23,6 +23,7 @@ Rawi supports **10 different AI providers**, ranging from cutting-edge cloud ser
 | [**Anthropic**](#anthropic)           | Cloud | High       | API Key  | Safety, long context, reasoning |
 | [**Google**](#google)                 | Cloud | Standard   | API Key  | Multimodal, code generation     |
 | [**DeepSeek**](#deepseek)             | Cloud | Standard   | API Key  | Cost-effective, reasoning       |
+| [**Mistral**](#mistral)               | Cloud | Standard   | API Key  | European AI, multilingual       |
 | [**Ollama**](#ollama)                 | Local | Maximum    | Install  | Privacy, offline, free          |
 | [**LM Studio**](#lm-studio)           | Local | Maximum    | Install  | GUI management, local models    |
 | [**Azure OpenAI**](#azure-openai)     | Cloud | Enterprise | API Key  | Enterprise, compliance          |
@@ -180,6 +181,49 @@ rawi configure --provider deepseek \
   --model deepseek-chat \
   --api-key sk-your-deepseek-key \
   --profile deepseek
+```
+
+---
+
+### Mistral
+
+**European AI platform with strong multilingual capabilities.**
+
+```bash
+# Quick setup
+rawi configure --provider mistral --model mistral-large-latest --api-key your-mistral-key
+```
+
+**Available Models:**
+
+- `mistral-large-latest` — Most capable model
+- `mistral-small-latest` — Efficient and fast
+- `ministral-3b-latest` — Lightweight model
+- `ministral-8b-latest` — Balanced performance
+- `pixtral-large-latest` — Multimodal capabilities
+- `pixtral-12b-2409` — Vision and text model
+
+**Key Features:**
+
+- European AI with GDPR compliance
+- Strong multilingual support
+- Competitive pricing
+- JSON mode support
+- Function calling capabilities
+
+**Setup Requirements:**
+
+1. Create account at [console.mistral.ai](https://console.mistral.ai)
+2. Generate API key from API Keys section
+3. Configure billing (pay-per-use)
+
+**Configuration Example:**
+
+```bash
+rawi configure --provider mistral \
+  --model mistral-large-latest \
+  --api-key your-mistral-key \
+  --profile mistral
 ```
 
 ---

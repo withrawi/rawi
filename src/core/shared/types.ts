@@ -46,7 +46,8 @@ export type SupportedProvider =
   | 'bedrock'
   | 'qwen'
   | 'lmstudio'
-  | 'deepseek';
+  | 'deepseek'
+  | 'mistral';
 
 export interface BaseCredentials {
   provider: SupportedProvider;
@@ -107,6 +108,11 @@ export interface DeepSeekSettings {
   baseURL?: string;
 }
 
+export interface MistralSettings {
+  apiKey: string;
+  baseURL?: string;
+}
+
 export type ProviderSettings =
   | OllamaSettings
   | GoogleSettings
@@ -117,7 +123,8 @@ export type ProviderSettings =
   | BedrockSettings
   | QwenSettings
   | LMStudioSettings
-  | DeepSeekSettings;
+  | DeepSeekSettings
+  | MistralSettings;
 
 export interface RawiCredentials extends BaseCredentials {
   apiKey?: string;
