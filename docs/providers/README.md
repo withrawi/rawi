@@ -13,7 +13,7 @@ Comprehensive guide to all AI providers supported by Rawi, their setup, and capa
 
 ## Overview
 
-Rawi supports **9 different AI providers**, ranging from cutting-edge cloud services to privacy-focused local solutions. Choose the provider that best fits your needs, budget, and privacy requirements.
+Rawi supports **12 different AI providers**, ranging from cutting-edge cloud services to privacy-focused local solutions. Choose the provider that best fits your needs, budget, and privacy requirements.
 
 ## Quick Provider Comparison
 
@@ -22,6 +22,9 @@ Rawi supports **9 different AI providers**, ranging from cutting-edge cloud serv
 | [**OpenAI**](#openai)                 | Cloud | Standard   | API Key  | General purpose, latest models  |
 | [**Anthropic**](#anthropic)           | Cloud | High       | API Key  | Safety, long context, reasoning |
 | [**Google**](#google)                 | Cloud | Standard   | API Key  | Multimodal, code generation     |
+| [**DeepSeek**](#deepseek)             | Cloud | Standard   | API Key  | Cost-effective, reasoning       |
+| [**Mistral**](#mistral)               | Cloud | Standard   | API Key  | European AI, multilingual       |
+| [**Cerebras**](#cerebras)             | Cloud | Standard   | API Key  | Ultra-fast inference, speed     |
 | [**Ollama**](#ollama)                 | Local | Maximum    | Install  | Privacy, offline, free          |
 | [**LM Studio**](#lm-studio)           | Local | Maximum    | Install  | GUI management, local models    |
 | [**Azure OpenAI**](#azure-openai)     | Cloud | Enterprise | API Key  | Enterprise, compliance          |
@@ -141,6 +144,128 @@ rawi configure --provider google --model gemini-pro --api-key your-google-api-ke
 1. Create Google Cloud project
 2. Enable Vertex AI API
 3. Generate API key or service account
+
+---
+
+### DeepSeek
+
+**Cost-effective AI with strong reasoning capabilities and competitive performance.**
+
+```bash
+# Quick setup
+rawi configure --provider deepseek --model deepseek-chat --api-key sk-your-deepseek-key
+```
+
+**Available Models:**
+
+- `deepseek-chat` — Versatile model for general use
+- `deepseek-reasoner` — Enhanced reasoning capabilities
+
+**Key Features:**
+
+- 💰 Highly cost-effective pricing
+- 🧠 Strong reasoning capabilities
+- ⚡ Fast inference speed
+- 📊 Competitive performance
+- 🔍 Context caching for efficiency
+
+**Setup Requirements:**
+
+1. Create account at [platform.deepseek.com](https://platform.deepseek.com)
+2. Generate API key
+3. Configure billing (pay-per-use)
+
+**Configuration Example:**
+
+```bash
+rawi configure --provider deepseek \
+  --model deepseek-chat \
+  --api-key sk-your-deepseek-key \
+  --profile deepseek
+```
+
+---
+
+### Mistral
+
+**European AI platform with strong multilingual capabilities.**
+
+```bash
+# Quick setup
+rawi configure --provider mistral --model mistral-large-latest --api-key your-mistral-key
+```
+
+**Available Models:**
+
+- `mistral-large-latest` — Most capable model
+- `mistral-small-latest` — Efficient and fast
+- `ministral-3b-latest` — Lightweight model
+- `ministral-8b-latest` — Balanced performance
+- `pixtral-large-latest` — Multimodal capabilities
+- `pixtral-12b-2409` — Vision and text model
+
+**Key Features:**
+
+- European AI with GDPR compliance
+- Strong multilingual support
+- Competitive pricing
+- JSON mode support
+- Function calling capabilities
+
+**Setup Requirements:**
+
+1. Create account at [console.mistral.ai](https://console.mistral.ai)
+2. Generate API key from API Keys section
+3. Configure billing (pay-per-use)
+
+**Configuration Example:**
+
+```bash
+rawi configure --provider mistral \
+  --model mistral-large-latest \
+  --api-key your-mistral-key \
+  --profile mistral
+```
+
+---
+
+### Cerebras
+
+**Ultra-fast AI inference with Wafer-Scale Engine technology.**
+
+```bash
+# Quick setup
+rawi configure --provider cerebras --model llama3.1-70b --api-key csk-your-key
+```
+
+**Available Models:**
+
+- `llama3.1-70b` — Meta's Llama 3.1 70B model
+- `llama3.1-8b` — Meta's Llama 3.1 8B model
+- `llama-3.3-70b` — Latest Meta Llama 3.3 70B
+
+**Key Features:**
+
+- ⚡ Extremely fast inference speeds
+- 🔧 Wafer-Scale Engine (WSE) technology
+- 💰 Competitive pricing per token
+- 🛠️ OpenAI-compatible API
+- 📊 High throughput capabilities
+
+**Setup Requirements:**
+
+1. Create account at [cloud.cerebras.ai](https://cloud.cerebras.ai)
+2. Generate API key
+3. Configure billing (pay-per-use)
+
+**Configuration Example:**
+
+```bash
+rawi configure --provider cerebras \
+  --model llama3.1-70b \
+  --api-key csk-your-key-here \
+  --profile cerebras
+```
 
 ---
 

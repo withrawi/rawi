@@ -29,15 +29,25 @@ export class ConfigDisplayManager implements IConfigDisplayManager {
     );
     console.log(chalk.blue('  Model:') + chalk.white(` ${modelDisplayName}`));
 
+    // Get API key from provider settings if not in top-level
+    let displayApiKey = masked.apiKey;
     if (
-      masked.apiKey ||
+      !displayApiKey &&
+      masked.providerSettings &&
+      'apiKey' in masked.providerSettings
+    ) {
+      displayApiKey = maskApiKey(masked.providerSettings.apiKey as string);
+    }
+
+    if (
+      displayApiKey ||
       (masked.providerSettings &&
         Object.keys(masked.providerSettings).length > 0)
     ) {
       console.log(chalk.blue('  Configuration:'));
 
-      if (masked.apiKey) {
-        console.log(chalk.gray(`    API Key: ${masked.apiKey}`));
+      if (displayApiKey) {
+        console.log(chalk.gray(`    API Key: ${displayApiKey}`));
       }
 
       if (masked.providerSettings) {
@@ -84,6 +94,10 @@ export class ConfigDisplayManager implements IConfigDisplayManager {
   private displayProviderSettings(settings: Record<string, any>): void {
     for (const [key, value] of Object.entries(settings)) {
       if (value !== undefined && value !== null) {
+        // Skip API key from provider settings as it's already shown above
+        if (key === 'apiKey') {
+          continue;
+        }
         const displayKey = this.formatSettingKey(key);
         const displayValue = this.formatSettingValue(key, value);
         console.log(chalk.gray(`    ${displayKey}: ${displayValue}`));

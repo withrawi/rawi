@@ -75,13 +75,14 @@ export const streamWithOpenAI = async (
   prompt: string,
 ): Promise<StreamingResponse> => {
   try {
+    const settings = credentials.providerSettings as OpenAISettings | undefined;
+
+    const apiKey = settings?.apiKey || credentials.apiKey;
+
     if (!credentials.apiKey) {
       throw new Error('API key is required for OpenAI');
     }
 
-    const settings = credentials.providerSettings as OpenAISettings | undefined;
-
-    const apiKey = settings?.apiKey || credentials.apiKey;
     const baseURL = settings?.baseURL || 'https://api.openai.com/v1';
 
     const openaiProvider = createOpenAI({

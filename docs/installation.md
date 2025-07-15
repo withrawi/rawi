@@ -133,6 +133,26 @@ rawi configure \
   --api-key sk-ant-your-key
 ```
 
+#### DeepSeek (Cost-Effective with Reasoning)
+
+```bash
+# Get API key from: https://platform.deepseek.com/api_keys
+rawi configure \
+  --provider deepseek \
+  --model deepseek-chat \
+  --api-key sk-your-deepseek-key
+```
+
+#### Mistral (European AI)
+
+```bash
+# Get API key from: https://console.mistral.ai/api-keys/
+rawi configure \
+  --provider mistral \
+  --model mistral-large-latest \
+  --api-key your-mistral-key
+```
+
 #### Google Gemini (Fast & Efficient)
 
 ```bash

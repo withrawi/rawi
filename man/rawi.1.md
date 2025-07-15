@@ -20,9 +20,18 @@
 
 **rawi** **info** [*options*]
 
-## DESCRIPTION
+## DESCRI- **🔵 OpenAI** \- GPT models (gpt-4o, gpt-4-turbo, o1, etc.)
 
-Rawi (راوي) is a modern, developer-friendly CLI tool for interacting with multiple AI providers including OpenAI, Anthropic, Google, Amazon Bedrock, Azure OpenAI, Ollama, xAI, Qwen, and LM Studio. Inspired by Jordanian storytelling tradition, Rawi delivers clear answers, summaries, and analyses with a focus on usability, discoverability, and actionable output.
+- **🟣 Anthropic** \- Claude models (claude-3-opus, claude-3-sonnet, etc.)
+- **🔴 Google** \- Gemini models (gemini-pro, gemini-flash, etc.)
+- **🔵 DeepSeek** \- DeepSeek models (deepseek-chat, deepseek-reasoner)
+- **🟠 Mistral** \- Mistral models (mistral-large-latest, mistral-small-latest, etc.)
+- **🔷 Azure** \- Azure OpenAI service deployments
+- **🟠 Bedrock** \- AWS-hosted AI models (Claude, Titan, etc.)
+- **🟢 Ollama** \- Local models (llama2, mistral, codellama, etc.)
+- **🤖 xAI** \- Grok models
+- **🟡 Qwen** \- Alibaba Cloud models
+- **🔧 LM Studio** \- Local model serveri (راوي) is a modern, developer-friendly CLI tool for interacting with multiple AI providers including OpenAI, Anthropic, Google, Amazon Bedrock, Azure OpenAI, Ollama, xAI, Qwen, and LM Studio. Inspired by Jordanian storytelling tradition, Rawi delivers clear answers, summaries, and analyses with a focus on usability, discoverability, and actionable output.
 
 **Key Features:**
 
@@ -416,7 +425,8 @@ List all available models for a specific provider
 - **🔵 OpenAI** \- GPT models (gpt-4o, gpt-4-turbo, o1, etc.)
 - **🟣 Anthropic** \- Claude models (claude-3-opus, claude-3-sonnet, etc.)
 - **🔴 Google** \- Gemini models (gemini-pro, gemini-flash, etc.)
-- **🔷 Azure** \- Azure OpenAI service deployments
+- **� DeepSeek** \- DeepSeek models (deepseek-chat, deepseek-reasoner)
+- **�🔷 Azure** \- Azure OpenAI service deployments
 - **🟠 Bedrock** \- AWS-hosted AI models (Claude, Titan, etc.)
 - **🟢 Ollama** \- Local models (llama2, mistral, codellama, etc.)
 - **🤖 xAI** \- Grok models

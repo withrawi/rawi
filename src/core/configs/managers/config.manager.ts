@@ -3,11 +3,14 @@ import {
   type AnthropicSettings,
   type AzureSettings,
   type BedrockSettings,
+  type CerebrasSettings,
   type ConfigureOptions,
   DEFAULT_LANGUAGE,
   DEFAULT_MAX_TOKENS,
   DEFAULT_TEMPERATURE,
+  type DeepSeekSettings,
   type GoogleSettings,
+  type MistralSettings,
   type OpenAISettings,
   type QwenSettings,
   type RawiCredentials,
@@ -180,6 +183,15 @@ export class ConfigManager
       case 'xai':
         await this.configureXAI(credentials, options, existingCredentials);
         break;
+      case 'deepseek':
+        await this.configureDeepSeek(credentials, options, existingCredentials);
+        break;
+      case 'mistral':
+        await this.configureMistral(credentials, options, existingCredentials);
+        break;
+      case 'cerebras':
+        await this.configureCerebras(credentials, options, existingCredentials);
+        break;
       case 'openai':
         await this.configureOpenAI(credentials, options, existingCredentials);
         break;
@@ -338,6 +350,86 @@ export class ConfigManager
 
     const settings: XAISettings = {apiKey};
     credentials.apiKey = apiKey;
+    credentials.providerSettings = settings;
+  }
+
+  private async configureDeepSeek(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    const apiKey = await this.interactive.getApiKey(
+      options.apiKey || existingCredentials?.apiKey,
+      'deepseek',
+    );
+
+    const settings: DeepSeekSettings = {apiKey};
+    credentials.apiKey = apiKey;
+    credentials.providerSettings = settings;
+  }
+  private async configureMistral(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    // For Mistral, check for API key in provider settings first
+    const existingApiKey =
+      options.apiKey ||
+      (existingCredentials?.providerSettings &&
+      'apiKey' in existingCredentials.providerSettings
+        ? existingCredentials.providerSettings.apiKey
+        : existingCredentials?.apiKey);
+
+    const apiKey = await this.interactive.getApiKey(existingApiKey, 'mistral');
+
+    const baseURL = await this.providerConfig.getBaseURL(
+      options.baseURL ||
+        (existingCredentials?.providerSettings &&
+        'baseURL' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.baseURL
+          : undefined),
+    );
+
+    const settings: MistralSettings = {apiKey};
+
+    if (baseURL) {
+      settings.baseURL = baseURL;
+    }
+
+    // Only store API key in provider settings, not in top-level credentials
+    credentials.providerSettings = settings;
+  }
+
+  private async configureCerebras(
+    credentials: RawiCredentials,
+    options: ConfigureOptions,
+    existingCredentials: RawiCredentials | null,
+  ): Promise<void> {
+    // For Cerebras, check for API key in provider settings first
+    const existingApiKey =
+      options.apiKey ||
+      (existingCredentials?.providerSettings &&
+      'apiKey' in existingCredentials.providerSettings
+        ? existingCredentials.providerSettings.apiKey
+        : existingCredentials?.apiKey);
+
+    const apiKey = await this.interactive.getApiKey(existingApiKey, 'cerebras');
+
+    const baseURL = await this.providerConfig.getBaseURL(
+      options.baseURL ||
+        (existingCredentials?.providerSettings &&
+        'baseURL' in existingCredentials.providerSettings
+          ? existingCredentials.providerSettings.baseURL
+          : undefined),
+    );
+
+    const settings: CerebrasSettings = {apiKey};
+
+    if (baseURL) {
+      settings.baseURL = baseURL;
+    }
+
+    // Only store API key in provider settings, not in top-level credentials
     credentials.providerSettings = settings;
   }
 
