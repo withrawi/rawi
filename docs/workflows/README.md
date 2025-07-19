@@ -17,17 +17,41 @@ This section provides practical, real-world examples of how to integrate Rawi in
 
 ## Available Workflows
 
-### 📝 [Development Workflow](development.md)
+### 📝 [Development Workflow](development.md) **[WF-100]**
 
 Integrate Rawi into your software development process for code review, debugging, documentation, and refactoring assistance.
 
-### ✍️ [Content Creation Workflow](content-creation.md)
+### ✍️ [Content Creation Workflow](content-creation.md) **[WF-101]**
 
 Use Rawi for writing, editing, and optimizing content including blog posts, documentation, and creative writing.
 
-### 🔍 [Research and Analysis Workflow](research.md)
+### 🔍 [Research and Analysis Workflow](research.md) **[WF-102]**
 
 Leverage Rawi for information gathering, data analysis, literature reviews, and research documentation.
+
+### 🔍 [Code Review Workflow](code-review.md) **[WF-001]**
+
+Automate and enhance code review processes with AI-powered analysis, security auditing, and quality assessment.
+
+### 🔀 [Git Integration Workflow](git-integration.md) **[WF-002]**
+
+Integrate Rawi with Git workflows for smart commit messages, branch analysis, and release notes generation.
+
+### 📚 [Documentation Generation Workflow](documentation-generation.md) **[WF-003]**
+
+Automate creation of README files, API documentation, code comments, and comprehensive project guides.
+
+### 🔌 [API Development Workflow](api-development.md) **[WF-004]**
+
+Streamline API development with design assistance, implementation guidance, testing, and optimization.
+
+### 🧪 [Testing Workflow](testing.md) **[WF-005]**
+
+Comprehensive testing strategies including unit tests, integration tests, e2e tests, and performance testing.
+
+### 📊 [Data Analysis Workflow](data-analysis.md) **[WF-006]**
+
+Advanced data analysis workflows for exploration, statistical analysis, visualization, and machine learning.
 
 ---
 
@@ -35,18 +59,42 @@ Leverage Rawi for information gathering, data analysis, literature reviews, and 
 
 ### 🛠️ Development Workflows
 
-- [**Code Review Workflow**](#code-review-workflow) — Automated code analysis and review
-- [**Git Integration Workflow**](#git-integration-workflow) — Smart commit messages and change analysis
-- [**Documentation Generation**](#documentation-generation) — Auto-generate project documentation
-- [**Debugging Assistant**](#debugging-workflow) — AI-powered debugging assistance
-- [**API Development**](#api-development-workflow) — Design and document APIs with AI
+- [**Code Review Workflow**](code-review.md) **[WF-001]** — Automated code analysis and review
+- [**Git Integration Workflow**](git-integration.md) **[WF-002]** — Smart commit messages and change analysis
+- [**Documentation Generation**](documentation-generation.md) **[WF-003]** — Auto-generate project documentation
+- [**API Development Workflow**](api-development.md) **[WF-004]** — Design and document APIs with AI
+- [**Testing Workflow**](testing.md) **[WF-005]** — Comprehensive testing strategies
 
 ### 📊 Data Analysis Workflows
 
-- [**Log Analysis Workflow**](#log-analysis-workflow) — Intelligent log monitoring and analysis
-- [**Data Processing Pipeline**](#data-processing-workflow) — Process and analyze datasets
-- [**Performance Monitoring**](#performance-monitoring-workflow) — Monitor and optimize system performance
-- [**Error Categorization**](#error-analysis-workflow) — Categorize and prioritize errors
+- [**Data Analysis Workflow**](data-analysis.md) **[WF-006]** — Advanced data exploration and insights
+- [**Statistical Analysis Pipeline**](#statistical-analysis-workflow) **[WF-007]** — Statistical modeling and inference
+- [**Performance Monitoring**](#performance-monitoring-workflow) **[WF-008]** — Monitor and optimize system performance
+- [**Business Intelligence**](#business-intelligence-workflow) **[WF-009]** — Business metrics and KPI analysis
+
+### 🔒 Security Workflows
+
+- [**Security Audit Workflow**](#security-audit-workflow) **[WF-010]** — Comprehensive security assessment
+- [**Vulnerability Assessment**](#vulnerability-assessment-workflow) **[WF-011]** — Identify and prioritize security risks
+- [**Compliance Checking**](#compliance-workflow) **[WF-012]** — Ensure regulatory compliance
+
+### 🚀 DevOps Workflows
+
+- [**CI/CD Integration**](#cicd-integration-workflow) **[WF-013]** — Automated deployment pipelines
+- [**Infrastructure as Code**](#infrastructure-workflow) **[WF-014]** — Manage infrastructure with AI assistance
+- [**Monitoring and Alerting**](#monitoring-workflow) **[WF-015]** — Intelligent system monitoring
+
+### 📝 Content Creation Workflows
+
+- [**Technical Writing**](content-creation.md) **[WF-101]** — Professional documentation and guides
+- [**Blog Content Creation**](#blog-workflow) **[WF-016]** — SEO-optimized blog posts and articles
+- [**Marketing Content**](#marketing-workflow) **[WF-017]** — Marketing copy and campaign materials
+
+### 🔬 Research Workflows
+
+- [**Academic Research**](research.md) **[WF-102]** — Literature reviews and research papers
+- [**Market Research**](#market-research-workflow) **[WF-018]** — Competitive analysis and market insights
+- [**User Research**](#user-research-workflow) **[WF-019]** — UX research and user insights
 
 ### 🎨 Content Creation Workflows
 

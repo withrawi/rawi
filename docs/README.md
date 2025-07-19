@@ -13,6 +13,7 @@ Welcome to the **Rawi (راوي)** documentation wiki! This comprehensive guide 
 ### Core Features
 
 - [**Commands Reference**](./commands/README.md) — Complete guide to all Rawi commands
+- [**File Reading & Processing**](./file-reading.md) — Process PDFs, DOCX, XLSX, and text files
 - [**AI Providers**](./providers/README.md) — Supported AI providers and setup guides
 - [**Act Templates**](./templates/README.md) — 200+ expert prompt templates
 - [**Session Management**](./sessions.md) — Persistent conversations and context

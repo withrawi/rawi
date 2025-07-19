@@ -427,6 +427,63 @@ grep ERROR app.log | rawi ask "Categorize these errors and suggest fixes"
 cat docker-compose.yml | rawi ask "Review this Docker configuration for best practices"
 ```
 
+### 📄 Document & File Processing
+
+Process and analyze various document formats with intelligent content extraction:
+
+```bash
+# PDF document analysis
+rawi ask --file report.pdf "Summarize the key findings in this report"
+
+# Code review from files
+rawi ask --file src/app.js "Review this code for potential improvements"
+
+# Excel data analysis
+rawi ask --file sales-data.xlsx "What trends do you see in this data?"
+
+# Microsoft Word document processing
+rawi ask --file requirements.docx "Extract the main requirements from this document"
+
+# Multiple file processing
+rawi ask --files config.json package.json "Compare these configuration files"
+
+# Batch processing with glob patterns
+rawi ask --batch "src/**/*.{js,ts}" "Review all TypeScript/JavaScript files for consistency"
+
+# Process files with specific templates
+rawi ask --file database-schema.sql --act database-admin "Analyze this schema for optimization"
+
+# Combine file content with prompts
+rawi ask --file error-logs.txt "Analyze these logs and suggest solutions"
+```
+
+**Supported File Formats:**
+
+- **📄 PDF** — Extract text from PDF documents
+- **📝 DOCX** — Microsoft Word documents
+- **📊 XLSX** — Excel spreadsheets with sheet selection
+- **📋 Text Files** — .txt, .md, .json, .js, .py, .sql, .yml, etc.
+- **🔍 Source Code** — All programming languages with syntax context
+
+**Advanced File Features:**
+
+```bash
+# Process specific Excel sheets
+rawi ask --file data.xlsx --sheet "Q4 Sales" "Analyze Q4 performance"
+
+# Override file type detection
+rawi ask --file data.unknown --file-type txt "Process this as plain text"
+
+# Parallel processing for speed
+rawi ask --batch "docs/**/*.md" --parallel "Create a documentation index"
+
+# Continue processing on errors
+rawi ask --batch "**/*.json" --continue-on-error "Validate all JSON files"
+
+# Verbose output for debugging
+rawi ask --file large-dataset.csv --verbose "Summarize this data"
+```
+
 ## 📦 Installation
 
 ### NPM (Recommended)
