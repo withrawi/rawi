@@ -1,11 +1,11 @@
 {
   "name": "rawi",
   "description": "Rawi (راوي) is the developer-friendly AI CLI that brings the power of 12 major AI providers directly to your terminal. With seamless shell integration, persistent conversations, and 200+ specialized prompt templates, Rawi transforms your command line into an intelligent development workspace.",
-  "version": "0.0.7-beta.1",
+  "version": "0.0.7-beta.5",
   "type": "module",
   "license": "MIT",
   "bin": {
-    "rawi": "./dist/index.js"
+    "rawi": "dist/index.js"
   },
   "man": [
     "./man/rawi.1"
@@ -59,7 +59,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/withrawi/rawi.git"
+    "url": "git+https://github.com/withrawi/rawi.git"
   },
   "bugs": {
     "url": "https://github.com/withrawi/rawi/issues"
