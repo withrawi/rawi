@@ -86,6 +86,7 @@ export class FileReaderManager {
       FileType.PHP,
       FileType.YML,
       FileType.YAML,
+      FileType.CSV,
       FileType.TOML,
       FileType.ENV,
       FileType.INI,

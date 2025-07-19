@@ -76,6 +76,7 @@ export enum SupportedFileType {
   YML = 'yml',
   YAML = 'yaml',
   TOML = 'toml',
+  CSV = 'csv',
   ENV = 'env',
   INI = 'ini',
   CONF = 'conf',
