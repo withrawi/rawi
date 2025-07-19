@@ -48,7 +48,6 @@ export class TextReader extends AbstractFileReader {
 
       this.logVerbose(`Text extraction completed in ${processingTime}ms`);
 
-      // Add file type context for better AI understanding
       const fileTypeContext = this.getFileTypeContext(ext);
       const text = fileTypeContext
         ? `[${fileTypeContext}]\n${content}`

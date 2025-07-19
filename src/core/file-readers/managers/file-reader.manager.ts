@@ -202,7 +202,7 @@ export class FileReaderManager {
   updateOptions(newOptions: Partial<FileReaderManagerOptions>): void {
     this.options = {...this.options, ...newOptions};
     this.initializeReaders();
-    this.batchProcessor = new BatchFileProcessor(this); // Reinitialize with new options
+    this.batchProcessor = new BatchFileProcessor(this);
     this.logVerbose('Updated reader options and reinitialized readers');
   }
 
