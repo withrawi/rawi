@@ -70,6 +70,31 @@ export const createAskCommand = (): Command => {
       ),
     )
     .option(
+      '-F, --files <paths...>',
+      chalk.white('Process content from multiple files'),
+    )
+    .option(
+      '-b, --batch <patterns...>',
+      chalk.white(
+        'Process files matching glob patterns (e.g., "src/**/*.js" "docs/*.md")',
+      ),
+    )
+    .option(
+      '--parallel',
+      chalk.white('Process multiple files in parallel (faster for many files)'),
+    )
+    .option(
+      '--max-concurrency <number>',
+      chalk.white(
+        'Maximum number of files to process concurrently (default: 5)',
+      ),
+      '5',
+    )
+    .option(
+      '--continue-on-error',
+      chalk.white('Continue processing other files if one fails'),
+    )
+    .option(
       '--file-type <type>',
       chalk.white(
         'Override automatic file type detection (pdf, docx, pptx, xlsx, odt, odp, ods, txt, etc.)',
@@ -95,6 +120,20 @@ export const createAskCommand = (): Command => {
           '  echo "Additional context" | rawi ask "Analyze" --file data.json',
         ),
         '',
+        chalk.bold.cyan('Batch Processing:'),
+        chalk.gray(
+          '  rawi ask "Review these files" --files file1.js file2.py file3.md',
+        ),
+        chalk.gray(
+          '  rawi ask "Analyze source code" --batch "src/**/*.{js,ts}"',
+        ),
+        chalk.gray(
+          '  rawi ask "Review docs" --batch "docs/**/*.md" --parallel',
+        ),
+        chalk.gray(
+          '  rawi ask "Check configs" --batch "**/*.{json,yml,yaml}" --continue-on-error',
+        ),
+        '',
         chalk.bold.cyan('See also:'),
         chalk.gray('  rawi act --list'),
         chalk.gray('  rawi provider --list'),
@@ -109,14 +148,12 @@ export const createAskCommand = (): Command => {
         const stdinContent = await readStdin();
         let fileContent = '';
 
-        // Process file if provided
-        if (options.file) {
+        if (options.file || options.files || options.batch) {
           if (options.verbose) {
-            console.log(chalk.dim(`📄 Processing file: ${options.file}`));
+            console.log(chalk.dim('📄 Processing files...'));
           }
 
           try {
-            // Override file type if specified
             let forceFileType: SupportedFileType | undefined;
             if (options.fileType) {
               const fileTypeKey = options.fileType.toUpperCase();
@@ -143,27 +180,115 @@ export const createAskCommand = (): Command => {
               forceFileType,
             });
 
-            const result = await fileReaderManager.readFile(options.file);
+            let result: any;
+            let totalFiles = 0;
 
-            if (result.success && result.content) {
-              fileContent = result.content.text;
-              if (options.verbose) {
-                console.log(
-                  chalk.dim(
-                    `✅ Successfully processed ${result.content.metadata.fileType} file`,
-                  ),
+            if (options.file) {
+              result = await fileReaderManager.readFile(options.file);
+              if (result.success && result.content) {
+                fileContent = result.content.text;
+                totalFiles = 1;
+              } else {
+                console.error(
+                  chalk.red(`❌ Failed to process file: ${result.error}`),
                 );
-                console.log(
-                  chalk.dim(
-                    `📊 Content length: ${fileContent.length} characters`,
-                  ),
-                );
+                process.exit(1);
               }
             } else {
-              console.error(
-                chalk.red(`❌ Failed to process file: ${result.error}`),
+              const maxConcurrency =
+                Number.parseInt(options.maxConcurrency) || 5;
+              const batchOptions = {
+                parallel: options.parallel,
+                maxConcurrency,
+                continueOnError: options.continueOnError,
+                fileType: options.fileType,
+                onProgress: options.verbose
+                  ? (processed: number, total: number, currentFile: string) => {
+                      console.log(
+                        chalk.dim(
+                          `📝 [${processed}/${total}] Processing: ${currentFile}`,
+                        ),
+                      );
+                    }
+                  : undefined,
+              };
+
+              let summary: any;
+              if (options.files) {
+                summary = await fileReaderManager.processMultipleFiles(
+                  options.files,
+                  batchOptions,
+                );
+              } else if (options.batch) {
+                summary = await fileReaderManager.processGlobPatterns(
+                  options.batch,
+                  batchOptions,
+                );
+              }
+
+              if (summary) {
+                const contentParts: string[] = [];
+                let successCount = 0;
+
+                for (const fileResult of summary.results) {
+                  if (fileResult.result.success && fileResult.result.content) {
+                    contentParts.push(
+                      `=== ${fileResult.filePath} ===\n${fileResult.result.content.text}\n`,
+                    );
+                    successCount++;
+                  }
+                }
+
+                fileContent = contentParts.join('\n');
+                totalFiles = summary.totalFiles;
+
+                if (options.verbose) {
+                  console.log(
+                    chalk.dim(
+                      `✅ Successfully processed ${successCount}/${summary.totalFiles} files`,
+                    ),
+                  );
+                  console.log(
+                    chalk.dim(
+                      `⏱️  Total time: ${(summary.totalProcessingTime / 1000).toFixed(2)}s`,
+                    ),
+                  );
+                  console.log(
+                    chalk.dim(
+                      `📊 Total content length: ${fileContent.length} characters`,
+                    ),
+                  );
+
+                  if (summary.failedFiles > 0) {
+                    console.log(
+                      chalk.yellow(
+                        `⚠️  ${summary.failedFiles} files failed to process:`,
+                      ),
+                    );
+                    for (const error of summary.errors) {
+                      console.log(
+                        chalk.yellow(`   • ${error.filePath}: ${error.error}`),
+                      );
+                    }
+                  }
+                }
+
+                if (successCount === 0) {
+                  console.error(
+                    chalk.red('❌ No files were processed successfully'),
+                  );
+                  process.exit(1);
+                }
+              }
+            }
+
+            if (options.verbose && totalFiles === 1) {
+              console.log(chalk.dim('✅ Successfully processed file'));
+              console.log(
+                chalk.dim(
+                  `📊 Content length: ${fileContent.length} characters`,
+                ),
               );
-              process.exit(1);
             }
           } catch (error) {
             const errorMessage =
@@ -175,7 +300,6 @@ export const createAskCommand = (): Command => {
           }
         }
 
-        // Combine query, stdin content, and file content
         let finalQuery: string;
         const contentParts = [query, stdinContent, fileContent].filter(Boolean);
 
@@ -336,7 +460,7 @@ export const createAskCommand = (): Command => {
               process.stdout.write(chunk);
             },
             onComplete: () => {
-              console.log(); // Add newline after streaming
+              console.log();
               if (options.verbose) {
                 console.log(chalk.dim('✅ Streaming completed'));
               }

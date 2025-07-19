@@ -140,3 +140,6 @@ export abstract class BaseFileReader {
     }
   }
 }
+
+// Re-export batch interfaces
+export * from './batch.interface.js';

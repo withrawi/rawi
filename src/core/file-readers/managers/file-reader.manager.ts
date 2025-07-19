@@ -1,12 +1,16 @@
 import type {
+  BatchProcessingOptions,
+  BatchProcessingSummary,
   FileReaderOptions,
   FileReaderResult,
+  GlobOptions,
   SupportedFileType,
 } from '../interfaces/types.js';
 import {SupportedFileType as FileType} from '../interfaces/types.js';
 import type {AbstractFileReader} from '../readers/base.reader.js';
 import {OfficeReader} from '../readers/office.reader.js';
 import {TextReader} from '../readers/text.reader.js';
+import {BatchFileProcessor} from '../utils/batch-processor.js';
 import {
   detectFileType,
   getFileTypeDescription,
@@ -21,6 +25,7 @@ export interface FileReaderManagerOptions extends FileReaderOptions {
 export class FileReaderManager {
   private readers: Map<SupportedFileType, AbstractFileReader>;
   private options: FileReaderManagerOptions;
+  private batchProcessor: BatchFileProcessor;
 
   constructor(options: FileReaderManagerOptions = {}) {
     this.options = {
@@ -30,6 +35,7 @@ export class FileReaderManager {
 
     this.readers = new Map();
     this.initializeReaders();
+    this.batchProcessor = new BatchFileProcessor(this);
   }
 
   private initializeReaders(): void {
@@ -196,7 +202,33 @@ export class FileReaderManager {
   updateOptions(newOptions: Partial<FileReaderManagerOptions>): void {
     this.options = {...this.options, ...newOptions};
     this.initializeReaders();
+    this.batchProcessor = new BatchFileProcessor(this); // Reinitialize with new options
     this.logVerbose('Updated reader options and reinitialized readers');
+  }
+
+  async processMultipleFiles(
+    filePaths: string[],
+    options: BatchProcessingOptions = {},
+  ): Promise<BatchProcessingSummary> {
+    return this.batchProcessor.processFiles(filePaths, options);
+  }
+
+  async processGlobPatterns(
+    patterns: string[],
+    options: BatchProcessingOptions & GlobOptions = {},
+  ): Promise<BatchProcessingSummary> {
+    return this.batchProcessor.processGlobPatterns(patterns, options);
+  }
+
+  async expandGlob(
+    patterns: string[],
+    options: GlobOptions = {},
+  ): Promise<string[]> {
+    return this.batchProcessor.expandGlobPatterns(patterns, options);
+  }
+
+  async filterSupportedFiles(filePaths: string[]): Promise<string[]> {
+    return this.batchProcessor.filterSupportedFiles(filePaths);
   }
 
   private async determineFileType(

@@ -3,5 +3,6 @@ export * from './managers/file-reader.manager.js';
 export * from './readers/base.reader.js';
 export * from './readers/office.reader.js';
 export * from './readers/text.reader.js';
+export * from './utils/batch-processor.js';
 export * from './utils/file-type.detector.js';
 export * from './validators/file-reader.errors.js';
