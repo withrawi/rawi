@@ -1,7 +1,7 @@
 {
   "name": "rawi",
   "description": "Rawi (راوي) is the developer-friendly AI CLI that brings the power of 12 major AI providers directly to your terminal. With seamless shell integration, persistent conversations, and 200+ specialized prompt templates, Rawi transforms your command line into an intelligent development workspace.",
-  "version": "0.0.7",
+  "version": "0.0.7-beta.1",
   "type": "module",
   "license": "MIT",
   "bin": {
@@ -97,7 +97,6 @@
     "@inquirer/prompts": "7.6.0",
     "@libsql/client": "0.15.10",
     "@oclif/core": "4.5.1",
-    "@types/glob": "9.0.0",
     "ai": "4.3.19",
     "boxen": "8.0.1",
     "chalk": "5.4.1",

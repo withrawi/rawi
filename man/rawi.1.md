@@ -62,9 +62,12 @@ Show help for command with usage examples
 **rawi ask** [*query*] [*options*]
 **echo** "_text_" **|** **rawi ask** [*query*] [*options*]
 **cat** _file_ **|** **rawi ask** [*query*] [*options*]
+**rawi ask** [*query*] **--file** _path_ [*options*]
+**rawi ask** [*query*] **--files** _path1_ _path2_ ... [*options*]
+**rawi ask** [*query*] **--batch** "_pattern_" [*options*]
 
 **Description:**
-Send questions or prompts to AI providers. Supports stdin piping for processing files or command output. Can continue previous conversations or start new sessions.
+Send questions or prompts to AI providers. Supports stdin piping for processing command output, direct file processing for documents and data files, and batch processing for multiple files. Can continue previous conversations or start new sessions.
 
 **Arguments:**
 
@@ -90,6 +93,34 @@ Force creation of a new chat session instead of continuing the last one
 
 Apply an expert prompt template. Use **rawi act --list** to see available templates. Templates provide specialized prompts for tasks like code review, documentation, analysis, etc.
 
+**-f, --file** _path_
+
+Process content from a single file. Supports multiple file formats including PDF, DOCX, PPTX, XLSX, ODT, ODP, ODS, TXT, and more. File content is automatically extracted and included in the AI prompt.
+
+**-F, --files** _paths..._
+
+Process content from multiple files simultaneously. Specify multiple file paths separated by spaces. All file contents are combined and sent in a single request.
+
+**-b, --batch** _patterns..._
+
+Process files matching glob patterns. Use standard glob syntax to match multiple files (e.g., "src/\*_/_.js" "docs/\*.md"). Powerful for bulk processing of codebases or document collections.
+
+**--parallel**
+
+Process multiple files in parallel for improved performance when handling many files. Use with **--files** or **--batch** options.
+
+**--max-concurrency** _number_
+
+Maximum number of files to process concurrently when using **--parallel** (default: 5). Higher values may improve speed but increase system resource usage.
+
+**--continue-on-error**
+
+Continue processing remaining files if one file fails to read or process. By default, processing stops on the first error.
+
+**--file-type** _type_
+
+Override automatic file type detection. Useful when file extensions don't match content or for files without extensions. Supported types: pdf, docx, pptx, xlsx, odt, odp, ods, txt, etc.
+
 **--verbose**
 
 Show detailed status information, debug output, and processing steps
@@ -107,6 +138,38 @@ Show detailed status information, debug output, and processing steps
 # Git integration
 
 **git diff** **|** **rawi ask** "Review these code changes"
+
+# Process single file
+
+**rawi ask** "What is this document about?" **--file** report.pdf
+
+# Process multiple files
+
+**rawi ask** "Analyze these files" **--files** file1.js file2.py file3.md
+
+# Batch process with glob patterns
+
+**rawi ask** "Review source code" **--batch** "src/\*_/_.{js,ts}"
+
+# Parallel processing for performance
+
+**rawi ask** "Analyze documentation" **--batch** "docs/**/\*.md" **--parallel\*\*
+
+# Continue on errors for bulk processing
+
+**rawi ask** "Check configurations" **--batch** "**/\*.{json,yml}" **--continue-on-error\*\*
+
+# Override file type detection
+
+**rawi ask** "Parse this data" **--file** data.unknown **--file-type** json
+
+# Use expert template with file input
+
+**rawi ask** **--act** code-reviewer **--file** src/app.js "Review this code"
+
+# Combine piped input with file processing
+
+**echo** "Additional context" **|** **rawi ask** "Analyze with context" **--file** data.json
 
 # Use expert template
 

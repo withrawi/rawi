@@ -38,13 +38,40 @@ rawi ask "Explain async/await in JavaScript with examples"
 
 ## Options
 
-| Option                  | Alias | Description                                | Default   |
-| ----------------------- | ----- | ------------------------------------------ | --------- |
-| `--profile <profile>`   | `-p`  | Profile to use for AI configuration        | `default` |
-| `--session <sessionId>` | `-s`  | Continue an existing chat session          |           |
-| `--new-session`         | `-n`  | Start a new chat session                   |           |
-| `--act <template>`      |       | Use an act template by ID                  |           |
-| `--verbose`             |       | Show detailed status and debug information |           |
+| Option                       | Alias | Description                                  | Default   |
+| ---------------------------- | ----- | -------------------------------------------- | --------- |
+| `--profile <profile>`        | `-p`  | Profile to use for AI configuration          | `default` |
+| `--session <sessionId>`      | `-s`  | Continue an existing chat session            |           |
+| `--new-session`              | `-n`  | Start a new chat session                     |           |
+| `--act <template>`           |       | Use an act template by ID                    |           |
+| `--file <path>`              | `-f`  | Process content from a file                  |           |
+| `--files <paths...>`         | `-F`  | Process content from multiple files          |           |
+| `--batch <patterns...>`      | `-b`  | Process files matching glob patterns         |           |
+| `--file-type <type>`         |       | Override automatic file type detection       |           |
+| `--parallel`                 |       | Process multiple files in parallel           |           |
+| `--max-concurrency <number>` |       | Maximum concurrent files to process          | `5`       |
+| `--continue-on-error`        |       | Continue processing other files if one fails |           |
+| `--verbose`                  |       | Show detailed status and debug information   |           |
+
+### File Processing Options
+
+**Supported File Types:**
+
+- `pdf` — PDF documents
+- `docx` — Microsoft Word documents
+- `xlsx` — Excel spreadsheets
+- `txt` — Plain text files
+- Auto-detected: `.js`, `.ts`, `.py`, `.json`, `.md`, `.yml`, etc.
+
+**File Type Override:**
+
+```bash
+# Process unknown file as text
+rawi ask --file data.unknown --file-type txt "Analyze this data"
+
+# Force PDF processing
+rawi ask --file document --file-type pdf "Extract text from this"
+```
 
 ---
 
@@ -270,6 +297,43 @@ rawi ask "Create a React component for file upload with drag-and-drop"
 rawi ask "Explain this regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/"
 ```
 
+### File Processing
+
+```bash
+# Process PDF documents
+rawi ask --file report.pdf "Summarize the key findings in this report"
+
+# Analyze Excel spreadsheets
+rawi ask --file sales-data.xlsx "What trends do you see in this quarterly data?"
+
+# Review source code files
+rawi ask --file src/app.js --act code-reviewer "Review this code for best practices"
+
+# Process Word documents
+rawi ask --file requirements.docx "Extract all functional requirements"
+
+# Multiple file comparison
+rawi ask --files package.json composer.json "Compare these dependency configurations"
+
+# Batch processing with glob patterns
+rawi ask --batch "src/**/*.{js,ts}" "Find potential security vulnerabilities"
+
+# Process specific Excel sheets
+rawi ask --file workbook.xlsx --sheet "Q4 Results" "Analyze Q4 performance metrics"
+
+# Override file type detection
+rawi ask --file data.unknown --file-type txt "Process this as plain text"
+
+# Parallel processing for speed
+rawi ask --batch "docs/**/*.md" --parallel "Create a comprehensive documentation index"
+
+# Continue on errors for large batches
+rawi ask --batch "**/*.json" --continue-on-error "Validate all JSON configuration files"
+
+# Combine file processing with templates
+rawi ask --file database-schema.sql --act database-admin "Optimize this schema"
+```
+
 ### Git Workflows
 
 ```bash
@@ -349,6 +413,43 @@ rawi ask "Generate Terraform config for AWS EC2 with security groups"
 
 # Monitoring setup
 rawi ask "Create Prometheus monitoring for Express.js application"
+```
+
+### Document & File Processing
+
+```bash
+# PDF document analysis
+rawi ask --file report.pdf "Summarize the key findings"
+
+# Code review from files
+rawi ask --file src/app.js --act code-reviewer "Review for best practices"
+
+# Excel data analysis
+rawi ask --file sales-data.xlsx "What trends do you see in this data?"
+
+# Word document processing
+rawi ask --file requirements.docx "Extract all functional requirements"
+
+# Multiple file analysis
+rawi ask --files config.json package.json "Compare these configuration files"
+
+# Batch processing with patterns
+rawi ask --batch "src/**/*.js" "Find potential security issues"
+
+# Process documentation files
+rawi ask --batch "docs/*.md" "Create a table of contents"
+
+# Parallel processing for speed
+rawi ask --batch "test/**/*.js" --parallel "Analyze test coverage"
+
+# Continue on errors for large batches
+rawi ask --batch "**/*.json" --continue-on-error "Validate all JSON files"
+
+# Combine with templates
+rawi ask --file database.sql --act database-admin "Optimize this schema"
+
+# Process with file type override
+rawi ask --file data.backup --file-type json "Validate this backup file"
 ```
 
 ---

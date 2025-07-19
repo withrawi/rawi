@@ -331,6 +331,193 @@ rawi act developer "Code help" --debug
 
 ---
 
+## File Reading Issues
+
+### File Not Found Errors
+
+**Problem**: `File not found` or `Cannot read file` errors
+
+**Diagnostic Commands**:
+
+```bash
+# Check if file exists
+ls -la /path/to/file
+
+# Check current directory
+pwd
+ls -la
+
+# Test with absolute path
+rawi ask --file "$(pwd)/document.pdf" "What is this about?"
+```
+
+**Solutions**:
+
+```bash
+# Use absolute path
+rawi ask --file "/full/path/to/document.pdf" "Analyze this"
+
+# Check file permissions
+chmod 644 document.pdf
+
+# Verify file is readable
+cat document.pdf | head  # For text files
+file document.pdf        # Check file type
+```
+
+### Unsupported File Format
+
+**Problem**: `Unsupported file format` errors
+
+**Solutions**:
+
+```bash
+# Check supported formats
+rawi ask --help | grep -A 20 "file-type"
+
+# Override file type detection
+rawi ask --file unknown.ext --file-type txt "Process as text"
+
+# Convert to supported format
+pandoc document.rtf -o document.docx  # Convert RTF to DOCX
+libreoffice --convert-to pdf document.doc  # Convert DOC to PDF
+
+# List supported extensions
+rawi ask --file example.pdf --help
+```
+
+### Empty or Corrupted Content
+
+**Problem**: File processed but content is empty or garbled
+
+**Diagnostic Commands**:
+
+```bash
+# Check file integrity
+file document.pdf
+ls -lh document.pdf  # Check file size
+
+# Test extraction manually
+pdftotext document.pdf test.txt  # For PDFs
+unzip -l document.docx  # For DOCX files
+```
+
+**Solutions**:
+
+```bash
+# Try different file type
+rawi ask --file document.pdf --file-type txt "Process as plain text"
+
+# Re-download or recreate file
+wget -O new-file.pdf "original-url"
+
+# Use verbose mode for debugging
+rawi ask --file document.pdf --verbose "Debug this file"
+
+# Try with smaller test file
+echo "Hello world" > test.txt
+rawi ask --file test.txt "What does this say?"
+```
+
+### Large File Processing Issues
+
+**Problem**: Timeout or memory errors with large files
+
+**Solutions**:
+
+```bash
+# Check file size
+ls -lh large-file.pdf
+
+# Process in smaller batches
+split -b 10M large-file.txt part_  # Split large text files
+rawi ask --file part_aa "Analyze this portion"
+
+# Use specific file type to skip expensive detection
+rawi ask --file large-data.xlsx --file-type xlsx "Process this"
+
+# Increase timeout (if available in future versions)
+rawi ask --file large-file.pdf --timeout 300 "Analyze slowly"
+```
+
+### Batch Processing Failures
+
+**Problem**: Batch processing fails or processes some files incorrectly
+
+**Diagnostic Commands**:
+
+```bash
+# Test glob pattern
+ls -la src/**/*.js  # Verify pattern matches expected files
+
+# Process single file first
+rawi ask --file src/app.js "Test single file"
+
+# Use verbose mode
+rawi ask --batch "src/*.js" --verbose "Debug batch processing"
+```
+
+**Solutions**:
+
+```bash
+# Use continue-on-error for large batches
+rawi ask --batch "**/*.js" --continue-on-error "Process all JS files"
+
+# Reduce concurrency
+rawi ask --batch "src/**/*.js" --max-concurrency 2 "Process slowly"
+
+# Process in smaller batches
+rawi ask --batch "src/components/*.js" "Process components first"
+rawi ask --batch "src/utils/*.js" "Process utils second"
+
+# Exclude problematic directories
+rawi ask --batch "src/**/*.js" --exclude "node_modules/**" "Skip dependencies"
+```
+
+### Permission Denied Errors
+
+**Problem**: Cannot read files due to permission issues
+
+**Solutions**:
+
+```bash
+# Check file permissions
+ls -l document.pdf
+
+# Fix file permissions
+chmod 644 document.pdf  # Read/write for owner, read for others
+chmod -R 644 documents/  # Fix directory permissions
+
+# Check directory permissions
+ls -ld /path/to/directory
+
+# Use sudo if necessary (be careful)
+sudo rawi ask --file /root/document.pdf "Analyze this"  # Not recommended
+```
+
+### Encoding Issues
+
+**Problem**: Non-English text appears as gibberish
+
+**Solutions**:
+
+```bash
+# Check file encoding
+file -bi document.txt
+
+# Convert encoding if needed
+iconv -f ISO-8859-1 -t UTF-8 document.txt > document-utf8.txt
+rawi ask --file document-utf8.txt "Analyze this"
+
+# Specify encoding (if supported in future)
+rawi ask --file document.txt --encoding utf-8 "Process with UTF-8"
+
+# Use file type override
+rawi ask --file document.txt --file-type txt "Force text processing"
+```
+
+---
+
 ## Performance Issues
 
 ### Slow Response Times
