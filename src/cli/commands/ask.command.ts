@@ -61,7 +61,7 @@ export const createAskCommand = (): Command => {
         }
 
         const finalQuery = await assembleQuery(query, fileContent);
-        
+
         if (!finalQuery || finalQuery.trim() === '') {
           askCommand.help();
           return;
@@ -74,12 +74,28 @@ export const createAskCommand = (): Command => {
           }
         }
 
-        const filteringEnabled = options.filterSensitive || (options.filterTypes && options.filterTypes.trim() !== '');
+        const filteringEnabled =
+          options.filterSensitive ||
+          (options.filterTypes && options.filterTypes.trim() !== '');
         const filterTypes = processFilterTypes(filteringEnabled, options);
-        const contentFilter = setupContentFilter(filteringEnabled, filterTypes, options);
+        const contentFilter = setupContentFilter(
+          filteringEnabled,
+          filterTypes,
+          options,
+        );
 
-        const filteredQuery = filterAndDisplayQuery(contentFilter, finalQuery, filteringEnabled, options);
-        displayFilterStatistics(contentFilter, finalQuery, filteringEnabled, options);
+        const filteredQuery = filterAndDisplayQuery(
+          contentFilter,
+          finalQuery,
+          filteringEnabled,
+          options,
+        );
+        displayFilterStatistics(
+          contentFilter,
+          finalQuery,
+          filteringEnabled,
+          options,
+        );
 
         if (options.saveFilterConfig) {
           saveFilterConfig(contentFilter, options);
@@ -91,9 +107,13 @@ export const createAskCommand = (): Command => {
         let processedQuery = filteredQuery;
         if (options.act) {
           try {
-            processedQuery = processActTemplate(options.act, filteredQuery, options);
+            processedQuery = processActTemplate(
+              options.act,
+              filteredQuery,
+              options,
+            );
           } catch (error) {
-            return; 
+            return;
           }
         }
 
@@ -102,7 +122,7 @@ export const createAskCommand = (): Command => {
 
         dbManager = new DatabaseManager();
         const sessionId = await handleSession(dbManager, profile, options);
-        
+
         const credentials = validateCredentials(profile, options);
         logProcessingInfo(profile, processedQuery, options);
 
@@ -113,7 +133,7 @@ export const createAskCommand = (): Command => {
           dbManager,
           filteringEnabled,
           filterTypes,
-          options
+          options,
         );
 
         if (options.verbose) {

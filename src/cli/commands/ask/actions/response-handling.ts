@@ -9,7 +9,7 @@ export const streamResponse = async (
   context: string | null,
   dbManager: DatabaseManager,
   credentials: any,
-  options: any
+  options: any,
 ): Promise<void> => {
   if (options.verbose) {
     spinnerManager.start('query', 'Processing your query...');
@@ -31,17 +31,15 @@ export const streamResponse = async (
         }
         isFirstChunk = false;
       }
-      
+
       process.stdout.write(chunk);
       response += chunk;
     }
 
-    // Ensure we end with a newline
     if (!response.endsWith('\n')) {
       process.stdout.write('\n');
     }
 
-    // Save the interaction to the database
     await dbManager.addMessage(
       sessionId,
       'user',
@@ -49,7 +47,7 @@ export const streamResponse = async (
       credentials.provider,
       credentials.model || 'default',
       credentials.temperature,
-      credentials.maxTokens
+      credentials.maxTokens,
     );
 
     await dbManager.addMessage(
@@ -59,7 +57,7 @@ export const streamResponse = async (
       credentials.provider,
       credentials.model || 'default',
       credentials.temperature,
-      credentials.maxTokens
+      credentials.maxTokens,
     );
 
     if (options.verbose) {
@@ -69,15 +67,15 @@ export const streamResponse = async (
     if (options.verbose) {
       spinnerManager.fail('query', 'Failed to process query');
     }
-    
+
     console.error(chalk.red('❌ Error processing query:'));
     console.error(chalk.red((error as Error).message));
-    
+
     if (options.verbose && error instanceof Error && error.stack) {
       console.error(chalk.dim('Stack trace:'));
       console.error(chalk.dim(error.stack));
     }
-    
+
     process.exit(1);
   }
 };

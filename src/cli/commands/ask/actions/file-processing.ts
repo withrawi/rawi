@@ -2,7 +2,9 @@ import chalk from 'chalk';
 import {SupportedFileType} from '../../../../core/file-readers/interfaces/types.js';
 import {FileReaderManager} from '../../../../core/file-readers/managers/file-reader.manager.js';
 
-export const processFiles = async (options: any): Promise<{fileContent: string; totalFiles: number}> => {
+export const processFiles = async (
+  options: any,
+): Promise<{fileContent: string; totalFiles: number}> => {
   let fileContent = '';
   let totalFiles = 0;
 
@@ -16,9 +18,7 @@ export const processFiles = async (options: any): Promise<{fileContent: string; 
       const fileTypeKey = options.fileType.toUpperCase();
       if (fileTypeKey in SupportedFileType) {
         forceFileType =
-          SupportedFileType[
-            fileTypeKey as keyof typeof SupportedFileType
-          ];
+          SupportedFileType[fileTypeKey as keyof typeof SupportedFileType];
       } else {
         console.error(
           chalk.red(`❌ Unsupported file type: ${options.fileType}`),
@@ -45,14 +45,11 @@ export const processFiles = async (options: any): Promise<{fileContent: string; 
         fileContent = result.content.text;
         totalFiles = 1;
       } else {
-        console.error(
-          chalk.red(`❌ Failed to process file: ${result.error}`),
-        );
+        console.error(chalk.red(`❌ Failed to process file: ${result.error}`));
         process.exit(1);
       }
     } else {
-      const maxConcurrency =
-        Number.parseInt(options.maxConcurrency) || 5;
+      const maxConcurrency = Number.parseInt(options.maxConcurrency) || 5;
       const batchOptions = {
         parallel: options.parallel,
         maxConcurrency,
@@ -130,9 +127,7 @@ export const processFiles = async (options: any): Promise<{fileContent: string; 
         }
 
         if (successCount === 0) {
-          console.error(
-            chalk.red('❌ No files were processed successfully'),
-          );
+          console.error(chalk.red('❌ No files were processed successfully'));
           process.exit(1);
         }
       }
@@ -141,19 +136,15 @@ export const processFiles = async (options: any): Promise<{fileContent: string; 
     if (options.verbose && totalFiles === 1) {
       console.log(chalk.dim('✅ Successfully processed file'));
       console.log(
-        chalk.dim(
-          `📊 Content length: ${fileContent.length} characters`,
-        ),
+        chalk.dim(`📊 Content length: ${fileContent.length} characters`),
       );
     }
 
-    return { fileContent, totalFiles };
+    return {fileContent, totalFiles};
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error occurred';
-    console.error(
-      chalk.red(`❌ Error processing file: ${errorMessage}`),
-    );
+    console.error(chalk.red(`❌ Error processing file: ${errorMessage}`));
     process.exit(1);
   }
 };

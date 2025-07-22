@@ -11,9 +11,8 @@ export const streamAIResponse = async (
   dbManager: DatabaseManager,
   filteringEnabled: boolean,
   filterTypes: string[] | undefined,
-  options: any
+  options: any,
 ): Promise<void> => {
-  // Save user message first
   await dbManager.addMessage(
     sessionId,
     'user',
@@ -98,9 +97,7 @@ export const streamAIResponse = async (
 
               console.log(chalk.yellow('\nBreakdown by type:'));
               for (const [type, count] of Object.entries(filterCount)) {
-                const percentage = Math.round(
-                  (count / totalFiltered) * 100,
-                );
+                const percentage = Math.round((count / totalFiltered) * 100);
                 const bar = '█'.repeat(
                   Math.min(20, Math.floor(percentage / 5)),
                 );
@@ -133,20 +130,13 @@ export const streamAIResponse = async (
               }
 
               console.log(
-                chalk.dim(
-                  '   Use --verbose for detailed filtering statistics',
-                ),
+                chalk.dim('   Use --verbose for detailed filtering statistics'),
               );
             }
 
-            if (
-              options.highlightFiltered &&
-              fullFilterResult.highlightedText
-            ) {
+            if (options.highlightFiltered && fullFilterResult.highlightedText) {
               console.log(
-                chalk.yellow(
-                  '\n🔍 Highlighted sensitive content in response:',
-                ),
+                chalk.yellow('\n🔍 Highlighted sensitive content in response:'),
               );
               console.log('─────────────────────────────────────────');
               console.log(fullFilterResult.highlightedText);
@@ -154,9 +144,7 @@ export const streamAIResponse = async (
             }
           } else if (options.verbose) {
             console.log(
-              chalk.dim(
-                '✅ No sensitive information detected in response',
-              ),
+              chalk.dim('✅ No sensitive information detected in response'),
             );
           }
         }
@@ -167,10 +155,7 @@ export const streamAIResponse = async (
       },
       onError: (error: Error) => {
         if (options.verbose) {
-          spinnerManager.fail(
-            'generation',
-            'Failed to generate response',
-          );
+          spinnerManager.fail('generation', 'Failed to generate response');
           console.error(chalk.red(`❌ ${error.message}`));
         }
       },
@@ -187,10 +172,7 @@ export const streamAIResponse = async (
     );
 
     if (options.verbose) {
-      spinnerManager.succeed(
-        'generation',
-        'Response streamed successfully!',
-      );
+      spinnerManager.succeed('generation', 'Response streamed successfully!');
     }
   } catch (error) {
     if (options.verbose) {

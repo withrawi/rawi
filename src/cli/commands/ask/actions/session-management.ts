@@ -24,10 +24,10 @@ export const validateProfile = (profile: string, options: any): void => {
 export const handleSession = async (
   dbManager: DatabaseManager,
   profile: string,
-  options: any
+  options: any,
 ): Promise<string> => {
   let sessionId: string;
-  
+
   if (options.newSession) {
     sessionId = await dbManager.createSession(profile);
     if (options.verbose) {
@@ -74,14 +74,9 @@ export const validateCredentials = (profile: string, options: any): any => {
 
   if (!credentials) {
     if (options.verbose) {
-      spinnerManager.fail(
-        'validation',
-        'Configuration validation failed',
-      );
+      spinnerManager.fail('validation', 'Configuration validation failed');
       console.error(
-        chalk.red(
-          `❌ Unable to load credentials for profile '${profile}'.`,
-        ),
+        chalk.red(`❌ Unable to load credentials for profile '${profile}'.`),
       );
     }
     process.exit(1);
@@ -100,7 +95,7 @@ export const validateCredentials = (profile: string, options: any): any => {
 export const logProcessingInfo = (
   profile: string,
   filteredQuery: string,
-  options: any
+  options: any,
 ): void => {
   if (options.verbose) {
     console.log(`Using profile: ${profile}`);

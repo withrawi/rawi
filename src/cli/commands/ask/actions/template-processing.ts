@@ -4,7 +4,7 @@ import {applyActTemplate} from '../../../../core/templates/utils.js';
 export const processActTemplate = (
   actTemplate: string,
   query: string,
-  options: any
+  options: any,
 ): string => {
   try {
     const processedQuery = applyActTemplate(actTemplate, query);
@@ -18,9 +18,7 @@ export const processActTemplate = (
     if (options.verbose) {
       console.error(chalk.red(`❌ ${errorMessage}`));
       console.log(
-        chalk.yellow(
-          '💡 Use "rawi act --list" to see available templates.',
-        ),
+        chalk.yellow('💡 Use "rawi act --list" to see available templates.'),
       );
     }
     throw error;
