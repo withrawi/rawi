@@ -1,6 +1,6 @@
-import type {CommandOption} from '../types.js';
 import chalk from 'chalk';
 import {DEFAULT_PROFILE} from '../../../../core/shared/constants.js';
+import type {CommandOption} from '../types.js';
 
 export const profileOption: CommandOption = {
   flags: '-p, --profile <profile>',

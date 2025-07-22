@@ -1,5 +1,5 @@
-import type {CommandOption} from '../types.js';
 import chalk from 'chalk';
+import type {CommandOption} from '../types.js';
 
 export const filterSensitiveOption: CommandOption = {
   flags: '--filter-sensitive',

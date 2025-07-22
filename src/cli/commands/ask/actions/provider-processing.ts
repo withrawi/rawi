@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import {DatabaseManager} from '../../../../core/database/manager.js';
 import {ContentFilter} from '../../../../core/content-filter/content-filter.js';
+import type {DatabaseManager} from '../../../../core/database/manager.js';
 import {processQuery} from '../../../../core/providers/utils.js';
 import {spinnerManager} from '../../../../core/shared/spinner.js';
 

@@ -2,23 +2,23 @@ import chalk from 'chalk';
 import {Command} from 'commander';
 import {DatabaseManager} from '../../core/database/manager.js';
 import {DEFAULT_PROFILE} from '../../core/shared/constants.js';
-import {askCommandOptions, askCommandHelpText} from './ask/index.js';
 import {
   assembleQuery,
-  processFiles,
-  setupContentFilter,
   displayFilterStatistics,
   filterAndDisplayQuery,
-  saveFilterConfig,
-  resetFilterConfig,
-  processFilterTypes,
-  validateProfile,
   handleSession,
-  validateCredentials,
   logProcessingInfo,
   processActTemplate,
+  processFiles,
+  processFilterTypes,
+  resetFilterConfig,
+  saveFilterConfig,
+  setupContentFilter,
   streamAIResponse,
+  validateCredentials,
+  validateProfile,
 } from './ask/actions/index.js';
+import {askCommandHelpText, askCommandOptions} from './ask/index.js';
 
 export const createAskCommand = (): Command => {
   const askCommand = new Command('ask');
@@ -112,7 +112,7 @@ export const createAskCommand = (): Command => {
               filteredQuery,
               options,
             );
-          } catch (error) {
+          } catch (_error) {
             return;
           }
         }

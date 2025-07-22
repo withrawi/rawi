@@ -30,7 +30,7 @@ export const streamResponse = async (
   prompt: string,
   options: StreamResponseOptions = {},
 ): Promise<StreamingResponse> => {
-  let streamFn;
+  let streamFn: any;
   switch (credentials.provider) {
     case 'google':
       streamFn = streamWithGoogle;

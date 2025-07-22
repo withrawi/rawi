@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import {getCredentials, isConfigured} from '../../../../core/configs/utils.js';
-import {DatabaseManager} from '../../../../core/database/manager.js';
+import type {DatabaseManager} from '../../../../core/database/manager.js';
 import {spinnerManager} from '../../../../core/shared/spinner.js';
 
 export const validateProfile = (profile: string, options: any): void => {
