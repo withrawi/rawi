@@ -34,7 +34,7 @@ export const streamWithDeepSeek = async (
       | undefined;
 
     const apiKey = settings?.apiKey || credentials.apiKey;
-    
+
     if (!credentials.apiKey) {
       throw new Error('API key is required for DeepSeek');
     }

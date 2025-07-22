@@ -29,7 +29,6 @@ export class ConfigDisplayManager implements IConfigDisplayManager {
     );
     console.log(chalk.blue('  Model:') + chalk.white(` ${modelDisplayName}`));
 
-    // Get API key from provider settings if not in top-level
     let displayApiKey = masked.apiKey;
     if (
       !displayApiKey &&
@@ -94,7 +93,6 @@ export class ConfigDisplayManager implements IConfigDisplayManager {
   private displayProviderSettings(settings: Record<string, any>): void {
     for (const [key, value] of Object.entries(settings)) {
       if (value !== undefined && value !== null) {
-        // Skip API key from provider settings as it's already shown above
         if (key === 'apiKey') {
           continue;
         }

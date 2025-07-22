@@ -263,7 +263,22 @@ rawi ask --file report.pdf "Analyze this"
 rawi ask --file report.pdf "Extract the top 3 recommendations from the executive summary"
 ```
 
-### 2. Combine with Shell Commands
+### 2. Filter Sensitive Information
+
+When working with files that might contain sensitive data:
+
+```bash
+# Filter sensitive information from files
+rawi ask --file customer-data.csv --filter-sensitive "Analyze this data"
+
+# Filter specific types of information
+rawi ask --file employee-records.xlsx --filter-types email,phone,ssn "Summarize employee data"
+
+# See what's being filtered
+rawi ask --file financial-report.pdf --filter-sensitive --show-filtered "Analyze this report"
+```
+
+### 3. Combine with Shell Commands
 
 Integrate file processing into your existing workflows:
 
@@ -277,7 +292,7 @@ git ls-files "*.js" | head -10 | \
   xargs rawi ask --files --act code-reviewer "Review these files"
 ```
 
-### 3. Use Verbose Mode for Debugging
+### 4. Use Verbose Mode for Debugging
 
 When things don't work as expected, use verbose mode:
 
@@ -285,7 +300,7 @@ When things don't work as expected, use verbose mode:
 rawi ask --file document.pdf --verbose "Analyze this document"
 ```
 
-### 4. Save Useful Outputs
+### 5. Save Useful Outputs
 
 Save analysis results for later reference:
 
@@ -297,7 +312,7 @@ rawi ask --file report.pdf "Create executive summary" > summary.md
 rawi ask --file data.xlsx "Key insights" >> analysis-notes.md
 ```
 
-### 5. Handle Different File Types
+### 6. Handle Different File Types
 
 Override file type detection when needed:
 
@@ -386,6 +401,7 @@ Now that you've learned the basics of file processing with Rawi, here are some n
 - [Commands Reference](./commands/README.md)
 - [AI Provider Setup](./providers/README.md)
 - [Template Usage](./templates/README.md)
+- [Content Filtering Guide](./content-filtering.md)
 - [Workflow Examples](./workflows/README.md)
 
 ---

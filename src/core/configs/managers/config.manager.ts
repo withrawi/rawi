@@ -372,7 +372,6 @@ export class ConfigManager
     options: ConfigureOptions,
     existingCredentials: RawiCredentials | null,
   ): Promise<void> {
-    // For Mistral, check for API key in provider settings first
     const existingApiKey =
       options.apiKey ||
       (existingCredentials?.providerSettings &&
@@ -396,7 +395,6 @@ export class ConfigManager
       settings.baseURL = baseURL;
     }
 
-    // Only store API key in provider settings, not in top-level credentials
     credentials.providerSettings = settings;
   }
 
@@ -405,7 +403,6 @@ export class ConfigManager
     options: ConfigureOptions,
     existingCredentials: RawiCredentials | null,
   ): Promise<void> {
-    // For Cerebras, check for API key in provider settings first
     const existingApiKey =
       options.apiKey ||
       (existingCredentials?.providerSettings &&
@@ -429,7 +426,6 @@ export class ConfigManager
       settings.baseURL = baseURL;
     }
 
-    // Only store API key in provider settings, not in top-level credentials
     credentials.providerSettings = settings;
   }
 

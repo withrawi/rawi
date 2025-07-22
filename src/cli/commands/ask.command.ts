@@ -1,6 +1,8 @@
 import chalk from 'chalk';
 import {Command} from 'commander';
 import {getCredentials, isConfigured} from '../../core/configs/utils.js';
+import {ContentFilter} from '../../core/content-filter/content-filter.js';
+import {getAvailablePatternTypes} from '../../core/content-filter/patterns.js';
 import {DatabaseManager} from '../../core/database/manager.js';
 import {SupportedFileType} from '../../core/file-readers/interfaces/types.js';
 import {FileReaderManager} from '../../core/file-readers/managers/file-reader.manager.js';
@@ -104,6 +106,38 @@ export const createAskCommand = (): Command => {
       '--verbose',
       chalk.white('Show detailed status and debug information'),
     )
+    .option(
+      '--filter-sensitive',
+      chalk.white('Filter sensitive information from prompts and responses'),
+    )
+    .option(
+      '--filter-types <types>',
+      chalk.white(
+        'Comma-separated list of information types to filter (e.g., email,phone,creditcard)',
+      ),
+    )
+    .option(
+      '--show-filtered',
+      chalk.white(
+        'Show which information was filtered and display filtering statistics',
+      ),
+    )
+    .option(
+      '--highlight-filtered',
+      chalk.white('Show filtered content with highlighting in terminal output'),
+    )
+    .option(
+      '--save-filter-config',
+      chalk.white(
+        'Save current filtering configuration as default for future use',
+      ),
+    )
+    .option(
+      '--reset-filter-config',
+      chalk.white(
+        'Reset filtering configuration to defaults (enables all filter types)',
+      ),
+    )
     .addHelpText(
       'after',
       [
@@ -132,6 +166,28 @@ export const createAskCommand = (): Command => {
         ),
         chalk.gray(
           '  rawi ask "Check configs" --batch "**/*.{json,yml,yaml}" --continue-on-error',
+        ),
+        '',
+        chalk.bold.cyan('Content Filtering:'),
+        chalk.gray('  rawi ask "Analyze this data" --filter-sensitive'),
+        chalk.gray(
+          '  rawi ask "Process this info" --filter-types email,phone,creditcard',
+        ),
+        chalk.gray(
+          '  rawi ask "Check this text" --filter-sensitive --show-filtered',
+        ),
+        chalk.gray(
+          '  rawi ask "Analyze this data" --filter-sensitive --highlight-filtered',
+        ),
+        chalk.gray(
+          '  rawi ask "Process this file" --file customer-data.csv --filter-sensitive --verbose',
+        ),
+        chalk.gray(
+          '  rawi ask "Save my settings" --filter-types email,phone --save-filter-config',
+        ),
+        chalk.gray('  rawi ask --reset-filter-config'),
+        chalk.gray(
+          '  rawi ask "What filter types are available?" --filter-sensitive --verbose',
         ),
         '',
         chalk.bold.cyan('See also:'),
@@ -310,9 +366,173 @@ export const createAskCommand = (): Command => {
 
         finalQuery = contentParts.join('\n\n');
 
+        if (options.resetFilterConfig) {
+          const contentFilter = new ContentFilter({}, true);
+          const success = contentFilter.resetConfiguration();
+
+          if (success) {
+            console.log(
+              chalk.green('✅ Filter configuration reset to defaults'),
+            );
+            if (options.verbose) {
+              console.log(
+                chalk.dim('Default filter types:'),
+                contentFilter.getAvailableFilterTypes().join(', '),
+              );
+            }
+          } else {
+            console.error(chalk.red('❌ Failed to reset filter configuration'));
+          }
+
+          if (!finalQuery || finalQuery.trim() === '') {
+            return;
+          }
+        }
+
+        const filteringEnabled = options.filterSensitive || (options.filterTypes && options.filterTypes.trim() !== '');
+        let filterTypes: string[] | undefined;
+
+        if (filteringEnabled && options.filterTypes) {
+          filterTypes = options.filterTypes
+            .split(',')
+            .map((type: string) => type.trim());
+
+          if (options.verbose) {
+            console.log(
+              chalk.dim(
+                `🔒 Content filtering enabled with types: ${filterTypes?.join(', ') || ''}`,
+              ),
+            );
+          }
+        } else if (filteringEnabled) {
+          filterTypes = getAvailablePatternTypes();
+
+          if (options.verbose) {
+            console.log(
+              chalk.dim(
+                '🔒 Content filtering enabled with all available types',
+              ),
+            );
+          }
+        }
+
+        const contentFilter = new ContentFilter(
+          {
+            enabled: filteringEnabled,
+            types: filterTypes || getAvailablePatternTypes(),
+            showFiltered: options.showFiltered || false,
+            highlightFiltered: options.highlightFiltered || false,
+          },
+          true,
+        );
+
+        let filteredQuery = finalQuery;
+        if (filteringEnabled) {
+          const filterResult = contentFilter.filterContent(finalQuery);
+          filteredQuery = filterResult.filteredText;
+
+          if (options.verbose) {
+            console.log(chalk.yellow('\n🔍 Query after filtering:'));
+            console.log(chalk.yellow('─────────────────────────'));
+            console.log(filteredQuery);
+            console.log(chalk.yellow('─────────────────────────'));
+          }
+        }
+
+        if (options.saveFilterConfig) {
+          const success = contentFilter.saveConfiguration();
+
+          if (success) {
+            console.log(
+              chalk.green('✅ Filter configuration saved successfully'),
+            );
+            if (options.verbose) {
+              const config = contentFilter.getOptions();
+              console.log(chalk.dim('Enabled:'), config.enabled);
+              console.log(chalk.dim('Filter types:'), config.types.join(', '));
+              console.log(chalk.dim('Show filtered:'), config.showFiltered);
+            }
+          } else {
+            console.error(chalk.red('❌ Failed to save filter configuration'));
+          }
+
+          if (!finalQuery || finalQuery.trim() === '') {
+            return;
+          }
+        }
+
+        if (
+          filteringEnabled &&
+          (options.verbose || options.showFiltered || options.highlightFiltered)
+        ) {
+          const filterResult = contentFilter.filterContent(finalQuery);
+
+          if (Object.keys(filterResult.filterCount).length > 0) {
+            if (options.verbose) {
+              console.log(chalk.yellow('📊 Prompt Filtering Summary:'));
+              console.log(chalk.yellow('─────────────────────────'));
+
+              const totalFiltered = Object.values(
+                filterResult.filterCount,
+              ).reduce((sum, count) => sum + count, 0);
+              console.log(
+                chalk.yellow(`Total filtered items: ${totalFiltered}`),
+              );
+
+              console.log(chalk.yellow('\nBreakdown by type:'));
+              for (const [type, count] of Object.entries(
+                filterResult.filterCount,
+              )) {
+                const percentage = Math.round((count / totalFiltered) * 100);
+                const bar = '█'.repeat(
+                  Math.min(20, Math.floor(percentage / 5)),
+                );
+                console.log(
+                  chalk.yellow(
+                    `  ${type.padEnd(15)}: ${count.toString().padStart(3)} (${percentage}%) ${bar}`,
+                  ),
+                );
+              }
+            } else {
+              const totalFiltered = Object.values(
+                filterResult.filterCount,
+              ).reduce((sum, count) => sum + count, 0);
+              console.log(
+                chalk.yellow(
+                  `📊 Filtered ${totalFiltered} sensitive items from prompt`,
+                ),
+              );
+
+              const sortedTypes = Object.entries(filterResult.filterCount)
+                .sort(([, countA], [, countB]) => countB - countA)
+                .slice(0, 3);
+
+              if (sortedTypes.length > 0) {
+                const typesList = sortedTypes
+                  .map(([type, count]) => `${type} (${count})`)
+                  .join(', ');
+                console.log(chalk.yellow(`   Most common: ${typesList}`));
+              }
+
+              console.log(
+                chalk.dim('   Use --verbose for detailed filtering statistics'),
+              );
+            }
+
+            if (options.highlightFiltered && filterResult.highlightedText) {
+              console.log(
+                chalk.yellow('\n🔍 Highlighted sensitive content in prompt:'),
+              );
+              console.log('─────────────────────────────────────────');
+              console.log(filterResult.highlightedText);
+              console.log('─────────────────────────────────────────');
+            }
+          }
+        }
+
         if (options.act) {
           try {
-            finalQuery = applyActTemplate(options.act, finalQuery);
+            filteredQuery = applyActTemplate(options.act, filteredQuery);
             if (options.verbose) {
               console.log(chalk.dim(`🎭 Using act template: ${options.act}`));
             }
@@ -389,7 +609,7 @@ export const createAskCommand = (): Command => {
         if (options.verbose) {
           console.log(`Using profile: ${profile}`);
           console.log(
-            `Processing query: ${finalQuery.length > 100 ? `${finalQuery.substring(0, 100)}...` : finalQuery}`,
+            `Processing query: ${filteredQuery.length > 100 ? `${filteredQuery.substring(0, 100)}...` : filteredQuery}`,
           );
         }
 
@@ -424,7 +644,7 @@ export const createAskCommand = (): Command => {
         await dbManager.addMessage(
           sessionId,
           'user',
-          finalQuery,
+          filteredQuery,
           credentials.provider,
           credentials.model,
           credentials.temperature,
@@ -445,8 +665,19 @@ export const createAskCommand = (): Command => {
         let hasStartedStreaming = false;
 
         try {
-          response = await processQuery(credentials, finalQuery, {
+          let fullResponseBuffer = '';
+          const needResponseStats =
+            filteringEnabled && (options.verbose || options.showFiltered);
+
+          response = await processQuery(credentials, filteredQuery, {
             streaming: true,
+            filtering: filteringEnabled
+              ? {
+                  enabled: true,
+                  types: filterTypes,
+                  showFiltered: false,
+                }
+              : undefined,
             onChunk: (chunk: string) => {
               if (!hasStartedStreaming) {
                 if (options.verbose) {
@@ -457,10 +688,106 @@ export const createAskCommand = (): Command => {
                 }
                 hasStartedStreaming = true;
               }
+
+              if (needResponseStats) {
+                fullResponseBuffer += chunk;
+              }
+
               process.stdout.write(chunk);
             },
             onComplete: () => {
               console.log();
+
+              if (needResponseStats) {
+                const highlightFilter = new ContentFilter({
+                  enabled: true,
+                  types: filterTypes,
+                  showFiltered: false,
+                  highlightFiltered: options.highlightFiltered || false,
+                });
+
+                const fullFilterResult =
+                  highlightFilter.filterContent(fullResponseBuffer);
+                const filterCount = fullFilterResult.filterCount;
+
+                if (Object.keys(filterCount).length > 0) {
+                  if (options.verbose) {
+                    console.log(chalk.yellow('📊 Filtering Summary:'));
+                    console.log(chalk.yellow('───────────────────'));
+
+                    const totalFiltered = Object.values(filterCount).reduce(
+                      (sum, count) => sum + count,
+                      0,
+                    );
+                    console.log(
+                      chalk.yellow(`Total filtered items: ${totalFiltered}`),
+                    );
+
+                    console.log(chalk.yellow('\nBreakdown by type:'));
+                    for (const [type, count] of Object.entries(filterCount)) {
+                      const percentage = Math.round(
+                        (count / totalFiltered) * 100,
+                      );
+                      const bar = '█'.repeat(
+                        Math.min(20, Math.floor(percentage / 5)),
+                      );
+                      console.log(
+                        chalk.yellow(
+                          `  ${type.padEnd(15)}: ${count.toString().padStart(3)} (${percentage}%) ${bar}`,
+                        ),
+                      );
+                    }
+                  } else {
+                    const totalFiltered = Object.values(filterCount).reduce(
+                      (sum, count) => sum + count,
+                      0,
+                    );
+                    console.log(
+                      chalk.yellow(
+                        `📊 Filtered ${totalFiltered} sensitive items from response`,
+                      ),
+                    );
+
+                    const sortedTypes = Object.entries(filterCount)
+                      .sort(([, countA], [, countB]) => countB - countA)
+                      .slice(0, 3);
+
+                    if (sortedTypes.length > 0) {
+                      const typesList = sortedTypes
+                        .map(([type, count]) => `${type} (${count})`)
+                        .join(', ');
+                      console.log(chalk.yellow(`   Most common: ${typesList}`));
+                    }
+
+                    console.log(
+                      chalk.dim(
+                        '   Use --verbose for detailed filtering statistics',
+                      ),
+                    );
+                  }
+
+                  if (
+                    options.highlightFiltered &&
+                    fullFilterResult.highlightedText
+                  ) {
+                    console.log(
+                      chalk.yellow(
+                        '\n🔍 Highlighted sensitive content in response:',
+                      ),
+                    );
+                    console.log('─────────────────────────────────────────');
+                    console.log(fullFilterResult.highlightedText);
+                    console.log('─────────────────────────────────────────');
+                  }
+                } else if (options.verbose) {
+                  console.log(
+                    chalk.dim(
+                      '✅ No sensitive information detected in response',
+                    ),
+                  );
+                }
+              }
+
               if (options.verbose) {
                 console.log(chalk.dim('✅ Streaming completed'));
               }

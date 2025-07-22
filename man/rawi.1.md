@@ -125,6 +125,30 @@ Override automatic file type detection. Useful when file extensions don't match 
 
 Show detailed status information, debug output, and processing steps
 
+**--filter-sensitive**
+
+Filter sensitive information from prompts and responses. Automatically detects and replaces sensitive data like email addresses, phone numbers, credit card numbers, etc.
+
+**--filter-types** _types_
+
+Comma-separated list of information types to filter (e.g., email,phone,creditcard,ssn,ip,url,address). Use this to specify which types of sensitive information should be filtered.
+
+**--show-filtered**
+
+Show which information was filtered and display filtering statistics. Provides a summary of filtered content by type.
+
+**--highlight-filtered**
+
+Show filtered content with highlighting in terminal output. Visually identifies sensitive information that was detected.
+
+**--save-filter-config**
+
+Save current filtering configuration as default for future use. Persists your filtering preferences.
+
+**--reset-filter-config**
+
+Reset filtering configuration to defaults (enables all filter types).
+
 **Examples:**
 
 # Basic question
@@ -171,6 +195,14 @@ Show detailed status information, debug output, and processing steps
 
 **echo** "Additional context" **|** **rawi ask** "Analyze with context" **--file** data.json
 
+# Filter sensitive information from files
+
+**rawi ask** "Analyze this data" **--file** customer-data.csv **--filter-sensitive**
+
+# Filter specific types from files
+
+**rawi ask** "Process this info" **--file** employee-records.xlsx **--filter-types** email,phone,ssn
+
 # Use expert template
 
 **rawi ask** **--act** code-reviewer "Review this function"
@@ -186,6 +218,30 @@ Show detailed status information, debug output, and processing steps
 # Verbose output for debugging
 
 **rawi ask** **--verbose** "Explain machine learning"
+
+# Filter sensitive information
+
+**rawi ask** **--filter-sensitive** "Analyze this data with my email john@example.com"
+
+# Filter specific types of information
+
+**rawi ask** **--filter-types** email,phone,creditcard "Process this customer data"
+
+# Show filtering statistics
+
+**rawi ask** **--filter-sensitive** **--show-filtered** "Check this text with sensitive info"
+
+# Highlight filtered content
+
+**rawi ask** **--filter-sensitive** **--highlight-filtered** "Process this data"
+
+# Save filtering preferences
+
+**rawi ask** **--filter-types** email,phone **--save-filter-config** "Save my settings"
+
+# Reset to default filtering settings
+
+**rawi ask** **--reset-filter-config**
 
 ### configure \- Manage AI provider settings and profiles
 

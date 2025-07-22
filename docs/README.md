@@ -104,6 +104,7 @@ Welcome to the **Rawi (راوي)** documentation wiki! This comprehensive guide 
 - [**Session Management**](sessions.md) — Conversation context and continuity
 - [**Profile Management**](profiles.md) — Multiple configuration profiles
 - [**Shell Integration**](shell-integration.md) — Advanced terminal integration
+- [**Content Filtering**](content-filtering.md) — Protect sensitive information
 
 ### 🛠️ Workflows & Examples
 
