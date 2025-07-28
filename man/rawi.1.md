@@ -20,18 +20,24 @@
 
 **rawi** **info** [*options*]
 
-## DESCRI- **🔵 OpenAI** \- GPT models (gpt-4o, gpt-4-turbo, o1, etc.)
+| Provider         | Top Models                            | API Key | Local | Best For                       |
+| ---------------- | ------------------------------------- | ------- | ----- | ------------------------------ |
+| **🔵 OpenAI**    | GPT-4o, GPT-4, O1, O3, GPT-4o-mini    | ✅      | ❌    | General development, coding    |
+| **🟣 Anthropic** | Claude 3.5 Sonnet, Claude 3.5 Haiku   | ✅      | ❌    | Analysis, safety, long content |
+| **🔴 Google**    | Gemini 2.0 Flash, Gemini 1.5 Pro      | ✅      | ❌    | Fast inference, multimodal     |
+| **� DeepSeek**   | DeepSeek-Chat, DeepSeek-Reasoner      | ✅      | ❌    | Cost-effective, reasoning      |
+| **�🟢 Ollama**   | Llama 3.2, CodeLlama, Qwen, +100 more | ❌      | ✅    | Privacy, offline, free         |
+| **🔧 LM Studio** | Llama 3.3, Phi-4, Gemma-3, Qwen-3     | ❌      | ✅    | Local models, GUI management   |
+| **🟠 Mistral**   | Mistral Large, Mistral Small, Pixtral | ✅      | ❌    | European AI, multilingual      |
+| **⚡ Cerebras**  | Llama 3.3 70B, Llama 3.1 70B/8B       | ✅      | ❌    | Ultra-fast inference, speed    |
+| **🔷 Azure**     | Enterprise OpenAI deployments         | ✅      | ❌    | Enterprise, compliance         |
+| **🟠 Bedrock**   | Claude, Llama, Titan via AWS          | ✅      | ❌    | AWS integration, scale         |
+| **� Qwen**       | Qwen-Max, Qwen-Plus, Qwen-Turbo       | ✅      | ❌    | Multilingual, Chinese          |
+| **🤖 xAI**       | Grok-3, Grok-2, Grok-Beta             | ✅      | ❌    | Real-time, conversational      |
 
-- **🟣 Anthropic** \- Claude models (claude-3-opus, claude-3-sonnet, etc.)
-- **🔴 Google** \- Gemini models (gemini-pro, gemini-flash, etc.)
-- **🔵 DeepSeek** \- DeepSeek models (deepseek-chat, deepseek-reasoner)
-- **🟠 Mistral** \- Mistral models (mistral-large-latest, mistral-small-latest, etc.)
-- **🔷 Azure** \- Azure OpenAI service deployments
-- **🟠 Bedrock** \- AWS-hosted AI models (Claude, Titan, etc.)
-- **🟢 Ollama** \- Local models (llama2, mistral, codellama, etc.)
-- **🤖 xAI** \- Grok models
-- **🟡 Qwen** \- Alibaba Cloud models
-- **🔧 LM Studio** \- Local model serveri (راوي) is a modern, developer-friendly CLI tool for interacting with multiple AI providers including OpenAI, Anthropic, Google, Amazon Bedrock, Azure OpenAI, Ollama, xAI, Qwen, and LM Studio. Inspired by Jordanian storytelling tradition, Rawi delivers clear answers, summaries, and analyses with a focus on usability, discoverability, and actionable output.
+## DESCRIPTION
+
+(راوي) is a modern, developer-friendly CLI tool for interacting with multiple AI providers including OpenAI, Anthropic, Google, Amazon Bedrock, Azure OpenAI, Ollama, xAI, Qwen, and LM Studio. Inspired by Jordanian storytelling tradition, Rawi delivers clear answers, summaries, and analyses with a focus on usability, discoverability, and actionable output.
 
 **Key Features:**
 
@@ -541,16 +547,18 @@ List all available models for a specific provider
 
 **Supported Providers:**
 
-- **🔵 OpenAI** \- GPT models (gpt-4o, gpt-4-turbo, o1, etc.)
-- **🟣 Anthropic** \- Claude models (claude-3-opus, claude-3-sonnet, etc.)
-- **🔴 Google** \- Gemini models (gemini-pro, gemini-flash, etc.)
-- **� DeepSeek** \- DeepSeek models (deepseek-chat, deepseek-reasoner)
-- **�🔷 Azure** \- Azure OpenAI service deployments
-- **🟠 Bedrock** \- AWS-hosted AI models (Claude, Titan, etc.)
-- **🟢 Ollama** \- Local models (llama2, mistral, codellama, etc.)
-- **🤖 xAI** \- Grok models
-- **🟡 Qwen** \- Alibaba Cloud models
-- **🔧 LM Studio** \- Local model server
+- **🔵 OpenAI** \- GPT models (gpt-4o, gpt-4, o1, o3, gpt-4o-mini)
+- **🟣 Anthropic** \- Claude models (Claude 3.5 Sonnet, Claude 3.5 Haiku)
+- **🔴 Google** \- Gemini models (Gemini 2.0 Flash, Gemini 1.5 Pro)
+- **� DeepSeek** \- DeepSeek models (DeepSeek-Chat, DeepSeek-Reasoner)
+- **�� Ollama** \- Local models (Llama 3.2, CodeLlama, Qwen, +100 more)
+- **� LM Studio** \- Local model server (Llama 3.3, Phi-4, Gemma-3, Qwen-3)
+- **� Mistral** \- Mistral models (Mistral Large, Mistral Small, Pixtral)
+- **⚡ Cerebras** \- Cerebras models (Llama 3.3 70B, Llama 3.1 70B/8B)
+- **🔷 Azure** \- Enterprise OpenAI deployments
+- **🟠 Bedrock** \- AWS-hosted AI models (Claude, Llama, Titan via AWS)
+- **🟡 Qwen** \- Qwen models (Qwen-Max, Qwen-Plus, Qwen-Turbo)
+- **🤖 xAI** \- Grok models (Grok-3, Grok-2, Grok-Beta)
 
 **Examples:**
 
@@ -873,10 +881,6 @@ Verify your configuration:
 - Use **--verbose** only when necessary (may expose sensitive data)
 - Keep configuration backups secure
 
-## SEE ALSO
-
-**curl**(1), **jq**(1), **git**(1)
-
 ### Online Resources
 
 **Project Homepage:**
@@ -894,13 +898,6 @@ https://github.com/MKAbuMattar/rawi/issues
 **Examples and Tutorials:**
 
 https://github.com/MKAbuMattar/rawi/tree/main/docs/examples
-
-### Related Tools
-
-- **openai-cli** - Official OpenAI command line interface
-- **anthropic-cli** - Anthropic's Claude CLI tool
-- **gh** - GitHub CLI with AI features
-- **copilot-cli** - GitHub Copilot CLI integration
 
 ## AUTHOR
 
