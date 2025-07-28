@@ -74,7 +74,7 @@ export class ConfigDisplayManager implements IConfigDisplayManager {
   }
 
   displayConfigurationSummary(credentials: RawiCredentials): void {
-    console.log(chalk.green('\\n✅ Configuration Summary:'));
+    console.log(chalk.green('✅ Configuration Summary:'));
     this.displayCredentials(credentials);
   }
 
@@ -84,7 +84,7 @@ export class ConfigDisplayManager implements IConfigDisplayManager {
       return;
     }
 
-    console.log(chalk.blue('\\nAvailable Profiles:'));
+    console.log(chalk.blue('Available Profiles:'));
     for (const profile of profiles) {
       console.log(chalk.white(`  • ${profile}`));
     }

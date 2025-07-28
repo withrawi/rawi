@@ -34,8 +34,8 @@ export class ConfigManager
   private readonly validator = new ConfigValidator();
 
   async interactiveConfigure(options: ConfigureOptions = {}): Promise<void> {
-    console.log(chalk.bold.blue('\\n🔧 Configuring Rawi'));
-    console.log(chalk.gray('Please provide your AI service configuration:\\n'));
+    console.log(chalk.bold.blue('🔧 Configuring Rawi'));
+    console.log(chalk.gray('Please provide your AI service configuration:'));
 
     try {
       const profile = await this.interactive.getProfile(options.profile);
@@ -129,7 +129,7 @@ export class ConfigManager
 
           console.log(chalk.gray(`Profile: ${profile}`));
           this.display.displayConfigurationSummary(credentials);
-          console.log(chalk.gray(`\\nConfig file: ${this.configFile}`));
+          console.log(chalk.gray(`Config file: ${this.configFile}`));
 
           this.display.displaySuccess('Configuration completed successfully!');
         } catch (error) {
@@ -138,16 +138,14 @@ export class ConfigManager
         }
       } catch (error) {
         if (error instanceof Error && error.name === 'ExitPromptError') {
-          console.log(
-            chalk.yellow('\\n👋 Configuration cancelled. Exiting...'),
-          );
+          console.log(chalk.yellow('👋 Configuration cancelled. Exiting...'));
           return;
         }
         throw error;
       }
     } catch (error) {
       if (error === '') {
-        console.log(chalk.yellow('\\n❌ Configuration cancelled.'));
+        console.log(chalk.yellow('❌ Configuration cancelled.'));
         return;
       }
 

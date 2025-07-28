@@ -5,7 +5,7 @@ import type {IProviderConfigManager} from '../interfaces/config-manager.interfac
 export class ProviderConfigManager implements IProviderConfigManager {
   async getBaseURL(defaultBaseURL?: string): Promise<string | undefined> {
     console.log(
-      chalk.gray('\\nNote: The Base URL is where your service is running.'),
+      chalk.gray('Note: The Base URL is where your service is running.'),
     );
     console.log(chalk.gray('Leave empty to use the default endpoint.'));
 
@@ -31,7 +31,7 @@ export class ProviderConfigManager implements IProviderConfigManager {
   }
 
   async getAPIEndpoint(defaultEndpoint?: string): Promise<string | undefined> {
-    console.log(chalk.gray('\\nNote: API endpoint for custom deployments.'));
+    console.log(chalk.gray('Note: API endpoint for custom deployments.'));
     console.log(chalk.gray('Leave empty to use the default endpoint.'));
 
     const endpoint = await input({
@@ -56,7 +56,7 @@ export class ProviderConfigManager implements IProviderConfigManager {
   }
 
   async getRegion(defaultRegion?: string): Promise<string | undefined> {
-    console.log(chalk.gray('\\nSelect the region for your cloud provider:'));
+    console.log(chalk.gray('Select the region for your cloud provider:'));
 
     const region = await input({
       message: 'Region:',
@@ -74,7 +74,7 @@ export class ProviderConfigManager implements IProviderConfigManager {
 
   async getProjectId(defaultProjectId?: string): Promise<string | undefined> {
     console.log(
-      chalk.gray('\\nNote: Project ID from your cloud provider console.'),
+      chalk.gray('Note: Project ID from your cloud provider console.'),
     );
 
     const projectId = await input({
@@ -98,9 +98,7 @@ export class ProviderConfigManager implements IProviderConfigManager {
   }
 
   async getAccessKey(defaultAccessKey?: string): Promise<string | undefined> {
-    console.log(
-      chalk.gray('\\nNote: AWS Access Key ID from your AWS console.'),
-    );
+    console.log(chalk.gray('Note: AWS Access Key ID from your AWS console.'));
 
     const accessKey = await input({
       message: 'Access Key ID:',
@@ -126,7 +124,7 @@ export class ProviderConfigManager implements IProviderConfigManager {
     defaultSecretKey?: string,
   ): Promise<string | undefined> {
     console.log(
-      chalk.gray('\\nNote: AWS Secret Access Key from your AWS console.'),
+      chalk.gray('Note: AWS Secret Access Key from your AWS console.'),
     );
 
     const secretKey = await input({
@@ -151,9 +149,7 @@ export class ProviderConfigManager implements IProviderConfigManager {
 
   async getSessionToken(defaultToken?: string): Promise<string | undefined> {
     console.log(
-      chalk.gray(
-        '\\nNote: Optional session token for temporary AWS credentials.',
-      ),
+      chalk.gray('Note: Optional session token for temporary AWS credentials.'),
     );
     console.log(chalk.gray('Leave empty if using permanent credentials.'));
 
