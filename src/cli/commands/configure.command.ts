@@ -13,7 +13,6 @@ import type {
   MistralSettings,
   OllamaSettings,
   OpenAISettings,
-  QwenSettings,
   RawiCredentials,
   SupportedLanguage,
   XAISettings,
@@ -42,7 +41,7 @@ export const createConfigureCommand = (): Command => {
     .option(
       '--provider <provider>',
       chalk.white(
-        'AI provider (openai, anthropic, google, ollama, xai, azure, bedrock, qwen, deepseek, mistral, cerebras, lmstudio)',
+        'AI provider (openai, anthropic, google, ollama, xai, azure, bedrock, deepseek, mistral, cerebras, lmstudio)',
       ),
     )
     .option('--model <model>', chalk.white('AI model name'))
@@ -305,24 +304,6 @@ export const createConfigureCommand = (): Command => {
                 Object.keys(providerSettings).length > 0
                   ? providerSettings
                   : undefined,
-            };
-          } else if (options.provider === 'qwen') {
-            requiredOptions = Boolean(options.model && options.apiKey);
-
-            const providerSettings: QwenSettings = {
-              apiKey: options.apiKey,
-            };
-            if (options.baseUrl) {
-              providerSettings.baseURL = options.baseUrl;
-            }
-
-            credentials = {
-              provider: options.provider,
-              model: options.model,
-              temperature: options.temperature || 0.7,
-              maxTokens: options.maxTokens || 2048,
-              language: (options.language as SupportedLanguage) || 'english',
-              providerSettings: providerSettings,
             };
           } else if (options.provider === 'xai') {
             requiredOptions = Boolean(options.model && options.apiKey);

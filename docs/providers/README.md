@@ -29,7 +29,6 @@ Rawi supports **12 different AI providers**, ranging from cutting-edge cloud ser
 | [**LM Studio**](#lm-studio)           | Local | Maximum    | Install  | GUI management, local models    |
 | [**Azure OpenAI**](#azure-openai)     | Cloud | Enterprise | API Key  | Enterprise, compliance          |
 | [**Amazon Bedrock**](#amazon-bedrock) | Cloud | Enterprise | AWS Auth | AWS integration, variety        |
-| [**Qwen**](#qwen)                     | Cloud | Standard   | API Key  | Multilingual, efficient         |
 | [**xAI**](#xai)                       | Cloud | Standard   | API Key  | Real-time, conversational       |
 
 ---
@@ -396,21 +395,6 @@ rawi configure --provider bedrock \
 
 ## Specialized Providers
 
-### Qwen
-
-**Alibaba's multilingual AI with strong performance.**
-
-```bash
-rawi configure --provider qwen --model qwen-turbo --api-key your-qwen-key
-```
-
-**Key Features:**
-
-- 🌍 Excellent multilingual support
-- 💰 Cost-effective pricing
-- ⚡ Fast inference
-- 📊 Strong analytical capabilities
-
 ### xAI
 
 **Elon Musk's conversational AI with real-time knowledge.**
@@ -457,7 +441,7 @@ rawi configure --provider xai --model grok-beta --api-key your-xai-key
 
 - **Code Generation:** Google Gemini, OpenAI GPT-4o
 - **Long Documents:** Anthropic Claude (200k context)
-- **Multilingual:** Qwen, Google Gemini
+- **Multilingual:** Google Gemini
 - **Real-time Info:** xAI Grok
 
 ---

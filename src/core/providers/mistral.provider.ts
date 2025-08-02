@@ -1,5 +1,4 @@
-import type {mistral} from '@ai-sdk/mistral';
-import {createMistral} from '@ai-sdk/mistral';
+import {createMistral, type mistral} from '@ai-sdk/mistral';
 import {streamText} from 'ai';
 import type {
   LooseToStrict,
@@ -16,8 +15,12 @@ export const mistralModelIds = [
   'ministral-3b-latest',
   'ministral-8b-latest',
   'mistral-large-latest',
+  'mistral-medium-latest',
+  'mistral-medium-2505',
   'mistral-small-latest',
   'pixtral-large-latest',
+  'magistral-small-2506',
+  'magistral-medium-2506',
   'pixtral-12b-2409',
   'open-mistral-7b',
   'open-mixtral-8x7b',
@@ -61,7 +64,7 @@ export const streamWithMistral = async (
       model: mistralProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
-      maxTokens: credentials.maxTokens || 2048,
+      maxOutputTokens: credentials.maxTokens || 2048,
     });
 
     return {

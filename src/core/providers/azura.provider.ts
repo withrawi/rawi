@@ -1,5 +1,4 @@
-import type {azure} from '@ai-sdk/azure';
-import {createAzure} from '@ai-sdk/azure';
+import {type azure, createAzure} from '@ai-sdk/azure';
 import {streamText} from 'ai';
 import type {
   LooseToStrict,
@@ -51,7 +50,7 @@ export const streamWithAzure = async (
       model: azureProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
-      maxTokens: credentials.maxTokens || 2048,
+      maxOutputTokens: credentials.maxTokens || 2048,
     });
 
     return {

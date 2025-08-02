@@ -32,12 +32,11 @@
 | **⚡ Cerebras**  | Llama 3.3 70B, Llama 3.1 70B/8B       | ✅      | ❌    | Ultra-fast inference, speed    |
 | **🔷 Azure**     | Enterprise OpenAI deployments         | ✅      | ❌    | Enterprise, compliance         |
 | **🟠 Bedrock**   | Claude, Llama, Titan via AWS          | ✅      | ❌    | AWS integration, scale         |
-| **� Qwen**       | Qwen-Max, Qwen-Plus, Qwen-Turbo       | ✅      | ❌    | Multilingual, Chinese          |
 | **🤖 xAI**       | Grok-3, Grok-2, Grok-Beta             | ✅      | ❌    | Real-time, conversational      |
 
 ## DESCRIPTION
 
-(راوي) is a modern, developer-friendly CLI tool for interacting with multiple AI providers including OpenAI, Anthropic, Google, Amazon Bedrock, Azure OpenAI, Ollama, xAI, Qwen, and LM Studio. Inspired by Jordanian storytelling tradition, Rawi delivers clear answers, summaries, and analyses with a focus on usability, discoverability, and actionable output.
+(راوي) is a modern, developer-friendly CLI tool for interacting with multiple AI providers including OpenAI, Anthropic, Google, Amazon Bedrock, Azure OpenAI, Ollama, xAI, and LM Studio. Inspired by Jordanian storytelling tradition, Rawi delivers clear answers, summaries, and analyses with a focus on usability, discoverability, and actionable output.
 
 **Key Features:**
 
@@ -266,7 +265,7 @@ Profile name to configure (default: "default")
 
 **--provider** _provider_
 
-AI provider name. Supported providers: **openai**, **anthropic**, **google**, **azure**, **bedrock**, **ollama**, **xai**, **qwen**, **lmstudio**
+AI provider name. Supported providers: **openai**, **anthropic**, **google**, **azure**, **bedrock**, **ollama**, **xai**, **lmstudio**
 
 **--model** _model_
 
@@ -557,7 +556,6 @@ List all available models for a specific provider
 - **⚡ Cerebras** \- Cerebras models (Llama 3.3 70B, Llama 3.1 70B/8B)
 - **🔷 Azure** \- Enterprise OpenAI deployments
 - **🟠 Bedrock** \- AWS-hosted AI models (Claude, Llama, Titan via AWS)
-- **🟡 Qwen** \- Qwen models (Qwen-Max, Qwen-Plus, Qwen-Turbo)
 - **🤖 xAI** \- Grok models (Grok-3, Grok-2, Grok-Beta)
 
 **Examples:**

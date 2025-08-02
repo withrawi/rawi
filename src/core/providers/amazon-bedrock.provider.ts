@@ -1,5 +1,4 @@
-import type {bedrock} from '@ai-sdk/amazon-bedrock';
-import {createAmazonBedrock} from '@ai-sdk/amazon-bedrock';
+import {type bedrock, createAmazonBedrock} from '@ai-sdk/amazon-bedrock';
 import {streamText} from 'ai';
 import type {
   BedrockSettings,
@@ -114,7 +113,7 @@ export const streamWithBedrock = async (
       model: bedrockClient(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
-      maxTokens: credentials.maxTokens || 2048,
+      maxOutputTokens: credentials.maxTokens || 2048,
     });
 
     return {

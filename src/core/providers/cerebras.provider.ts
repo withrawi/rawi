@@ -1,5 +1,4 @@
-import type {cerebras} from '@ai-sdk/cerebras';
-import {createCerebras} from '@ai-sdk/cerebras';
+import {type cerebras, createCerebras} from '@ai-sdk/cerebras';
 import {streamText} from 'ai';
 import type {
   CerebrasSettings,
@@ -58,7 +57,7 @@ export const streamWithCerebras = async (
       model: cerebrasProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
-      maxTokens: credentials.maxTokens || 2048,
+      maxOutputTokens: credentials.maxTokens || 2048,
     });
 
     return {

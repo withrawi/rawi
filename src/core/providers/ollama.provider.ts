@@ -1,6 +1,5 @@
-import type {ollama} from '@ai-sdk-community/ollama';
-import {createOllama} from '@ai-sdk-community/ollama';
 import {streamText} from 'ai';
+import {createOllama, type ollama} from '../../libs/providers/ollama/index.js';
 import type {
   LooseToStrict,
   ModelInfo,
@@ -227,7 +226,7 @@ export const streamWithOllama = async (
       model: ollamaProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
-      maxTokens: credentials.maxTokens || 2048,
+      maxOutputTokens: credentials.maxTokens || 2048,
     });
 
     return {

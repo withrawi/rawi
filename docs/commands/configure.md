@@ -115,7 +115,6 @@ $ rawi configure
   Azure OpenAI
   AWS Bedrock
   xAI (Grok)
-  Qwen
   LM Studio
 
 ? Select a model:
@@ -241,15 +240,6 @@ rawi configure \
   --provider mistral \
   --model mistral-large-latest \
   --api-key your-mistral-key
-```
-
-#### Qwen
-
-```bash
-rawi configure \
-  --provider qwen \
-  --model qwen-max \
-  --api-key sk-your-qwen-key
 ```
 
 #### LM Studio

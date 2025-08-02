@@ -47,7 +47,6 @@ export const createProviderCommand = (): Command => {
           mistral: '🟠',
           ollama: '🟢',
           openai: '🔵',
-          qwen: '🟡',
           xai: '🤖',
         };
         const table = new Table({

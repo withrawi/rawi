@@ -1,5 +1,4 @@
-import type {anthropic} from '@ai-sdk/anthropic';
-import {createAnthropic} from '@ai-sdk/anthropic';
+import {type anthropic, createAnthropic} from '@ai-sdk/anthropic';
 import {streamText} from 'ai';
 import type {
   AnthropicSettings,
@@ -13,8 +12,8 @@ type LooseAnthropicModelId = Parameters<typeof anthropic>[0];
 export type AnthropicModelId = LooseToStrict<LooseAnthropicModelId>;
 
 const anthropicModelIds = [
-  'claude-4-opus-20250514',
-  'claude-4-sonnet-20250514',
+  'claude-opus-4-20250514',
+  'claude-sonnet-4-20250514',
   'claude-3-7-sonnet-20250219',
   'claude-3-5-sonnet-latest',
   'claude-3-5-sonnet-20241022',
@@ -64,7 +63,7 @@ export const streamWithAnthropic = async (
       model: anthropicProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
-      maxTokens: credentials.maxTokens || 2048,
+      maxOutputTokens: credentials.maxTokens || 2048,
     });
 
     return {

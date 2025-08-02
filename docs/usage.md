@@ -21,7 +21,7 @@ Rawi is a developer-friendly AI-powered CLI tool that brings the power of multip
 ### What Rawi Does
 
 - **AI-Powered Assistance**: Ask questions and get intelligent responses using state-of-the-art AI models
-- **Multi-Provider Support**: Works with OpenAI, Anthropic, Google, DeepSeek, Mistral, Cerebras, Ollama, LM Studio, Azure, AWS Bedrock, Qwen, and xAI
+- **Multi-Provider Support**: Works with OpenAI, Anthropic, Google, DeepSeek, Mistral, Cerebras, Ollama, LM Studio, Azure, AWS Bedrock, and xAI
 - **Expert Templates**: 200+ specialized prompt templates for different domains and use cases
 - **Session Management**: Persistent conversations with context awareness
 - **Shell Integration**: Perfect integration with pipes, redirects, and shell scripting

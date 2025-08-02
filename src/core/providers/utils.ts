@@ -12,7 +12,6 @@ import {
   streamWithMistral,
   streamWithOllama,
   streamWithOpenAI,
-  streamWithQwen,
   streamWithXAI,
 } from './index.js';
 
@@ -52,9 +51,6 @@ export const streamResponse = async (
       break;
     case 'bedrock':
       streamFn = streamWithBedrock;
-      break;
-    case 'qwen':
-      streamFn = streamWithQwen;
       break;
     case 'lmstudio':
       streamFn = streamWithLMStudio;

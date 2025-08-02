@@ -12,7 +12,6 @@ import {
   type GoogleSettings,
   type MistralSettings,
   type OpenAISettings,
-  type QwenSettings,
   type RawiCredentials,
   spinnerManager,
   type XAISettings,
@@ -175,9 +174,6 @@ export class ConfigManager
       case 'bedrock':
         await this.configureBedrock(credentials, options, existingCredentials);
         break;
-      case 'qwen':
-        await this.configureQwen(credentials, options, existingCredentials);
-        break;
       case 'xai':
         await this.configureXAI(credentials, options, existingCredentials);
         break;
@@ -318,21 +314,6 @@ export class ConfigManager
     if (region) settings.region = region;
     if (sessionToken) settings.sessionToken = sessionToken;
 
-    credentials.providerSettings = settings;
-  }
-
-  private async configureQwen(
-    credentials: RawiCredentials,
-    options: ConfigureOptions,
-    existingCredentials: RawiCredentials | null,
-  ): Promise<void> {
-    const apiKey = await this.interactive.getApiKey(
-      options.apiKey || existingCredentials?.apiKey,
-      'qwen',
-    );
-
-    const settings: QwenSettings = {apiKey};
-    credentials.apiKey = apiKey;
     credentials.providerSettings = settings;
   }
 

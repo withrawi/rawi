@@ -43,7 +43,6 @@ export type SupportedProvider =
   | 'xai'
   | 'azure'
   | 'bedrock'
-  | 'qwen'
   | 'lmstudio'
   | 'deepseek'
   | 'mistral'
@@ -98,11 +97,6 @@ export interface BedrockSettings {
   useProviderChain?: boolean;
 }
 
-export interface QwenSettings {
-  apiKey: string;
-  baseURL?: string;
-}
-
 export interface DeepSeekSettings {
   apiKey: string;
   baseURL?: string;
@@ -126,7 +120,6 @@ export type ProviderSettings =
   | XAISettings
   | AzureSettings
   | BedrockSettings
-  | QwenSettings
   | LMStudioSettings
   | DeepSeekSettings
   | MistralSettings
