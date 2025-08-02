@@ -9,18 +9,18 @@ export class TextLineStream extends TransformStream<string, string> {
         controller.enqueue(this.buffer);
       },
       transform: (chunkText, controller) => {
-        chunkText = this.buffer + chunkText;
+        let text = this.buffer + chunkText;
 
         while (true) {
-          const EOL = chunkText.indexOf('\n');
+          const EOL = text.indexOf('\n');
 
           if (EOL === -1) break;
 
-          controller.enqueue(chunkText.slice(0, EOL));
-          chunkText = chunkText.slice(EOL + 1);
+          controller.enqueue(text.slice(0, EOL));
+          text = text.slice(EOL + 1);
         }
 
-        this.buffer = chunkText;
+        this.buffer = text;
       },
     });
   }
