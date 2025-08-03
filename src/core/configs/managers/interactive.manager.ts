@@ -1,4 +1,4 @@
-import {confirm, input, password, select} from '@inquirer/prompts';
+import {confirm, input, password, search, select} from '@inquirer/prompts';
 import chalk from 'chalk';
 import {getAllProviders, getProvider} from '../../providers/index.js';
 import {
@@ -42,13 +42,46 @@ export class InteractiveConfigManager {
     const choices = providers.map((p) => ({
       name: `${p.displayName} (${p.name})`,
       value: p.name as SupportedProvider,
+      description: `${p.name} - ${p.displayName}`,
     }));
 
-    return select({
-      message: 'Select AI Provider:',
-      choices,
-      default: defaultProvider,
-    });
+    // Use search prompt for better provider filtering when there are many providers
+    if (choices.length > 5) {
+      return search({
+        message: 'Select AI Provider (type to search):',
+        source: async (input) => {
+          if (!input) {
+            // Sort choices to show default provider first if available
+            if (defaultProvider) {
+              const defaultChoice = choices.find(
+                (choice) => choice.value === defaultProvider,
+              );
+              const otherChoices = choices.filter(
+                (choice) => choice.value !== defaultProvider,
+              );
+              return defaultChoice ? [defaultChoice, ...otherChoices] : choices;
+            }
+            return choices;
+          }
+
+          const filtered = choices.filter(
+            (choice) =>
+              choice.name.toLowerCase().includes(input.toLowerCase()) ||
+              choice.value.toLowerCase().includes(input.toLowerCase()) ||
+              choice.description?.toLowerCase().includes(input.toLowerCase()),
+          );
+
+          return filtered;
+        },
+      });
+    } else {
+      // Use regular select for fewer providers
+      return select({
+        message: 'Select AI Provider:',
+        choices,
+        default: defaultProvider,
+      });
+    }
   }
 
   async selectModel(
@@ -71,11 +104,43 @@ export class InteractiveConfigManager {
       throw new Error(`No models available for provider: ${provider}`);
     }
 
-    return select({
-      message: `Select ${providerConfig.displayName} Model:`,
-      choices,
-      default: defaultModel,
-    });
+    // Use search prompt for better model filtering when there are many models
+    if (choices.length > 5) {
+      return search({
+        message: `Select ${providerConfig.displayName} Model (type to search):`,
+        source: async (input) => {
+          if (!input) {
+            // Sort choices to show default model first if available
+            if (defaultModel) {
+              const defaultChoice = choices.find(
+                (choice) => choice.value === defaultModel,
+              );
+              const otherChoices = choices.filter(
+                (choice) => choice.value !== defaultModel,
+              );
+              return defaultChoice ? [defaultChoice, ...otherChoices] : choices;
+            }
+            return choices;
+          }
+
+          const filtered = choices.filter(
+            (choice) =>
+              choice.name.toLowerCase().includes(input.toLowerCase()) ||
+              choice.value.toLowerCase().includes(input.toLowerCase()) ||
+              choice.description?.toLowerCase().includes(input.toLowerCase()),
+          );
+
+          return filtered;
+        },
+      });
+    } else {
+      // Use regular select for providers with fewer models
+      return select({
+        message: `Select ${providerConfig.displayName} Model:`,
+        choices,
+        default: defaultModel,
+      });
+    }
   }
 
   async getApiKey(

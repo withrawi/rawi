@@ -1,3 +1,4 @@
+export {ollamaModelIds} from './ollama-chat-settings.js';
 export type {
   OllamaProvider,
   OllamaProviderSettings,
