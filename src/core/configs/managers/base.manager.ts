@@ -2,6 +2,7 @@ import {
   copyFileSync,
   existsSync,
   mkdirSync,
+  readdirSync,
   readFileSync,
   writeFileSync,
 } from 'node:fs';
@@ -25,7 +26,12 @@ export class BaseConfigManager implements IConfigManager, IConfigPersistence {
   constructor() {
     this.configDir = getConfigDir();
     this.configFile = getCredentialsFilePath();
-    this.backupFile = join(this.configDir, 'credentials.backup.json');
+    this.backupFile = join(
+      this.configDir,
+      `backup.credentials.${new Date()
+        .toISOString()
+        .replace(/[:.]/g, '-')}.rawi`,
+    );
   }
 
   ensureConfigDir(): void {
@@ -113,8 +119,14 @@ export class BaseConfigManager implements IConfigManager, IConfigPersistence {
       return;
     }
 
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const backupFilePath = join(
+      this.configDir,
+      `backup.credentials.${timestamp}.rawi`,
+    );
+
     try {
-      copyFileSync(this.configFile, this.backupFile);
+      copyFileSync(this.configFile, backupFilePath);
     } catch (error) {
       throw new Error(
         `Failed to backup config file: ${
@@ -125,12 +137,23 @@ export class BaseConfigManager implements IConfigManager, IConfigPersistence {
   }
 
   restoreConfig(): void {
-    if (!existsSync(this.backupFile)) {
+    const backupFiles = readdirSync(this.configDir).filter(
+      (file) =>
+        file.startsWith('backup.credentials.') && file.endsWith('.rawi'),
+    );
+    if (backupFiles.length === 0) {
       throw new Error('No backup file found');
     }
 
+    const latestBackupFile = backupFiles.sort().pop();
+    if (!latestBackupFile) {
+      throw new Error('No backup file found');
+    }
+
+    const backupFilePath = join(this.configDir, latestBackupFile);
+
     try {
-      copyFileSync(this.backupFile, this.configFile);
+      copyFileSync(backupFilePath, this.configFile);
     } catch (error) {
       throw new Error(
         `Failed to restore config file: ${
