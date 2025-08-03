@@ -15,18 +15,18 @@ type OllamaEmbeddingConfig = {
   provider: string;
 };
 export class OllamaImageModel implements ImageModelV2 {
+  readonly #config: OllamaEmbeddingConfig;
+  readonly #settings: OllamaImageSettings;
+
   readonly specificationVersion = 'v2';
   readonly modelId: OllamaImageModelId;
 
-  private readonly config: OllamaEmbeddingConfig;
-  private readonly settings: OllamaImageSettings;
-
   get provider(): string {
-    return this.config.provider;
+    return this.#config.provider;
   }
 
   get maxImagesPerCall(): number {
-    return this.settings.maxImagesPerCall ?? 2048;
+    return this.#settings.maxImagesPerCall ?? 2048;
   }
 
   get supportsParallelCalls(): boolean {
@@ -39,8 +39,8 @@ export class OllamaImageModel implements ImageModelV2 {
     config: OllamaEmbeddingConfig,
   ) {
     this.modelId = modelId;
-    this.settings = settings;
-    this.config = config;
+    this.#settings = settings;
+    this.#config = config;
   }
 
   async doGenerate({
@@ -56,12 +56,12 @@ export class OllamaImageModel implements ImageModelV2 {
         model: this.modelId,
       },
       failedResponseHandler: ollamaFailedResponseHandler,
-      fetch: this.config.fetch,
-      headers: this.config.headers(),
+      fetch: this.#config.fetch,
+      headers: this.#config.headers(),
       successfulResponseHandler: createJsonResponseHandler(
         ollamaImageResponseSchema as any,
       ),
-      url: `${this.config.baseURL}/generate`,
+      url: `${this.#config.baseURL}/generate`,
     });
 
     // Type the response properly

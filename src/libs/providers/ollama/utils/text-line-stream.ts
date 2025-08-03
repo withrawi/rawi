@@ -1,15 +1,15 @@
 export class TextLineStream extends TransformStream<string, string> {
-  private buffer = '';
+  #buffer = '';
 
   constructor() {
     super({
       flush: (controller) => {
-        if (this.buffer.length === 0) return;
+        if (this.#buffer.length === 0) return;
 
-        controller.enqueue(this.buffer);
+        controller.enqueue(this.#buffer);
       },
       transform: (chunkText, controller) => {
-        let text = this.buffer + chunkText;
+        let text = this.#buffer + chunkText;
 
         while (true) {
           const EOL = text.indexOf('\n');
@@ -20,7 +20,7 @@ export class TextLineStream extends TransformStream<string, string> {
           text = text.slice(EOL + 1);
         }
 
-        this.buffer = text;
+        this.#buffer = text;
       },
     });
   }

@@ -29,26 +29,26 @@ export const DEFAULT_FILTER_OPTIONS: FilterOptions = {
 };
 
 export class ContentFilter {
-  private options: FilterOptions;
-  private patterns: PatternDefinition[];
-  private customPatternDefinitions: PatternDefinition[];
+  #options: FilterOptions;
+  #patterns: PatternDefinition[];
+  #customPatternDefinitions: PatternDefinition[];
 
   constructor(options: Partial<FilterOptions> = {}, loadFromDisk = false) {
     if (loadFromDisk) {
-      this.options = {
+      this.#options = {
         ...loadFilterConfig(),
         ...options,
       };
     } else {
-      this.options = {
+      this.#options = {
         ...DEFAULT_FILTER_OPTIONS,
         ...options,
       };
     }
 
-    this.customPatternDefinitions = [];
-    if (this.options.customPatterns) {
-      this.customPatternDefinitions = this.options.customPatterns.map(
+    this.#customPatternDefinitions = [];
+    if (this.#options.customPatterns) {
+      this.#customPatternDefinitions = this.#options.customPatterns.map(
         (pattern, index) => ({
           type: `custom-${index}`,
           pattern,
@@ -58,16 +58,16 @@ export class ContentFilter {
       );
     }
 
-    this.patterns = this.getActivePatterns();
+    this.#patterns = this.#getActivePatterns();
   }
 
   public filterContent(text: string): FilterResult {
-    if (!this.options.enabled || !text) {
+    if (!this.#options.enabled || !text) {
       return {
         filteredText: text,
         filterCount: {},
-        ...(this.options.showFiltered ? {originalText: text} : {}),
-        ...(this.options.highlightFiltered ? {highlightedText: text} : {}),
+        ...(this.#options.showFiltered ? {originalText: text} : {}),
+        ...(this.#options.highlightFiltered ? {highlightedText: text} : {}),
       };
     }
 
@@ -75,14 +75,14 @@ export class ContentFilter {
     const filterCount: Record<string, number> = {};
     let highlightedText = text;
 
-    for (const pattern of this.patterns) {
+    for (const pattern of this.#patterns) {
       const result = applyPattern(filteredText, pattern);
       filteredText = result.filteredText;
 
       if (result.count > 0) {
         filterCount[pattern.type] = result.count;
 
-        if (this.options.highlightFiltered) {
+        if (this.#options.highlightFiltered) {
           const regex = pattern.pattern;
           highlightedText = highlightedText.replace(regex, (match) => {
             return `\x1b[43m\x1b[30m${match}\x1b[0m`;
@@ -94,8 +94,8 @@ export class ContentFilter {
     return {
       filteredText,
       filterCount,
-      ...(this.options.showFiltered ? {originalText: text} : {}),
-      ...(this.options.highlightFiltered ? {highlightedText} : {}),
+      ...(this.#options.showFiltered ? {originalText: text} : {}),
+      ...(this.#options.highlightFiltered ? {highlightedText} : {}),
     };
   }
 
@@ -104,20 +104,20 @@ export class ContentFilter {
   }
 
   public enableFilterTypes(types: string[]): void {
-    this.options.types = types;
-    this.patterns = this.getActivePatterns();
+    this.#options.types = types;
+    this.#patterns = this.#getActivePatterns();
   }
 
   public setEnabled(enabled: boolean): void {
-    this.options.enabled = enabled;
+    this.#options.enabled = enabled;
   }
 
   public setShowFiltered(show: boolean): void {
-    this.options.showFiltered = show;
+    this.#options.showFiltered = show;
   }
 
   public setHighlightFiltered(highlight: boolean): void {
-    this.options.highlightFiltered = highlight;
+    this.#options.highlightFiltered = highlight;
   }
 
   public addCustomPattern(
@@ -125,7 +125,7 @@ export class ContentFilter {
     replacement = '[CUSTOM_FILTERED]',
     description = 'Custom pattern',
   ): string {
-    const type = `custom-${this.customPatternDefinitions.length}`;
+    const type = `custom-${this.#customPatternDefinitions.length}`;
 
     const patternDef: PatternDefinition = {
       type,
@@ -134,23 +134,23 @@ export class ContentFilter {
       description,
     };
 
-    this.customPatternDefinitions.push(patternDef);
-    this.patterns = this.getActivePatterns();
+    this.#customPatternDefinitions.push(patternDef);
+    this.#patterns = this.#getActivePatterns();
 
     return type;
   }
 
   public getOptions(): FilterOptions {
-    return {...this.options};
+    return {...this.#options};
   }
 
   public loadConfiguration(): FilterOptions {
     const config = loadFilterConfig();
-    this.options = {
+    this.#options = {
       ...config,
-      customPatterns: this.options.customPatterns,
+      customPatterns: this.#options.customPatterns,
     };
-    this.patterns = this.getActivePatterns();
+    this.#patterns = this.#getActivePatterns();
     return this.getOptions();
   }
 
@@ -161,23 +161,23 @@ export class ContentFilter {
   public resetConfiguration(): boolean {
     const success = resetFilterConfig();
     if (success) {
-      this.options = {...DEFAULT_FILTER_OPTIONS};
-      this.patterns = this.getActivePatterns();
+      this.#options = {...DEFAULT_FILTER_OPTIONS};
+      this.#patterns = this.#getActivePatterns();
     }
     return success;
   }
 
-  private getActivePatterns(): PatternDefinition[] {
+  #getActivePatterns(): PatternDefinition[] {
     const activePatterns: PatternDefinition[] = [];
 
-    for (const type of this.options.types) {
+    for (const type of this.#options.types) {
       const pattern = getPatternByType(type);
       if (pattern) {
         activePatterns.push(pattern);
       }
     }
 
-    activePatterns.push(...this.customPatternDefinitions);
+    activePatterns.push(...this.#customPatternDefinitions);
 
     return activePatterns;
   }

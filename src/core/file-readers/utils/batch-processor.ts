@@ -10,10 +10,10 @@ import type {
 import type {FileReaderManager} from '../managers/file-reader.manager.js';
 
 export class BatchFileProcessor {
-  private fileReaderManager: FileReaderManager;
+  #fileReaderManager: FileReaderManager;
 
   constructor(fileReaderManager: FileReaderManager) {
-    this.fileReaderManager = fileReaderManager;
+    this.#fileReaderManager = fileReaderManager;
   }
 
   async expandGlobPatterns(
@@ -47,7 +47,7 @@ export class BatchFileProcessor {
     for (const filePath of filePaths) {
       try {
         await fs.access(filePath);
-        if (await this.fileReaderManager.canReadFile(filePath)) {
+        if (await this.#fileReaderManager.canReadFile(filePath)) {
           supportedFiles.push(filePath);
         }
       } catch {}
@@ -56,14 +56,14 @@ export class BatchFileProcessor {
     return supportedFiles;
   }
 
-  private async processSingleFile(
+  async #processSingleFile(
     filePath: string,
     _fileType?: string, // TODO: Add support for file type override
   ): Promise<BatchFileResult> {
     const startTime = performance.now();
 
     try {
-      const result = await this.fileReaderManager.readFile(filePath);
+      const result = await this.#fileReaderManager.readFile(filePath);
 
       const processingTime = performance.now() - startTime;
 
@@ -86,7 +86,7 @@ export class BatchFileProcessor {
     }
   }
 
-  private async processFilesSequentially(
+  async #processFilesSequentially(
     filePaths: string[],
     options: BatchProcessingOptions,
   ): Promise<BatchFileResult[]> {
@@ -96,7 +96,10 @@ export class BatchFileProcessor {
       const filePath = filePaths[i];
 
       try {
-        const result = await this.processSingleFile(filePath, options.fileType);
+        const result = await this.#processSingleFile(
+          filePath,
+          options.fileType,
+        );
         results.push(result);
 
         if (options.onProgress) {
@@ -129,7 +132,7 @@ export class BatchFileProcessor {
     return results;
   }
 
-  private async processFilesInParallel(
+  async #processFilesInParallel(
     filePaths: string[],
     options: BatchProcessingOptions,
   ): Promise<BatchFileResult[]> {
@@ -143,7 +146,7 @@ export class BatchFileProcessor {
 
       const chunkPromises = chunk.map(async (filePath) => {
         try {
-          const result = await this.processSingleFile(
+          const result = await this.#processSingleFile(
             filePath,
             options.fileType,
           );
@@ -203,7 +206,7 @@ export class BatchFileProcessor {
     return results;
   }
 
-  private generateSummary(results: BatchFileResult[]): BatchProcessingSummary {
+  #generateSummary(results: BatchFileResult[]): BatchProcessingSummary {
     const successfulFiles = results.filter((r) => r.result.success).length;
     const failedFiles = results.length - successfulFiles;
     const totalProcessingTime = results.reduce(
@@ -236,14 +239,14 @@ export class BatchFileProcessor {
     options: BatchProcessingOptions = {},
   ): Promise<BatchProcessingSummary> {
     if (filePaths.length === 0) {
-      return this.generateSummary([]);
+      return this.#generateSummary([]);
     }
 
     const results = options.parallel
-      ? await this.processFilesInParallel(filePaths, options)
-      : await this.processFilesSequentially(filePaths, options);
+      ? await this.#processFilesInParallel(filePaths, options)
+      : await this.#processFilesSequentially(filePaths, options);
 
-    return this.generateSummary(results);
+    return this.#generateSummary(results);
   }
 
   async processGlobPatterns(

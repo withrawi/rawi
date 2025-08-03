@@ -27,17 +27,17 @@ export class ConfigManager
   extends BaseConfigManager
   implements IInteractiveConfigManager
 {
-  private readonly interactive = new InteractiveConfigManager();
-  private readonly providerConfig = new ProviderConfigManager();
-  private readonly display = new ConfigDisplayManager();
-  private readonly validator = new ConfigValidator();
+  readonly #interactive = new InteractiveConfigManager();
+  readonly #providerConfig = new ProviderConfigManager();
+  readonly #display = new ConfigDisplayManager();
+  readonly #validator = new ConfigValidator();
 
   async interactiveConfigure(options: ConfigureOptions = {}): Promise<void> {
     console.log(chalk.bold.blue('🔧 Configuring Rawi'));
     console.log(chalk.gray('Please provide your AI service configuration:'));
 
     try {
-      const profile = await this.interactive.getProfile(options.profile);
+      const profile = await this.#interactive.getProfile(options.profile);
 
       spinnerManager.start('config-load', 'Loading existing configuration...');
       const existingCredentials = this.getCredentials(profile);
@@ -55,7 +55,7 @@ export class ConfigManager
       }
 
       try {
-        const provider = await this.interactive.selectProvider(
+        const provider = await this.#interactive.selectProvider(
           options.provider || existingCredentials?.provider,
         );
 
@@ -69,7 +69,7 @@ export class ConfigManager
           `${provider} provider validated`,
         );
 
-        const model = await this.interactive.selectModel(
+        const model = await this.#interactive.selectModel(
           provider,
           options.model || existingCredentials?.model,
         );
@@ -77,33 +77,33 @@ export class ConfigManager
         const credentials: RawiCredentials = {
           provider,
           model,
-          temperature: await this.interactive.getTemperature(
+          temperature: await this.#interactive.getTemperature(
             options.temperature ??
               existingCredentials?.temperature ??
               DEFAULT_TEMPERATURE,
           ),
-          maxTokens: await this.interactive.getMaxTokens(
+          maxTokens: await this.#interactive.getMaxTokens(
             options.maxTokens ??
               existingCredentials?.maxTokens ??
               DEFAULT_MAX_TOKENS,
           ),
-          language: await this.interactive.getLanguage(
+          language: await this.#interactive.getLanguage(
             options.language ??
               existingCredentials?.language ??
               DEFAULT_LANGUAGE,
           ),
         };
 
-        await this.configureProviderSettings(
+        await this.#configureProviderSettings(
           credentials,
           provider,
           options,
           existingCredentials,
         );
 
-        const validation = this.validator.validateCredentials(credentials);
+        const validation = this.#validator.validateCredentials(credentials);
         if (!validation.isValid) {
-          this.display.displayError(
+          this.#display.displayError(
             'Configuration validation failed:',
             validation.errors.join(', '),
           );
@@ -112,7 +112,7 @@ export class ConfigManager
 
         if (validation.warnings.length > 0) {
           for (const warning of validation.warnings) {
-            this.display.displayWarning(warning);
+            this.#display.displayWarning(warning);
           }
         }
 
@@ -127,10 +127,10 @@ export class ConfigManager
           );
 
           console.log(chalk.gray(`Profile: ${profile}`));
-          this.display.displayConfigurationSummary(credentials);
+          this.#display.displayConfigurationSummary(credentials);
           console.log(chalk.gray(`Config file: ${this.configFile}`));
 
-          this.display.displaySuccess('Configuration completed successfully!');
+          this.#display.displaySuccess('Configuration completed successfully!');
         } catch (error) {
           spinnerManager.fail('config-save', 'Failed to save configuration');
           throw error;
@@ -150,12 +150,12 @@ export class ConfigManager
 
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      this.display.displayError('Configuration failed', errorMessage);
+      this.#display.displayError('Configuration failed', errorMessage);
       throw error;
     }
   }
 
-  private async configureProviderSettings(
+  async #configureProviderSettings(
     credentials: RawiCredentials,
     provider: string,
     options: ConfigureOptions,
@@ -163,44 +163,56 @@ export class ConfigManager
   ): Promise<void> {
     switch (provider) {
       case 'ollama':
-        await this.configureOllama(credentials, options, existingCredentials);
+        await this.#configureOllama(credentials, options, existingCredentials);
         break;
       case 'lmstudio':
-        await this.configureLMStudio(credentials, options, existingCredentials);
+        await this.#configureLMStudio(
+          credentials,
+          options,
+          existingCredentials,
+        );
         break;
       case 'azure':
-        await this.configureAzure(credentials, options, existingCredentials);
+        await this.#configureAzure(credentials, options, existingCredentials);
         break;
       case 'bedrock':
-        await this.configureBedrock(credentials, options, existingCredentials);
+        await this.#configureBedrock(credentials, options, existingCredentials);
         break;
       case 'xai':
-        await this.configureXAI(credentials, options, existingCredentials);
+        await this.#configureXAI(credentials, options, existingCredentials);
         break;
       case 'deepseek':
-        await this.configureDeepSeek(credentials, options, existingCredentials);
+        await this.#configureDeepSeek(
+          credentials,
+          options,
+          existingCredentials,
+        );
         break;
       case 'mistral':
-        await this.configureMistral(credentials, options, existingCredentials);
+        await this.#configureMistral(credentials, options, existingCredentials);
         break;
       case 'cerebras':
-        await this.configureCerebras(credentials, options, existingCredentials);
+        await this.#configureCerebras(
+          credentials,
+          options,
+          existingCredentials,
+        );
         break;
       case 'openai':
-        await this.configureOpenAI(credentials, options, existingCredentials);
+        await this.#configureOpenAI(credentials, options, existingCredentials);
         break;
       case 'anthropic':
-        await this.configureAnthropic(
+        await this.#configureAnthropic(
           credentials,
           options,
           existingCredentials,
         );
         break;
       case 'google':
-        await this.configureGoogle(credentials, options, existingCredentials);
+        await this.#configureGoogle(credentials, options, existingCredentials);
         break;
       default:
-        credentials.apiKey = await this.interactive.getApiKey(
+        credentials.apiKey = await this.#interactive.getApiKey(
           options.apiKey || existingCredentials?.apiKey,
           provider as any,
         );
@@ -208,12 +220,12 @@ export class ConfigManager
     }
   }
 
-  private async configureOllama(
+  async #configureOllama(
     credentials: RawiCredentials,
     options: ConfigureOptions,
     existingCredentials: RawiCredentials | null,
   ): Promise<void> {
-    const baseURL = await this.providerConfig.getBaseURL(
+    const baseURL = await this.#providerConfig.getBaseURL(
       options.baseURL ||
         (existingCredentials?.providerSettings &&
         'baseURL' in existingCredentials.providerSettings
@@ -226,12 +238,12 @@ export class ConfigManager
     }
   }
 
-  private async configureLMStudio(
+  async #configureLMStudio(
     credentials: RawiCredentials,
     options: ConfigureOptions,
     existingCredentials: RawiCredentials | null,
   ): Promise<void> {
-    const baseURL = await this.providerConfig.getBaseURL(
+    const baseURL = await this.#providerConfig.getBaseURL(
       options.baseURL ||
         (existingCredentials?.providerSettings &&
         'baseURL' in existingCredentials.providerSettings
@@ -244,17 +256,17 @@ export class ConfigManager
     }
   }
 
-  private async configureAzure(
+  async #configureAzure(
     credentials: RawiCredentials,
     options: ConfigureOptions,
     existingCredentials: RawiCredentials | null,
   ): Promise<void> {
-    const apiKey = await this.interactive.getApiKey(
+    const apiKey = await this.#interactive.getApiKey(
       options.apiKey || existingCredentials?.apiKey,
       'azure',
     );
 
-    const resourceName = await this.providerConfig.getAPIEndpoint(
+    const resourceName = await this.#providerConfig.getAPIEndpoint(
       options.resourceName ||
         (existingCredentials?.providerSettings &&
         'resourceName' in existingCredentials.providerSettings
@@ -270,12 +282,12 @@ export class ConfigManager
     }
   }
 
-  private async configureBedrock(
+  async #configureBedrock(
     credentials: RawiCredentials,
     options: ConfigureOptions,
     existingCredentials: RawiCredentials | null,
   ): Promise<void> {
-    const accessKeyId = await this.providerConfig.getAccessKey(
+    const accessKeyId = await this.#providerConfig.getAccessKey(
       options.accessKeyId ||
         (existingCredentials?.providerSettings &&
         'accessKeyId' in existingCredentials.providerSettings
@@ -283,7 +295,7 @@ export class ConfigManager
           : undefined),
     );
 
-    const secretAccessKey = await this.providerConfig.getSecretAccessKey(
+    const secretAccessKey = await this.#providerConfig.getSecretAccessKey(
       options.secretAccessKey ||
         (existingCredentials?.providerSettings &&
         'secretAccessKey' in existingCredentials.providerSettings
@@ -291,7 +303,7 @@ export class ConfigManager
           : undefined),
     );
 
-    const region = await this.providerConfig.getRegion(
+    const region = await this.#providerConfig.getRegion(
       options.region ||
         (existingCredentials?.providerSettings &&
         'region' in existingCredentials.providerSettings
@@ -299,7 +311,7 @@ export class ConfigManager
           : undefined),
     );
 
-    const sessionToken = await this.providerConfig.getSessionToken(
+    const sessionToken = await this.#providerConfig.getSessionToken(
       options.sessionToken ||
         (existingCredentials?.providerSettings &&
         'sessionToken' in existingCredentials.providerSettings
@@ -317,12 +329,12 @@ export class ConfigManager
     credentials.providerSettings = settings;
   }
 
-  private async configureXAI(
+  async #configureXAI(
     credentials: RawiCredentials,
     options: ConfigureOptions,
     existingCredentials: RawiCredentials | null,
   ): Promise<void> {
-    const apiKey = await this.interactive.getApiKey(
+    const apiKey = await this.#interactive.getApiKey(
       options.apiKey || existingCredentials?.apiKey,
       'xai',
     );
@@ -332,12 +344,12 @@ export class ConfigManager
     credentials.providerSettings = settings;
   }
 
-  private async configureDeepSeek(
+  async #configureDeepSeek(
     credentials: RawiCredentials,
     options: ConfigureOptions,
     existingCredentials: RawiCredentials | null,
   ): Promise<void> {
-    const apiKey = await this.interactive.getApiKey(
+    const apiKey = await this.#interactive.getApiKey(
       options.apiKey || existingCredentials?.apiKey,
       'deepseek',
     );
@@ -346,7 +358,8 @@ export class ConfigManager
     credentials.apiKey = apiKey;
     credentials.providerSettings = settings;
   }
-  private async configureMistral(
+
+  async #configureMistral(
     credentials: RawiCredentials,
     options: ConfigureOptions,
     existingCredentials: RawiCredentials | null,
@@ -358,9 +371,9 @@ export class ConfigManager
         ? existingCredentials.providerSettings.apiKey
         : existingCredentials?.apiKey);
 
-    const apiKey = await this.interactive.getApiKey(existingApiKey, 'mistral');
+    const apiKey = await this.#interactive.getApiKey(existingApiKey, 'mistral');
 
-    const baseURL = await this.providerConfig.getBaseURL(
+    const baseURL = await this.#providerConfig.getBaseURL(
       options.baseURL ||
         (existingCredentials?.providerSettings &&
         'baseURL' in existingCredentials.providerSettings
@@ -377,7 +390,7 @@ export class ConfigManager
     credentials.providerSettings = settings;
   }
 
-  private async configureCerebras(
+  async #configureCerebras(
     credentials: RawiCredentials,
     options: ConfigureOptions,
     existingCredentials: RawiCredentials | null,
@@ -389,9 +402,12 @@ export class ConfigManager
         ? existingCredentials.providerSettings.apiKey
         : existingCredentials?.apiKey);
 
-    const apiKey = await this.interactive.getApiKey(existingApiKey, 'cerebras');
+    const apiKey = await this.#interactive.getApiKey(
+      existingApiKey,
+      'cerebras',
+    );
 
-    const baseURL = await this.providerConfig.getBaseURL(
+    const baseURL = await this.#providerConfig.getBaseURL(
       options.baseURL ||
         (existingCredentials?.providerSettings &&
         'baseURL' in existingCredentials.providerSettings
@@ -408,12 +424,12 @@ export class ConfigManager
     credentials.providerSettings = settings;
   }
 
-  private async configureOpenAI(
+  async #configureOpenAI(
     credentials: RawiCredentials,
     options: ConfigureOptions,
     existingCredentials: RawiCredentials | null,
   ): Promise<void> {
-    const apiKey = await this.interactive.getApiKey(
+    const apiKey = await this.#interactive.getApiKey(
       options.apiKey || existingCredentials?.apiKey,
       'openai',
     );
@@ -423,12 +439,12 @@ export class ConfigManager
     credentials.providerSettings = settings;
   }
 
-  private async configureAnthropic(
+  async #configureAnthropic(
     credentials: RawiCredentials,
     options: ConfigureOptions,
     existingCredentials: RawiCredentials | null,
   ): Promise<void> {
-    const apiKey = await this.interactive.getApiKey(
+    const apiKey = await this.#interactive.getApiKey(
       options.apiKey || existingCredentials?.apiKey,
       'anthropic',
     );
@@ -438,17 +454,17 @@ export class ConfigManager
     credentials.providerSettings = settings;
   }
 
-  private async configureGoogle(
+  async #configureGoogle(
     credentials: RawiCredentials,
     options: ConfigureOptions,
     existingCredentials: RawiCredentials | null,
   ): Promise<void> {
-    const apiKey = await this.interactive.getApiKey(
+    const apiKey = await this.#interactive.getApiKey(
       options.apiKey || existingCredentials?.apiKey,
       'google',
     );
 
-    const baseURL = await this.providerConfig.getAPIEndpoint(
+    const baseURL = await this.#providerConfig.getAPIEndpoint(
       options.baseURL ||
         (existingCredentials?.providerSettings &&
         'baseURL' in existingCredentials.providerSettings
@@ -470,7 +486,7 @@ export class ConfigManager
     this.showConfiguration(profile, showCredentials).catch((error) => {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      this.display.displayError('Error showing configuration', errorMessage);
+      this.#display.displayError('Error showing configuration', errorMessage);
     });
   }
 
@@ -499,32 +515,32 @@ export class ConfigManager
         if (!(profile in config)) {
           console.log(chalk.red(`Profile '${profile}' not found.`));
           console.log(chalk.gray('Available profiles:'));
-          this.display.displayProfiles(profiles);
+          this.#display.displayProfiles(profiles);
           return;
         }
 
         console.log(chalk.blue(`\nProfile: ${profile}`));
-        this.display.displayCredentials(config[profile]!);
+        this.#display.displayCredentials(config[profile]!);
       } else {
         console.log(chalk.blue('\nAll Profiles:'));
         for (const profileName of profiles) {
           console.log(chalk.white(`\n• Profile: ${profileName}`));
-          this.display.displayCredentials(config[profileName]!);
+          this.#display.displayCredentials(config[profileName]!);
         }
       }
     } catch (error) {
       spinnerManager.fail('config-show', 'Failed to load configuration');
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      this.display.displayError('Error reading configuration', errorMessage);
+      this.#display.displayError('Error reading configuration', errorMessage);
     }
   }
 
   manualConfigure(credentials: RawiCredentials, profile = 'default'): void {
     try {
-      const validation = this.validator.validateCredentials(credentials);
+      const validation = this.#validator.validateCredentials(credentials);
       if (!validation.isValid) {
-        this.display.displayError(
+        this.#display.displayError(
           'Configuration validation failed:',
           validation.errors.join(', '),
         );
@@ -533,19 +549,19 @@ export class ConfigManager
 
       if (validation.warnings.length > 0) {
         for (const warning of validation.warnings) {
-          this.display.displayWarning(warning);
+          this.#display.displayWarning(warning);
         }
       }
 
       this.setCredentials(credentials, profile);
-      this.display.displaySuccess('Configuration saved successfully!');
+      this.#display.displaySuccess('Configuration saved successfully!');
       console.log(chalk.gray(`Profile: ${profile}`));
-      this.display.displayConfigurationSummary(credentials);
+      this.#display.displayConfigurationSummary(credentials);
       console.log(chalk.gray(`\nConfig file: ${this.configFile}`));
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      this.display.displayError('Manual configuration failed', errorMessage);
+      this.#display.displayError('Manual configuration failed', errorMessage);
       throw error;
     }
   }

@@ -16,26 +16,26 @@ type ToolCall = {
 };
 
 export class InferToolCallsFromStream {
-  private _firstMessage: boolean;
-  private readonly _toolCalls: ToolCall[];
-  private readonly _tools?: LanguageModelV2CallOptions['tools'];
-  private _toolPartial: string;
-  private _detectedToolCall: boolean;
+  #firstMessage: boolean;
+  readonly #toolCalls: ToolCall[];
+  readonly #tools?: LanguageModelV2CallOptions['tools'];
+  #toolPartial: string;
+  #detectedToolCall: boolean;
 
   constructor({tools}: {tools?: LanguageModelV2CallOptions['tools']}) {
-    this._firstMessage = true;
-    this._tools = tools;
-    this._toolPartial = '';
-    this._toolCalls = [];
-    this._detectedToolCall = false;
+    this.#firstMessage = true;
+    this.#tools = tools;
+    this.#toolPartial = '';
+    this.#toolCalls = [];
+    this.#detectedToolCall = false;
   }
 
   get toolCalls(): ToolCall[] {
-    return this._toolCalls;
+    return this.#toolCalls;
   }
 
   get detectedToolCall(): boolean {
-    return this._detectedToolCall;
+    return this.#detectedToolCall;
   }
 
   parse({
@@ -45,15 +45,15 @@ export class InferToolCallsFromStream {
     controller: TransformStreamDefaultController<LanguageModelV2StreamPart>;
     delta: string;
   }): boolean {
-    this.detectToolCall(delta);
+    this.#detectToolCall(delta);
 
-    if (!this._detectedToolCall) {
+    if (!this.#detectedToolCall) {
       return false;
     }
 
-    this._toolPartial += delta;
+    this.#toolPartial += delta;
 
-    let parsedFunctions = parse(this._toolPartial);
+    let parsedFunctions = parse(this.#toolPartial);
     if (!Array.isArray(parsedFunctions)) {
       parsedFunctions = [parsedFunctions];
     }
@@ -65,8 +65,8 @@ export class InferToolCallsFromStream {
         continue;
       }
 
-      if (!this._toolCalls[index]) {
-        this._toolCalls[index] = {
+      if (!this.#toolCalls[index]) {
+        this.#toolCalls[index] = {
           function: {
             arguments: '',
             name: parsedFunction.name,
@@ -76,7 +76,7 @@ export class InferToolCallsFromStream {
         };
       }
 
-      const toolCall = this._toolCalls[index];
+      const toolCall = this.#toolCalls[index];
       toolCall.function.arguments = parsedArguments;
 
       controller.enqueue({
@@ -104,24 +104,24 @@ export class InferToolCallsFromStream {
       });
     }
 
-    return this.finishReason();
+    return this.#finishReason();
   }
 
-  private detectToolCall(delta: string) {
-    if (!this._tools || this._tools.length === 0) {
+  #detectToolCall(delta: string) {
+    if (!this.#tools || this.#tools.length === 0) {
       return;
     }
 
-    if (this._firstMessage) {
+    if (this.#firstMessage) {
       if (delta.trim().startsWith('{') || delta.trim().startsWith('[')) {
-        this._detectedToolCall = true;
+        this.#detectedToolCall = true;
       }
 
-      this._firstMessage = false;
+      this.#firstMessage = false;
     }
   }
 
-  private finishReason(): LanguageModelV2FinishReason {
+  #finishReason(): LanguageModelV2FinishReason {
     if (!this.detectedToolCall) {
       return 'stop';
     }

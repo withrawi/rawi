@@ -61,7 +61,7 @@ export class OllamaChatLanguageModel implements LanguageModelV2 {
     return this.config.provider;
   }
 
-  private async getArguments({
+  async #getArguments({
     frequencyPenalty,
     maxOutputTokens,
     presencePenalty,
@@ -151,7 +151,7 @@ export class OllamaChatLanguageModel implements LanguageModelV2 {
   async doGenerate(
     options: Parameters<LanguageModelV2['doGenerate']>[0],
   ): Promise<Awaited<ReturnType<LanguageModelV2['doGenerate']>>> {
-    const {args, warnings} = await this.getArguments(options);
+    const {args, warnings} = await this.#getArguments(options);
     const body = {
       ...args,
       stream: false,
@@ -216,7 +216,7 @@ export class OllamaChatLanguageModel implements LanguageModelV2 {
   async doStream(
     options: Parameters<LanguageModelV2['doStream']>[0],
   ): Promise<Awaited<ReturnType<LanguageModelV2['doStream']>>> {
-    const {args: body, warnings} = await this.getArguments(options);
+    const {args: body, warnings} = await this.#getArguments(options);
 
     const {responseHeaders, value: response} = await postJsonToApi({
       abortSignal: options.abortSignal,

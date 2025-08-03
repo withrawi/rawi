@@ -10,11 +10,11 @@ import {
 import {ConfigValidator} from '../validators/config.validator.js';
 
 export class InteractiveConfigManager {
-  private readonly validator = new ConfigValidator();
+  readonly #validator = new ConfigValidator();
 
   async getProfile(profile?: string): Promise<string> {
     if (profile) {
-      if (!this.isValidProfileName(profile)) {
+      if (!this.#isValidProfileName(profile)) {
         throw new Error(`Invalid profile name: ${profile}`);
       }
       return profile;
@@ -27,7 +27,7 @@ export class InteractiveConfigManager {
         if (!input.trim()) {
           return 'Profile name is required';
         }
-        if (!this.isValidProfileName(input.trim())) {
+        if (!this.#isValidProfileName(input.trim())) {
           return 'Profile name can only contain letters, numbers, hyphens, and underscores';
         }
         return true;
@@ -90,7 +90,7 @@ export class InteractiveConfigManager {
 
     if (defaultApiKey) {
       const useExisting = await confirm({
-        message: `Use existing API key (${this.maskApiKey(defaultApiKey)})?`,
+        message: `Use existing API key (${this.#maskApiKey(defaultApiKey)})?`,
         default: true,
       });
 
@@ -109,7 +109,7 @@ export class InteractiveConfigManager {
           }
 
           if (provider) {
-            const validation = this.validator.validateApiKey(
+            const validation = this.#validator.validateApiKey(
               input.trim(),
               provider,
             );
@@ -185,12 +185,12 @@ export class InteractiveConfigManager {
     });
   }
 
-  private isValidProfileName(name: string): boolean {
+  #isValidProfileName(name: string): boolean {
     const profileNameRegex = /^[a-zA-Z0-9_-]+$/;
     return profileNameRegex.test(name) && name.length <= 50;
   }
 
-  private maskApiKey(apiKey: string): string {
+  #maskApiKey(apiKey: string): string {
     if (apiKey.length <= 8) {
       return '*'.repeat(apiKey.length);
     }

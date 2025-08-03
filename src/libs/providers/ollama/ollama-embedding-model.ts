@@ -18,18 +18,18 @@ type OllamaEmbeddingConfig = {
   provider: string;
 };
 export class OllamaEmbeddingModel implements EmbeddingModelV2<string> {
+  readonly #config: OllamaEmbeddingConfig;
+  readonly #settings: OllamaEmbeddingSettings;
+
   readonly specificationVersion = 'v2';
   readonly modelId: OllamaEmbeddingModelId;
 
-  private readonly config: OllamaEmbeddingConfig;
-  private readonly settings: OllamaEmbeddingSettings;
-
   get provider(): string {
-    return this.config.provider;
+    return this.#config.provider;
   }
 
   get maxEmbeddingsPerCall(): number {
-    return this.settings.maxEmbeddingsPerCall ?? 2048;
+    return this.#settings.maxEmbeddingsPerCall ?? 2048;
   }
 
   get supportsParallelCalls(): boolean {
@@ -42,8 +42,8 @@ export class OllamaEmbeddingModel implements EmbeddingModelV2<string> {
     config: OllamaEmbeddingConfig,
   ) {
     this.modelId = modelId;
-    this.settings = settings;
-    this.config = config;
+    this.#settings = settings;
+    this.#config = config;
   }
 
   async doEmbed({
@@ -68,12 +68,12 @@ export class OllamaEmbeddingModel implements EmbeddingModelV2<string> {
         model: this.modelId,
       },
       failedResponseHandler: ollamaFailedResponseHandler,
-      fetch: this.config.fetch,
-      headers: this.config.headers(),
+      fetch: this.#config.fetch,
+      headers: this.#config.headers(),
       successfulResponseHandler: createJsonResponseHandler(
         ollamaTextEmbeddingResponseSchema as any,
       ),
-      url: `${this.config.baseURL}/embed`,
+      url: `${this.#config.baseURL}/embed`,
     });
 
     // Type the response properly
