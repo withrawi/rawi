@@ -15,11 +15,7 @@ jobs:
       - name: Harden Runner
         uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
         with:
-          egress-policy: block
-          allowed-endpoints: >
-            api.github.com:443
-            github.com:443
-            release-assets.githubusercontent.com:443
+          egress-policy: audit
 
       - name: Mark stale
         uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9.1.0
