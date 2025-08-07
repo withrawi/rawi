@@ -31,7 +31,7 @@ export class OfficeReader extends AbstractFileReader {
       await this.validateFile(filePath);
       this.logVerbose(`Starting office file extraction for: ${filePath}`);
 
-      const text = await this.extractOfficeText(filePath);
+      const text = await this.#extractOfficeText(filePath);
       const {size} = await this.getFileStats(filePath);
       const processingTime = Date.now() - startTime;
 
@@ -39,8 +39,8 @@ export class OfficeReader extends AbstractFileReader {
         `Office file extraction completed in ${processingTime}ms`,
       );
 
-      const fileType = this.getFileTypeFromPath(filePath);
-      const mimeType = this.getMimeTypeForFileType(fileType);
+      const fileType = this.#getFileTypeFromPath(filePath);
+      const mimeType = this.#getMimeTypeForFileType(fileType);
 
       const metadata = this.createMetadata(
         filePath,
@@ -70,7 +70,7 @@ export class OfficeReader extends AbstractFileReader {
     }
   }
 
-  private async extractOfficeText(filePath: string): Promise<string> {
+  async #extractOfficeText(filePath: string): Promise<string> {
     try {
       const result = await parseOfficeAsync(filePath);
 
@@ -88,7 +88,7 @@ export class OfficeReader extends AbstractFileReader {
     }
   }
 
-  private getFileTypeFromPath(filePath: string): string {
+  #getFileTypeFromPath(filePath: string): string {
     const extension = filePath.toLowerCase().split('.').pop() || '';
     const extensionMap: Record<string, string> = {
       pdf: 'pdf',
@@ -102,7 +102,7 @@ export class OfficeReader extends AbstractFileReader {
     return extensionMap[extension] || 'unknown';
   }
 
-  private getMimeTypeForFileType(fileType: string): string {
+  #getMimeTypeForFileType(fileType: string): string {
     const mimeTypes: Record<string, string> = {
       pdf: 'application/pdf',
       docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',

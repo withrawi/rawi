@@ -29,7 +29,6 @@ export class ConfigDisplayManager implements IConfigDisplayManager {
     );
     console.log(chalk.blue('  Model:') + chalk.white(` ${modelDisplayName}`));
 
-    // Get API key from provider settings if not in top-level
     let displayApiKey = masked.apiKey;
     if (
       !displayApiKey &&
@@ -51,7 +50,7 @@ export class ConfigDisplayManager implements IConfigDisplayManager {
       }
 
       if (masked.providerSettings) {
-        this.displayProviderSettings(masked.providerSettings);
+        this.#displayProviderSettings(masked.providerSettings);
       }
     }
 
@@ -75,7 +74,7 @@ export class ConfigDisplayManager implements IConfigDisplayManager {
   }
 
   displayConfigurationSummary(credentials: RawiCredentials): void {
-    console.log(chalk.green('\\n✅ Configuration Summary:'));
+    console.log(chalk.green('✅ Configuration Summary:'));
     this.displayCredentials(credentials);
   }
 
@@ -85,33 +84,32 @@ export class ConfigDisplayManager implements IConfigDisplayManager {
       return;
     }
 
-    console.log(chalk.blue('\\nAvailable Profiles:'));
+    console.log(chalk.blue('Available Profiles:'));
     for (const profile of profiles) {
       console.log(chalk.white(`  • ${profile}`));
     }
   }
 
-  private displayProviderSettings(settings: Record<string, any>): void {
+  #displayProviderSettings(settings: Record<string, any>): void {
     for (const [key, value] of Object.entries(settings)) {
       if (value !== undefined && value !== null) {
-        // Skip API key from provider settings as it's already shown above
         if (key === 'apiKey') {
           continue;
         }
-        const displayKey = this.formatSettingKey(key);
-        const displayValue = this.formatSettingValue(key, value);
+        const displayKey = this.#formatSettingKey(key);
+        const displayValue = this.#formatSettingValue(key, value);
         console.log(chalk.gray(`    ${displayKey}: ${displayValue}`));
       }
     }
   }
 
-  private formatSettingKey(key: string): string {
+  #formatSettingKey(key: string): string {
     return key
       .replace(/([A-Z])/g, ' $1')
       .replace(/^./, (str) => str.toUpperCase());
   }
 
-  private formatSettingValue(key: string, value: any): string {
+  #formatSettingValue(key: string, value: any): string {
     const sensitiveKeys = [
       'apiKey',
       'accessKey',

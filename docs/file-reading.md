@@ -103,6 +103,9 @@ rawi ask --file README.md "Improve this documentation"
 
 # Data file processing
 rawi ask --file data.json "Validate and summarize this JSON structure"
+
+# CSV data analysis
+rawi ask --file sales_data.csv "Analyze trends in this sales data"
 ```
 
 **Supported Extensions:**

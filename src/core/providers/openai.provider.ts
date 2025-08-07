@@ -1,5 +1,4 @@
-import type {openai} from '@ai-sdk/openai';
-import {createOpenAI} from '@ai-sdk/openai';
+import {createOpenAI, type openai} from '@ai-sdk/openai';
 import {streamText} from 'ai';
 import type {
   LooseToStrict,
@@ -94,7 +93,7 @@ export const streamWithOpenAI = async (
       model: openaiProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
-      maxTokens: credentials.maxTokens || 2048,
+      maxOutputTokens: credentials.maxTokens || 2048,
     });
 
     return {

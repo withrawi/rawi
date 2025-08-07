@@ -1,3 +1,5 @@
+import {ContentFilter} from '../content-filter/content-filter.js';
+import {applyContentFiltering} from '../content-filter/middleware.js';
 import type {RawiCredentials, StreamingResponse} from '../shared/index.js';
 import {
   streamWithAnthropic,
@@ -10,42 +12,79 @@ import {
   streamWithMistral,
   streamWithOllama,
   streamWithOpenAI,
-  streamWithQwen,
   streamWithXAI,
 } from './index.js';
+
+export interface StreamResponseOptions {
+  filtering?: {
+    enabled: boolean;
+    types?: string[];
+    showFiltered?: boolean;
+    highlightFiltered?: boolean;
+  };
+}
 
 export const streamResponse = async (
   credentials: RawiCredentials,
   prompt: string,
+  options: StreamResponseOptions = {},
 ): Promise<StreamingResponse> => {
+  let streamFn: any;
   switch (credentials.provider) {
     case 'google':
-      return await streamWithGoogle(credentials, prompt);
+      streamFn = streamWithGoogle;
+      break;
     case 'ollama':
-      return await streamWithOllama(credentials, prompt);
+      streamFn = streamWithOllama;
+      break;
     case 'anthropic':
-      return await streamWithAnthropic(credentials, prompt);
+      streamFn = streamWithAnthropic;
+      break;
     case 'openai':
-      return await streamWithOpenAI(credentials, prompt);
+      streamFn = streamWithOpenAI;
+      break;
     case 'xai':
-      return await streamWithXAI(credentials, prompt);
+      streamFn = streamWithXAI;
+      break;
     case 'azure':
-      return await streamWithAzure(credentials, prompt);
+      streamFn = streamWithAzure;
+      break;
     case 'bedrock':
-      return await streamWithBedrock(credentials, prompt);
-    case 'qwen':
-      return await streamWithQwen(credentials, prompt);
+      streamFn = streamWithBedrock;
+      break;
     case 'lmstudio':
-      return await streamWithLMStudio(credentials, prompt);
+      streamFn = streamWithLMStudio;
+      break;
     case 'deepseek':
-      return await streamWithDeepSeek(credentials, prompt);
+      streamFn = streamWithDeepSeek;
+      break;
     case 'mistral':
-      return await streamWithMistral(credentials, prompt);
+      streamFn = streamWithMistral;
+      break;
     case 'cerebras':
-      return await streamWithCerebras(credentials, prompt);
+      streamFn = streamWithCerebras;
+      break;
     default:
       throw new Error(`Unsupported provider: ${credentials.provider}`);
   }
+
+  if (options.filtering?.enabled) {
+    const filter = new ContentFilter({
+      enabled: true,
+      types: options.filtering.types,
+      showFiltered: options.filtering.showFiltered,
+      highlightFiltered: options.filtering.highlightFiltered,
+    });
+
+    const filteredStreamFn = applyContentFiltering(streamFn, {
+      filter,
+      logStats: false,
+    });
+
+    return await filteredStreamFn(credentials, prompt);
+  }
+
+  return await streamFn(credentials, prompt);
 };
 
 export const processQuery = async (
@@ -56,10 +95,18 @@ export const processQuery = async (
     onChunk?: (chunk: string) => void;
     onComplete?: (fullResponse: string) => void;
     onError?: (error: Error) => void;
+    filtering?: {
+      enabled: boolean;
+      types?: string[];
+      showFiltered?: boolean;
+      highlightFiltered?: boolean;
+    };
   } = {},
 ): Promise<string> => {
   try {
-    const streamingResponse = await streamResponse(credentials, prompt);
+    const streamingResponse = await streamResponse(credentials, prompt, {
+      filtering: options.filtering,
+    });
     let fullResponse = '';
 
     for await (const chunk of streamingResponse.textStream) {

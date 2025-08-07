@@ -23,6 +23,7 @@ export class TextReader extends AbstractFileReader {
       FileType.MD,
       FileType.YML,
       FileType.YAML,
+      FileType.CSV,
       FileType.XML,
       FileType.HTML,
       FileType.CSS,
@@ -48,7 +49,7 @@ export class TextReader extends AbstractFileReader {
 
       this.logVerbose(`Text extraction completed in ${processingTime}ms`);
 
-      const fileTypeContext = this.getFileTypeContext(ext);
+      const fileTypeContext = this.#getFileTypeContext(ext);
       const text = fileTypeContext
         ? `[${fileTypeContext}]\n${content}`
         : content;
@@ -64,7 +65,7 @@ export class TextReader extends AbstractFileReader {
         size,
         ext.substring(1) || 'txt',
         processingTime,
-        this.getMimeType(ext),
+        this.#getMimeType(ext),
         {
           encoding: this.options.encoding || 'utf-8',
           lineCount: content.split('\n').length,
@@ -89,7 +90,7 @@ export class TextReader extends AbstractFileReader {
     }
   }
 
-  private getFileTypeContext(extension: string): string | null {
+  #getFileTypeContext(extension: string): string | null {
     const contexts: Record<string, string> = {
       '.js': 'JavaScript Code',
       '.jsx': 'React JavaScript Code',
@@ -100,6 +101,7 @@ export class TextReader extends AbstractFileReader {
       '.md': 'Markdown Document',
       '.yml': 'YAML Configuration',
       '.yaml': 'YAML Configuration',
+      '.csv': 'CSV Data',
       '.xml': 'XML Document',
       '.html': 'HTML Document',
       '.htm': 'HTML Document',
@@ -138,7 +140,7 @@ export class TextReader extends AbstractFileReader {
     return contexts[extension] || null;
   }
 
-  private getMimeType(extension: string): string {
+  #getMimeType(extension: string): string {
     const mimeTypes: Record<string, string> = {
       '.txt': 'text/plain',
       '.js': 'application/javascript',
@@ -150,6 +152,7 @@ export class TextReader extends AbstractFileReader {
       '.md': 'text/markdown',
       '.yml': 'application/x-yaml',
       '.yaml': 'application/x-yaml',
+      '.csv': 'text/csv',
       '.xml': 'application/xml',
       '.html': 'text/html',
       '.htm': 'text/html',

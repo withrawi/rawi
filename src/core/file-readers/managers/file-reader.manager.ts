@@ -23,23 +23,23 @@ export interface FileReaderManagerOptions extends FileReaderOptions {
 }
 
 export class FileReaderManager {
-  private readers: Map<SupportedFileType, AbstractFileReader>;
-  private options: FileReaderManagerOptions;
-  private batchProcessor: BatchFileProcessor;
+  #readers: Map<SupportedFileType, AbstractFileReader>;
+  #options: FileReaderManagerOptions;
+  #batchProcessor: BatchFileProcessor;
 
   constructor(options: FileReaderManagerOptions = {}) {
-    this.options = {
+    this.#options = {
       enableFallback: true,
       ...options,
     };
 
-    this.readers = new Map();
-    this.initializeReaders();
-    this.batchProcessor = new BatchFileProcessor(this);
+    this.#readers = new Map();
+    this.#initializeReaders();
+    this.#batchProcessor = new BatchFileProcessor(this);
   }
 
-  private initializeReaders(): void {
-    const officeReader = new OfficeReader(this.options);
+  #initializeReaders(): void {
+    const officeReader = new OfficeReader(this.#options);
     const officeFileTypes = [
       FileType.PDF,
       FileType.DOCX,
@@ -51,10 +51,10 @@ export class FileReaderManager {
     ];
 
     for (const fileType of officeFileTypes) {
-      this.readers.set(fileType, officeReader);
+      this.#readers.set(fileType, officeReader);
     }
 
-    const textReader = new TextReader(this.options);
+    const textReader = new TextReader(this.#options);
     const textFileTypes = [
       FileType.TXT,
       FileType.MD,
@@ -86,6 +86,7 @@ export class FileReaderManager {
       FileType.PHP,
       FileType.YML,
       FileType.YAML,
+      FileType.CSV,
       FileType.TOML,
       FileType.ENV,
       FileType.INI,
@@ -102,13 +103,13 @@ export class FileReaderManager {
     ];
 
     for (const fileType of textFileTypes) {
-      this.readers.set(fileType, textReader);
+      this.#readers.set(fileType, textReader);
     }
   }
 
   async readFile(filePath: string): Promise<FileReaderResult> {
     try {
-      const fileType = await this.determineFileType(filePath);
+      const fileType = await this.#determineFileType(filePath);
 
       if (!isSupportedFileType(fileType)) {
         return {
@@ -117,7 +118,7 @@ export class FileReaderManager {
         };
       }
 
-      const reader = this.getReader(fileType);
+      const reader = this.#getReader(fileType);
       if (!reader) {
         return {
           success: false,
@@ -125,7 +126,7 @@ export class FileReaderManager {
         };
       }
 
-      this.logVerbose(
+      this.#logVerbose(
         `Using ${reader.constructor.name} for ${getFileTypeDescription(fileType)}`,
       );
 
@@ -166,90 +167,86 @@ export class FileReaderManager {
 
   async canReadFile(filePath: string): Promise<boolean> {
     try {
-      const fileType = await this.determineFileType(filePath);
-      return isSupportedFileType(fileType) && this.readers.has(fileType);
+      const fileType = await this.#determineFileType(filePath);
+      return isSupportedFileType(fileType) && this.#readers.has(fileType);
     } catch {
       return false;
     }
   }
 
   async getFileInfo(filePath: string) {
-    const fileType = await this.determineFileType(filePath);
+    const fileType = await this.#determineFileType(filePath);
 
     return {
       filePath,
       fileType,
       description: getFileTypeDescription(fileType),
       supported: isSupportedFileType(fileType),
-      readerAvailable: this.readers.has(fileType),
+      readerAvailable: this.#readers.has(fileType),
     };
   }
 
   getSupportedFileTypes(): SupportedFileType[] {
-    return Array.from(this.readers.keys());
+    return Array.from(this.#readers.keys());
   }
 
   registerReader(
     fileType: SupportedFileType,
     reader: AbstractFileReader,
   ): void {
-    this.readers.set(fileType, reader);
-    this.logVerbose(
+    this.#readers.set(fileType, reader);
+    this.#logVerbose(
       `Registered custom reader for ${getFileTypeDescription(fileType)}`,
     );
   }
 
   updateOptions(newOptions: Partial<FileReaderManagerOptions>): void {
-    this.options = {...this.options, ...newOptions};
-    this.initializeReaders();
-    this.batchProcessor = new BatchFileProcessor(this);
-    this.logVerbose('Updated reader options and reinitialized readers');
+    this.#options = {...this.#options, ...newOptions};
+    this.#initializeReaders();
+    this.#batchProcessor = new BatchFileProcessor(this);
+    this.#logVerbose('Updated reader options and reinitialized readers');
   }
 
   async processMultipleFiles(
     filePaths: string[],
     options: BatchProcessingOptions = {},
   ): Promise<BatchProcessingSummary> {
-    return this.batchProcessor.processFiles(filePaths, options);
+    return this.#batchProcessor.processFiles(filePaths, options);
   }
 
   async processGlobPatterns(
     patterns: string[],
     options: BatchProcessingOptions & GlobOptions = {},
   ): Promise<BatchProcessingSummary> {
-    return this.batchProcessor.processGlobPatterns(patterns, options);
+    return this.#batchProcessor.processGlobPatterns(patterns, options);
   }
 
   async expandGlob(
     patterns: string[],
     options: GlobOptions = {},
   ): Promise<string[]> {
-    return this.batchProcessor.expandGlobPatterns(patterns, options);
+    return this.#batchProcessor.expandGlobPatterns(patterns, options);
   }
 
   async filterSupportedFiles(filePaths: string[]): Promise<string[]> {
-    return this.batchProcessor.filterSupportedFiles(filePaths);
+    return this.#batchProcessor.filterSupportedFiles(filePaths);
   }
 
-  private async determineFileType(
-    filePath: string,
-  ): Promise<SupportedFileType> {
-    if (this.options.forceFileType) {
-      return this.options.forceFileType;
+  async #determineFileType(filePath: string): Promise<SupportedFileType> {
+    if (this.#options.forceFileType) {
+      return this.#options.forceFileType;
     }
 
     const detection = await detectFileType(filePath);
     return detection.fileType;
   }
 
-  private getReader(
-    fileType: SupportedFileType,
-  ): AbstractFileReader | undefined {
-    return this.readers.get(fileType);
+  #getReader(fileType: SupportedFileType): AbstractFileReader | undefined {
+    return this.#readers.get(fileType);
   }
 
-  private logVerbose(message: string): void {
-    if (this.options.verbose) {
+  #logVerbose(message: string): void {
+    if (this.#options.verbose) {
       console.log(`[FileReaderManager] ${message}`);
     }
   }

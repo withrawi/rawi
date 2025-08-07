@@ -1,4 +1,4 @@
-import {confirm, input, password, select} from '@inquirer/prompts';
+import {confirm, input, password, search, select} from '@inquirer/prompts';
 import chalk from 'chalk';
 import {getAllProviders, getProvider} from '../../providers/index.js';
 import {
@@ -10,11 +10,11 @@ import {
 import {ConfigValidator} from '../validators/config.validator.js';
 
 export class InteractiveConfigManager {
-  private readonly validator = new ConfigValidator();
+  readonly #validator = new ConfigValidator();
 
   async getProfile(profile?: string): Promise<string> {
     if (profile) {
-      if (!this.isValidProfileName(profile)) {
+      if (!this.#isValidProfileName(profile)) {
         throw new Error(`Invalid profile name: ${profile}`);
       }
       return profile;
@@ -27,7 +27,7 @@ export class InteractiveConfigManager {
         if (!input.trim()) {
           return 'Profile name is required';
         }
-        if (!this.isValidProfileName(input.trim())) {
+        if (!this.#isValidProfileName(input.trim())) {
           return 'Profile name can only contain letters, numbers, hyphens, and underscores';
         }
         return true;
@@ -42,13 +42,46 @@ export class InteractiveConfigManager {
     const choices = providers.map((p) => ({
       name: `${p.displayName} (${p.name})`,
       value: p.name as SupportedProvider,
+      description: `${p.name} - ${p.displayName}`,
     }));
 
-    return select({
-      message: 'Select AI Provider:',
-      choices,
-      default: defaultProvider,
-    });
+    // Use search prompt for better provider filtering when there are many providers
+    if (choices.length > 5) {
+      return search({
+        message: 'Select AI Provider (type to search):',
+        source: async (input) => {
+          if (!input) {
+            // Sort choices to show default provider first if available
+            if (defaultProvider) {
+              const defaultChoice = choices.find(
+                (choice) => choice.value === defaultProvider,
+              );
+              const otherChoices = choices.filter(
+                (choice) => choice.value !== defaultProvider,
+              );
+              return defaultChoice ? [defaultChoice, ...otherChoices] : choices;
+            }
+            return choices;
+          }
+
+          const filtered = choices.filter(
+            (choice) =>
+              choice.name.toLowerCase().includes(input.toLowerCase()) ||
+              choice.value.toLowerCase().includes(input.toLowerCase()) ||
+              choice.description?.toLowerCase().includes(input.toLowerCase()),
+          );
+
+          return filtered;
+        },
+      });
+    } else {
+      // Use regular select for fewer providers
+      return select({
+        message: 'Select AI Provider:',
+        choices,
+        default: defaultProvider,
+      });
+    }
   }
 
   async selectModel(
@@ -71,11 +104,43 @@ export class InteractiveConfigManager {
       throw new Error(`No models available for provider: ${provider}`);
     }
 
-    return select({
-      message: `Select ${providerConfig.displayName} Model:`,
-      choices,
-      default: defaultModel,
-    });
+    // Use search prompt for better model filtering when there are many models
+    if (choices.length > 5) {
+      return search({
+        message: `Select ${providerConfig.displayName} Model (type to search):`,
+        source: async (input) => {
+          if (!input) {
+            // Sort choices to show default model first if available
+            if (defaultModel) {
+              const defaultChoice = choices.find(
+                (choice) => choice.value === defaultModel,
+              );
+              const otherChoices = choices.filter(
+                (choice) => choice.value !== defaultModel,
+              );
+              return defaultChoice ? [defaultChoice, ...otherChoices] : choices;
+            }
+            return choices;
+          }
+
+          const filtered = choices.filter(
+            (choice) =>
+              choice.name.toLowerCase().includes(input.toLowerCase()) ||
+              choice.value.toLowerCase().includes(input.toLowerCase()) ||
+              choice.description?.toLowerCase().includes(input.toLowerCase()),
+          );
+
+          return filtered;
+        },
+      });
+    } else {
+      // Use regular select for providers with fewer models
+      return select({
+        message: `Select ${providerConfig.displayName} Model:`,
+        choices,
+        default: defaultModel,
+      });
+    }
   }
 
   async getApiKey(
@@ -90,7 +155,7 @@ export class InteractiveConfigManager {
 
     if (defaultApiKey) {
       const useExisting = await confirm({
-        message: `Use existing API key (${this.maskApiKey(defaultApiKey)})?`,
+        message: `Use existing API key (${this.#maskApiKey(defaultApiKey)})?`,
         default: true,
       });
 
@@ -109,7 +174,7 @@ export class InteractiveConfigManager {
           }
 
           if (provider) {
-            const validation = this.validator.validateApiKey(
+            const validation = this.#validator.validateApiKey(
               input.trim(),
               provider,
             );
@@ -185,12 +250,12 @@ export class InteractiveConfigManager {
     });
   }
 
-  private isValidProfileName(name: string): boolean {
+  #isValidProfileName(name: string): boolean {
     const profileNameRegex = /^[a-zA-Z0-9_-]+$/;
     return profileNameRegex.test(name) && name.length <= 50;
   }
 
-  private maskApiKey(apiKey: string): string {
+  #maskApiKey(apiKey: string): string {
     if (apiKey.length <= 8) {
       return '*'.repeat(apiKey.length);
     }

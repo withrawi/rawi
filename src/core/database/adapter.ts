@@ -22,19 +22,19 @@ import {
 import {getDatabaseFilePath} from './config/paths.js';
 
 export class DatabaseAdapter {
-  private client;
-  private dbPath: string;
+  #client;
+  #dbPath: string;
 
   constructor() {
     try {
-      this.dbPath = getDatabaseFilePath();
+      this.#dbPath = getDatabaseFilePath();
 
-      this.ensureConfigDir();
+      this.#ensureConfigDir();
 
-      this.ensureDatabaseFileExists();
+      this.#ensureDatabaseFileExists();
 
-      const dbUrl = `file:${this.dbPath}`;
-      this.client = createClient({
+      const dbUrl = `file:${this.#dbPath}`;
+      this.#client = createClient({
         url: dbUrl,
       });
 
@@ -47,7 +47,7 @@ export class DatabaseAdapter {
     }
   }
 
-  private ensureConfigDir(): void {
+  #ensureConfigDir(): void {
     try {
       const configDir = getConfigDir();
       debugLog('Ensuring config directory exists:', configDir);
@@ -67,21 +67,21 @@ export class DatabaseAdapter {
     }
   }
 
-  private ensureDatabaseFileExists(): void {
+  #ensureDatabaseFileExists(): void {
     try {
-      const dbDir = dirname(this.dbPath);
+      const dbDir = dirname(this.#dbPath);
       if (!existsSync(dbDir)) {
         debugLog(`Database directory not found, creating it: ${dbDir}`);
         mkdirSync(dbDir, {recursive: true});
       }
 
-      if (!existsSync(this.dbPath)) {
-        debugLog('Database file not found, creating it:', this.dbPath);
+      if (!existsSync(this.#dbPath)) {
+        debugLog('Database file not found, creating it:', this.#dbPath);
 
-        writeFileSync(this.dbPath, '');
+        writeFileSync(this.#dbPath, '');
 
-        if (!existsSync(this.dbPath)) {
-          throw new Error(`Failed to create database file at ${this.dbPath}`);
+        if (!existsSync(this.#dbPath)) {
+          throw new Error(`Failed to create database file at ${this.#dbPath}`);
         }
 
         debugLog('Empty database file created successfully');
@@ -89,14 +89,14 @@ export class DatabaseAdapter {
         debugLog('Database file already exists');
 
         try {
-          accessSync(this.dbPath, constants.W_OK);
+          accessSync(this.#dbPath, constants.W_OK);
           debugLog('Database file is writable');
         } catch (accessError) {
           console.error(
             'Database file exists but is not writable!',
             accessError,
           );
-          throw new Error(`Database file at ${this.dbPath} is not writable`);
+          throw new Error(`Database file at ${this.#dbPath} is not writable`);
         }
       }
     } catch (error) {
@@ -115,11 +115,11 @@ export class DatabaseAdapter {
       try {
         debugLog(`Checking if database schema exists (attempt ${attempt})...`);
 
-        this.ensureConfigDir();
+        this.#ensureConfigDir();
 
-        this.ensureDatabaseFileExists();
+        this.#ensureDatabaseFileExists();
 
-        const tableResult = await this.client.execute(`
+        const tableResult = await this.#client.execute(`
           SELECT count(*) as table_count FROM sqlite_master 
           WHERE type='table' AND name IN ('chat_sessions', 'chat_messages');
         `);
@@ -130,8 +130,8 @@ export class DatabaseAdapter {
           debugLog('Database schema verified, both tables exist');
 
           try {
-            await this.client.execute('SELECT COUNT(*) FROM chat_sessions');
-            await this.client.execute('SELECT COUNT(*) FROM chat_messages');
+            await this.#client.execute('SELECT COUNT(*) FROM chat_sessions');
+            await this.#client.execute('SELECT COUNT(*) FROM chat_messages');
             debugLog('Database tables are accessible');
             return;
           } catch (queryError) {
@@ -147,7 +147,7 @@ export class DatabaseAdapter {
         debugLog(
           `Found only ${tableCount} of 2 required tables, initializing schema...`,
         );
-        await this.initialize();
+        await this.#initialize();
         return;
       } catch (error) {
         debugLog(`Error checking database schema (attempt ${attempt})`);
@@ -170,9 +170,9 @@ export class DatabaseAdapter {
                   'Last attempt - recreating database file from scratch',
                 );
 
-                if (this.client) {
+                if (this.#client) {
                   try {
-                    await this.client.close();
+                    await this.#client.close();
                   } catch (e: unknown) {
                     debugLog(
                       'Error closing client:',
@@ -182,8 +182,8 @@ export class DatabaseAdapter {
                 }
 
                 try {
-                  if (existsSync(this.dbPath)) {
-                    unlinkSync(this.dbPath);
+                  if (existsSync(this.#dbPath)) {
+                    unlinkSync(this.#dbPath);
                     debugLog('Deleted existing database file');
                   }
                 } catch (fsError) {
@@ -195,16 +195,16 @@ export class DatabaseAdapter {
                   );
                 }
 
-                this.ensureDatabaseFileExists();
+                this.#ensureDatabaseFileExists();
 
-                this.client = createClient({
-                  url: `file:${this.dbPath}`,
+                this.#client = createClient({
+                  url: `file:${this.#dbPath}`,
                 });
 
                 debugLog(
                   'Reconnected to fresh database. Attempting initialization...',
                 );
-                await this.initialize();
+                await this.#initialize();
                 return;
               } catch (recreateError) {
                 console.error(
@@ -219,9 +219,9 @@ export class DatabaseAdapter {
               }
             } else {
               try {
-                if (this.client) {
+                if (this.#client) {
                   try {
-                    await this.client.close();
+                    await this.#client.close();
                   } catch (e: unknown) {
                     debugLog(
                       'Error closing client:',
@@ -230,16 +230,16 @@ export class DatabaseAdapter {
                   }
                 }
 
-                this.ensureDatabaseFileExists();
+                this.#ensureDatabaseFileExists();
 
-                this.client = createClient({
-                  url: `file:${this.dbPath}`,
+                this.#client = createClient({
+                  url: `file:${this.#dbPath}`,
                 });
 
                 debugLog(
                   'Reconnected to database. Attempting initialization...',
                 );
-                await this.initialize();
+                await this.#initialize();
                 return;
               } catch (reconnectError) {
                 console.error(
@@ -262,7 +262,7 @@ export class DatabaseAdapter {
             typeof error,
           );
           try {
-            await this.initialize();
+            await this.#initialize();
             return;
           } catch (initError) {
             console.error(
@@ -287,18 +287,18 @@ export class DatabaseAdapter {
     );
   }
 
-  private async initialize(): Promise<void> {
+  async #initialize(): Promise<void> {
     let retryCount = 0;
     const maxRetries = 3;
 
     while (retryCount < maxRetries) {
       try {
-        this.ensureConfigDir();
+        this.#ensureConfigDir();
 
-        this.ensureDatabaseFileExists();
+        this.#ensureDatabaseFileExists();
 
         try {
-          await this.client.execute('PRAGMA quick_check;');
+          await this.#client.execute('PRAGMA quick_check;');
           debugLog('Database connection verified');
         } catch (connError: unknown) {
           console.error(
@@ -307,14 +307,14 @@ export class DatabaseAdapter {
           );
 
           try {
-            if (this.client) {
+            if (this.#client) {
               try {
-                await this.client.close();
+                await this.#client.close();
               } catch {}
             }
 
-            this.client = createClient({
-              url: `file:${this.dbPath}`,
+            this.#client = createClient({
+              url: `file:${this.#dbPath}`,
             });
 
             debugLog('Database client recreated');
@@ -334,7 +334,7 @@ export class DatabaseAdapter {
         );
 
         try {
-          await this.client.execute('PRAGMA journal_mode = WAL;');
+          await this.#client.execute('PRAGMA journal_mode = WAL;');
         } catch (error: unknown) {
           const pragmaError =
             error instanceof Error ? error.message : 'Unknown error';
@@ -342,7 +342,7 @@ export class DatabaseAdapter {
         }
 
         try {
-          await this.client.execute('PRAGMA synchronous = NORMAL;');
+          await this.#client.execute('PRAGMA synchronous = NORMAL;');
         } catch (error: unknown) {
           const pragmaError =
             error instanceof Error ? error.message : 'Unknown error';
@@ -350,14 +350,14 @@ export class DatabaseAdapter {
         }
 
         try {
-          await this.client.execute('PRAGMA foreign_keys = ON;');
+          await this.#client.execute('PRAGMA foreign_keys = ON;');
         } catch (error: unknown) {
           const pragmaError =
             error instanceof Error ? error.message : 'Unknown error';
           debugLog('Warning: Failed to set foreign_keys pragma:', pragmaError);
         }
 
-        await this.client.execute(`
+        await this.#client.execute(`
           CREATE TABLE IF NOT EXISTS chat_sessions (
             id TEXT PRIMARY KEY,
             profile TEXT NOT NULL,
@@ -370,7 +370,7 @@ export class DatabaseAdapter {
 
         debugLog('Created chat_sessions table');
 
-        await this.client.execute(`
+        await this.#client.execute(`
           CREATE TABLE IF NOT EXISTS chat_messages (
             id TEXT PRIMARY KEY,
             session_id TEXT NOT NULL,
@@ -389,7 +389,7 @@ export class DatabaseAdapter {
         debugLog('Created chat_messages table');
 
         try {
-          await this.client.execute(`
+          await this.#client.execute(`
             CREATE TRIGGER IF NOT EXISTS update_session_message_count_insert
             AFTER INSERT ON chat_messages
             BEGIN
@@ -402,7 +402,7 @@ export class DatabaseAdapter {
             END;
           `);
 
-          await this.client.execute(`
+          await this.#client.execute(`
             CREATE TRIGGER IF NOT EXISTS update_session_message_count_delete
             AFTER DELETE ON chat_messages
             BEGIN
@@ -415,7 +415,7 @@ export class DatabaseAdapter {
             END;
           `);
 
-          await this.client.execute(`
+          await this.#client.execute(`
             CREATE TRIGGER IF NOT EXISTS generate_session_title
             AFTER INSERT ON chat_messages
             WHEN NEW.role = 'user' AND (
@@ -441,32 +441,32 @@ export class DatabaseAdapter {
         }
 
         try {
-          await this.client.execute(`
+          await this.#client.execute(`
             CREATE INDEX IF NOT EXISTS idx_chat_sessions_profile 
             ON chat_sessions (profile);
           `);
 
-          await this.client.execute(`
+          await this.#client.execute(`
             CREATE INDEX IF NOT EXISTS idx_chat_sessions_created_at 
             ON chat_sessions (created_at DESC);
           `);
 
-          await this.client.execute(`
+          await this.#client.execute(`
             CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id 
             ON chat_messages (session_id);
           `);
 
-          await this.client.execute(`
+          await this.#client.execute(`
             CREATE INDEX IF NOT EXISTS idx_chat_messages_timestamp 
             ON chat_messages (timestamp DESC);
           `);
 
-          await this.client.execute(`
+          await this.#client.execute(`
             CREATE INDEX IF NOT EXISTS idx_chat_messages_provider 
             ON chat_messages (provider);
           `);
 
-          await this.client.execute(`
+          await this.#client.execute(`
             CREATE INDEX IF NOT EXISTS idx_chat_messages_content_fts 
             ON chat_messages (content);
           `);
@@ -479,7 +479,7 @@ export class DatabaseAdapter {
           debugLog('Continuing with basic functionality');
         }
 
-        const tableResult = await this.client.execute(`
+        const tableResult = await this.#client.execute(`
           SELECT count(*) as table_count FROM sqlite_master 
           WHERE type='table' AND name IN ('chat_sessions', 'chat_messages');
         `);
@@ -517,7 +517,7 @@ export class DatabaseAdapter {
 
     const sessionId = uuidv4();
 
-    await this.client.execute({
+    await this.#client.execute({
       sql: 'INSERT INTO chat_sessions (id, profile, title) VALUES (?, ?, ?)',
       args: [sessionId, profile, title || null],
     });
@@ -527,7 +527,7 @@ export class DatabaseAdapter {
 
   async getSession(sessionId: string): Promise<ChatSession | null> {
     await this.ensureDatabaseInitialized();
-    const result = await this.client.execute({
+    const result = await this.#client.execute({
       sql: 'SELECT * FROM chat_sessions WHERE id = ?',
       args: [sessionId],
     });
@@ -575,7 +575,7 @@ export class DatabaseAdapter {
     sql += ' ORDER BY updated_at DESC LIMIT ?';
     args.push(limit);
 
-    const result = await this.client.execute({sql, args});
+    const result = await this.#client.execute({sql, args});
 
     return result.rows.map((row) => ({
       id: row.id as string,
@@ -589,7 +589,7 @@ export class DatabaseAdapter {
 
   async deleteSession(sessionId: string): Promise<boolean> {
     await this.ensureDatabaseInitialized();
-    const result = await this.client.execute({
+    const result = await this.#client.execute({
       sql: 'DELETE FROM chat_sessions WHERE id = ?',
       args: [sessionId],
     });
@@ -598,7 +598,7 @@ export class DatabaseAdapter {
   }
 
   async updateSessionTitle(sessionId: string, title: string): Promise<boolean> {
-    const result = await this.client.execute({
+    const result = await this.#client.execute({
       sql: `UPDATE chat_sessions SET title = ?, updated_at = datetime('now') WHERE id = ?`,
       args: [title, sessionId],
     });
@@ -619,7 +619,7 @@ export class DatabaseAdapter {
     await this.ensureDatabaseInitialized();
     const messageId = uuidv4();
 
-    await this.client.execute({
+    await this.#client.execute({
       sql: `INSERT INTO chat_messages (
         id, session_id, role, content, provider, model, 
         temperature, max_tokens, metadata
@@ -654,7 +654,7 @@ export class DatabaseAdapter {
       args.push(limit);
     }
 
-    const result = await this.client.execute({sql, args});
+    const result = await this.#client.execute({sql, args});
 
     return result.rows.map((row) => ({
       id: row.id as string,
@@ -724,7 +724,7 @@ export class DatabaseAdapter {
     sql += ' ORDER BY m.timestamp DESC LIMIT ?';
     args.push(limit);
 
-    const result = await this.client.execute({sql, args});
+    const result = await this.#client.execute({sql, args});
 
     return result.rows.map((row) => ({
       id: row.id as string,
@@ -750,7 +750,7 @@ export class DatabaseAdapter {
       args.push(profile);
     }
 
-    const sessionResult = await this.client.execute({sql, args});
+    const sessionResult = await this.#client.execute({sql, args});
     const totalSessions = Number(sessionResult.rows[0].count);
 
     let messageSql = `
@@ -770,7 +770,7 @@ export class DatabaseAdapter {
       messageArgs.push(profile);
     }
 
-    const messageResult = await this.client.execute({
+    const messageResult = await this.#client.execute({
       sql: messageSql,
       args: messageArgs,
     });
@@ -793,7 +793,7 @@ export class DatabaseAdapter {
 
     providerSql += ' GROUP BY provider ORDER BY count DESC';
 
-    const providerResult = await this.client.execute({
+    const providerResult = await this.#client.execute({
       sql: providerSql,
       args: providerArgs,
     });
@@ -819,7 +819,7 @@ export class DatabaseAdapter {
 
     modelSql += ' GROUP BY model ORDER BY count DESC';
 
-    const modelResult = await this.client.execute({
+    const modelResult = await this.#client.execute({
       sql: modelSql,
       args: modelArgs,
     });
@@ -837,7 +837,7 @@ export class DatabaseAdapter {
       ORDER BY count DESC
     `;
 
-    const profileResult = await this.client.execute({sql: profileSql});
+    const profileResult = await this.#client.execute({sql: profileSql});
 
     const messagesByProfile: Record<string, number> = {};
     profileResult.rows.forEach((row) => {
@@ -860,7 +860,7 @@ export class DatabaseAdapter {
       timeRangeArgs.push(profile);
     }
 
-    const timeRangeResult = await this.client.execute({
+    const timeRangeResult = await this.#client.execute({
       sql: timeRangeSql,
       args: timeRangeArgs,
     });
@@ -882,7 +882,7 @@ export class DatabaseAdapter {
     date.setDate(date.getDate() - days);
     const cutoffDate = date.toISOString();
 
-    const result = await this.client.execute({
+    const result = await this.#client.execute({
       sql: `
         DELETE FROM chat_sessions 
         WHERE profile = ? AND created_at < ?
@@ -895,7 +895,7 @@ export class DatabaseAdapter {
 
   async vacuum(): Promise<void> {
     await this.ensureDatabaseInitialized();
-    await this.client.execute({sql: 'VACUUM'});
+    await this.#client.execute({sql: 'VACUUM'});
   }
 
   async exportChatHistory(options: ChatHistoryOptions = {}): Promise<{
@@ -926,6 +926,6 @@ export class DatabaseAdapter {
   }
 
   async close(): Promise<void> {
-    await this.client.close();
+    await this.#client.close();
   }
 }

@@ -90,7 +90,6 @@ This opens an interactive menu to:
 | **Google**         | 🔴   | Gemini Pro, PaLM   | Multimodal, code-optimized   |
 | **Azure OpenAI**   | 🔷   | GPT-4, GPT-3.5     | Enterprise, compliance       |
 | **Amazon Bedrock** | 🟠   | Multiple models    | AWS integration, variety     |
-| **Qwen**           | 🟡   | Qwen models        | Multilingual, efficient      |
 | **xAI**            | ⚫   | Grok models        | Real-time, conversational    |
 
 ### Local Providers

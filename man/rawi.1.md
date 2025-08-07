@@ -20,18 +20,23 @@
 
 **rawi** **info** [*options*]
 
-## DESCRI- **🔵 OpenAI** \- GPT models (gpt-4o, gpt-4-turbo, o1, etc.)
+| Provider         | Top Models                            | API Key | Local | Best For                       |
+| ---------------- | ------------------------------------- | ------- | ----- | ------------------------------ |
+| **🔵 OpenAI**    | GPT-4o, GPT-4, O1, O3, GPT-4o-mini    | ✅      | ❌    | General development, coding    |
+| **🟣 Anthropic** | Claude 3.5 Sonnet, Claude 3.5 Haiku   | ✅      | ❌    | Analysis, safety, long content |
+| **🔴 Google**    | Gemini 2.0 Flash, Gemini 1.5 Pro      | ✅      | ❌    | Fast inference, multimodal     |
+| **� DeepSeek**   | DeepSeek-Chat, DeepSeek-Reasoner      | ✅      | ❌    | Cost-effective, reasoning      |
+| **�🟢 Ollama**   | Llama 3.2, CodeLlama, Qwen, +100 more | ❌      | ✅    | Privacy, offline, free         |
+| **🔧 LM Studio** | Llama 3.3, Phi-4, Gemma-3, Qwen-3     | ❌      | ✅    | Local models, GUI management   |
+| **🟠 Mistral**   | Mistral Large, Mistral Small, Pixtral | ✅      | ❌    | European AI, multilingual      |
+| **⚡ Cerebras**  | Llama 3.3 70B, Llama 3.1 70B/8B       | ✅      | ❌    | Ultra-fast inference, speed    |
+| **🔷 Azure**     | Enterprise OpenAI deployments         | ✅      | ❌    | Enterprise, compliance         |
+| **🟠 Bedrock**   | Claude, Llama, Titan via AWS          | ✅      | ❌    | AWS integration, scale         |
+| **🤖 xAI**       | Grok-3, Grok-2, Grok-Beta             | ✅      | ❌    | Real-time, conversational      |
 
-- **🟣 Anthropic** \- Claude models (claude-3-opus, claude-3-sonnet, etc.)
-- **🔴 Google** \- Gemini models (gemini-pro, gemini-flash, etc.)
-- **🔵 DeepSeek** \- DeepSeek models (deepseek-chat, deepseek-reasoner)
-- **🟠 Mistral** \- Mistral models (mistral-large-latest, mistral-small-latest, etc.)
-- **🔷 Azure** \- Azure OpenAI service deployments
-- **🟠 Bedrock** \- AWS-hosted AI models (Claude, Titan, etc.)
-- **🟢 Ollama** \- Local models (llama2, mistral, codellama, etc.)
-- **🤖 xAI** \- Grok models
-- **🟡 Qwen** \- Alibaba Cloud models
-- **🔧 LM Studio** \- Local model serveri (راوي) is a modern, developer-friendly CLI tool for interacting with multiple AI providers including OpenAI, Anthropic, Google, Amazon Bedrock, Azure OpenAI, Ollama, xAI, Qwen, and LM Studio. Inspired by Jordanian storytelling tradition, Rawi delivers clear answers, summaries, and analyses with a focus on usability, discoverability, and actionable output.
+## DESCRIPTION
+
+(راوي) is a modern, developer-friendly CLI tool for interacting with multiple AI providers including OpenAI, Anthropic, Google, Amazon Bedrock, Azure OpenAI, Ollama, xAI, and LM Studio. Inspired by Jordanian storytelling tradition, Rawi delivers clear answers, summaries, and analyses with a focus on usability, discoverability, and actionable output.
 
 **Key Features:**
 
@@ -125,6 +130,30 @@ Override automatic file type detection. Useful when file extensions don't match 
 
 Show detailed status information, debug output, and processing steps
 
+**--filter-sensitive**
+
+Filter sensitive information from prompts and responses. Automatically detects and replaces sensitive data like email addresses, phone numbers, credit card numbers, etc.
+
+**--filter-types** _types_
+
+Comma-separated list of information types to filter (e.g., email,phone,creditcard,ssn,ip,url,address). Use this to specify which types of sensitive information should be filtered.
+
+**--show-filtered**
+
+Show which information was filtered and display filtering statistics. Provides a summary of filtered content by type.
+
+**--highlight-filtered**
+
+Show filtered content with highlighting in terminal output. Visually identifies sensitive information that was detected.
+
+**--save-filter-config**
+
+Save current filtering configuration as default for future use. Persists your filtering preferences.
+
+**--reset-filter-config**
+
+Reset filtering configuration to defaults (enables all filter types).
+
 **Examples:**
 
 # Basic question
@@ -171,6 +200,14 @@ Show detailed status information, debug output, and processing steps
 
 **echo** "Additional context" **|** **rawi ask** "Analyze with context" **--file** data.json
 
+# Filter sensitive information from files
+
+**rawi ask** "Analyze this data" **--file** customer-data.csv **--filter-sensitive**
+
+# Filter specific types from files
+
+**rawi ask** "Process this info" **--file** employee-records.xlsx **--filter-types** email,phone,ssn
+
 # Use expert template
 
 **rawi ask** **--act** code-reviewer "Review this function"
@@ -186,6 +223,30 @@ Show detailed status information, debug output, and processing steps
 # Verbose output for debugging
 
 **rawi ask** **--verbose** "Explain machine learning"
+
+# Filter sensitive information
+
+**rawi ask** **--filter-sensitive** "Analyze this data with my email john@example.com"
+
+# Filter specific types of information
+
+**rawi ask** **--filter-types** email,phone,creditcard "Process this customer data"
+
+# Show filtering statistics
+
+**rawi ask** **--filter-sensitive** **--show-filtered** "Check this text with sensitive info"
+
+# Highlight filtered content
+
+**rawi ask** **--filter-sensitive** **--highlight-filtered** "Process this data"
+
+# Save filtering preferences
+
+**rawi ask** **--filter-types** email,phone **--save-filter-config** "Save my settings"
+
+# Reset to default filtering settings
+
+**rawi ask** **--reset-filter-config**
 
 ### configure \- Manage AI provider settings and profiles
 
@@ -204,7 +265,7 @@ Profile name to configure (default: "default")
 
 **--provider** _provider_
 
-AI provider name. Supported providers: **openai**, **anthropic**, **google**, **azure**, **bedrock**, **ollama**, **xai**, **qwen**, **lmstudio**
+AI provider name. Supported providers: **openai**, **anthropic**, **google**, **azure**, **bedrock**, **ollama**, **xai**, **lmstudio**
 
 **--model** _model_
 
@@ -485,16 +546,17 @@ List all available models for a specific provider
 
 **Supported Providers:**
 
-- **🔵 OpenAI** \- GPT models (gpt-4o, gpt-4-turbo, o1, etc.)
-- **🟣 Anthropic** \- Claude models (claude-3-opus, claude-3-sonnet, etc.)
-- **🔴 Google** \- Gemini models (gemini-pro, gemini-flash, etc.)
-- **� DeepSeek** \- DeepSeek models (deepseek-chat, deepseek-reasoner)
-- **�🔷 Azure** \- Azure OpenAI service deployments
-- **🟠 Bedrock** \- AWS-hosted AI models (Claude, Titan, etc.)
-- **🟢 Ollama** \- Local models (llama2, mistral, codellama, etc.)
-- **🤖 xAI** \- Grok models
-- **🟡 Qwen** \- Alibaba Cloud models
-- **🔧 LM Studio** \- Local model server
+- **🔵 OpenAI** \- GPT models (gpt-4o, gpt-4, o1, o3, gpt-4o-mini)
+- **🟣 Anthropic** \- Claude models (Claude 3.5 Sonnet, Claude 3.5 Haiku)
+- **🔴 Google** \- Gemini models (Gemini 2.0 Flash, Gemini 1.5 Pro)
+- **� DeepSeek** \- DeepSeek models (DeepSeek-Chat, DeepSeek-Reasoner)
+- **�� Ollama** \- Local models (Llama 3.2, CodeLlama, Qwen, +100 more)
+- **� LM Studio** \- Local model server (Llama 3.3, Phi-4, Gemma-3, Qwen-3)
+- **� Mistral** \- Mistral models (Mistral Large, Mistral Small, Pixtral)
+- **⚡ Cerebras** \- Cerebras models (Llama 3.3 70B, Llama 3.1 70B/8B)
+- **🔷 Azure** \- Enterprise OpenAI deployments
+- **🟠 Bedrock** \- AWS-hosted AI models (Claude, Llama, Titan via AWS)
+- **🤖 xAI** \- Grok models (Grok-3, Grok-2, Grok-Beta)
 
 **Examples:**
 
@@ -817,10 +879,6 @@ Verify your configuration:
 - Use **--verbose** only when necessary (may expose sensitive data)
 - Keep configuration backups secure
 
-## SEE ALSO
-
-**curl**(1), **jq**(1), **git**(1)
-
 ### Online Resources
 
 **Project Homepage:**
@@ -838,13 +896,6 @@ https://github.com/MKAbuMattar/rawi/issues
 **Examples and Tutorials:**
 
 https://github.com/MKAbuMattar/rawi/tree/main/docs/examples
-
-### Related Tools
-
-- **openai-cli** - Official OpenAI command line interface
-- **anthropic-cli** - Anthropic's Claude CLI tool
-- **gh** - GitHub CLI with AI features
-- **copilot-cli** - GitHub Copilot CLI integration
 
 ## AUTHOR
 

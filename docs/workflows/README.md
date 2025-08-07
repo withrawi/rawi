@@ -438,9 +438,9 @@ import sys
 try:
     df = pd.read_csv('$DATA_FILE')
     print('Dataset shape:', df.shape)
-    print('\\nBasic statistics:')
+    print('Basic statistics:')
     print(df.describe())
-    print('\\nMissing values:')
+    print('Missing values:')
     print(df.isnull().sum())
 except Exception as e:
     print('Error processing CSV:', e)

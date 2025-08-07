@@ -9,17 +9,17 @@ import {
 import {DatabaseAdapter} from './adapter.js';
 
 export class DatabaseManager {
-  private adapter: DatabaseAdapter;
-  private initialized = false;
-  private initPromise: Promise<void> | null = null;
+  #adapter: DatabaseAdapter;
+  #initialized = false;
+  #initPromise: Promise<void> | null = null;
 
   constructor() {
-    this.adapter = new DatabaseAdapter();
+    this.#adapter = new DatabaseAdapter();
 
-    this.initPromise = this.adapter
+    this.#initPromise = this.#adapter
       .ensureDatabaseInitialized()
       .then(() => {
-        this.initialized = true;
+        this.#initialized = true;
         debugLog('Database manager initialization complete');
       })
       .catch((err) => {
@@ -30,14 +30,14 @@ export class DatabaseManager {
       });
   }
 
-  private async ensureInitialized(): Promise<void> {
-    if (this.initialized) {
+  async #ensureInitialized(): Promise<void> {
+    if (this.#initialized) {
       return;
     }
 
-    if (this.initPromise) {
+    if (this.#initPromise) {
       try {
-        await this.initPromise;
+        await this.#initPromise;
         return;
       } catch (_error) {
         debugLog('Initial initialization failed, trying again');
@@ -46,8 +46,8 @@ export class DatabaseManager {
 
     try {
       debugLog('Explicitly initializing database');
-      await this.adapter.ensureDatabaseInitialized();
-      this.initialized = true;
+      await this.#adapter.ensureDatabaseInitialized();
+      this.#initialized = true;
     } catch (error) {
       console.error('Failed to initialize database:', error);
       throw new Error('Database initialization failed');
@@ -55,28 +55,28 @@ export class DatabaseManager {
   }
 
   async createSession(profile: string, title?: string): Promise<string> {
-    await this.ensureInitialized();
-    return this.adapter.createSession(profile, title);
+    await this.#ensureInitialized();
+    return this.#adapter.createSession(profile, title);
   }
 
   async getSession(sessionId: string): Promise<ChatSession | null> {
-    await this.ensureInitialized();
-    return this.adapter.getSession(sessionId);
+    await this.#ensureInitialized();
+    return this.#adapter.getSession(sessionId);
   }
 
   async getSessions(options: ChatHistoryOptions = {}): Promise<ChatSession[]> {
-    await this.ensureInitialized();
-    return this.adapter.getSessions(options);
+    await this.#ensureInitialized();
+    return this.#adapter.getSessions(options);
   }
 
   async deleteSession(sessionId: string): Promise<boolean> {
-    await this.ensureInitialized();
-    return this.adapter.deleteSession(sessionId);
+    await this.#ensureInitialized();
+    return this.#adapter.deleteSession(sessionId);
   }
 
   async updateSessionTitle(sessionId: string, title: string): Promise<boolean> {
-    await this.ensureInitialized();
-    return this.adapter.updateSessionTitle(sessionId, title);
+    await this.#ensureInitialized();
+    return this.#adapter.updateSessionTitle(sessionId, title);
   }
 
   async addMessage(
@@ -89,8 +89,8 @@ export class DatabaseManager {
     maxTokens?: number,
     metadata?: any,
   ): Promise<string> {
-    await this.ensureInitialized();
-    return this.adapter.addMessage(
+    await this.#ensureInitialized();
+    return this.#adapter.addMessage(
       sessionId,
       role,
       content,
@@ -103,31 +103,31 @@ export class DatabaseManager {
   }
 
   async getMessages(sessionId: string, limit?: number): Promise<ChatMessage[]> {
-    await this.ensureInitialized();
-    return this.adapter.getMessages(sessionId, limit);
+    await this.#ensureInitialized();
+    return this.#adapter.getMessages(sessionId, limit);
   }
 
   async searchMessages(
     options: ChatHistoryOptions = {},
   ): Promise<ChatMessage[]> {
-    await this.ensureInitialized();
-    return this.adapter.searchMessages(options);
+    await this.#ensureInitialized();
+    return this.#adapter.searchMessages(options);
   }
 
   async getStats(profile?: string): Promise<HistoryStats> {
-    await this.ensureInitialized();
-    return this.adapter.getStats(profile);
+    await this.#ensureInitialized();
+    return this.#adapter.getStats(profile);
   }
 
   async close(): Promise<void> {
-    await this.adapter.close();
+    await this.#adapter.close();
   }
 
   async getCurrentSession(profile: string): Promise<string> {
     try {
-      await this.ensureInitialized();
+      await this.#ensureInitialized();
 
-      const sessions = await this.getSessions({profile, limit: 1});
+      const sessions = await this.#adapter.getSessions({profile, limit: 1});
 
       if (sessions.length > 0) {
         return sessions[0].id;
@@ -144,8 +144,8 @@ export class DatabaseManager {
         debugLog(
           'Attempting to ensure database is initialized before creating new session',
         );
-        await this.adapter.ensureDatabaseInitialized();
-        this.initialized = true;
+        await this.#adapter.ensureDatabaseInitialized();
+        this.#initialized = true;
 
         debugLog('Creating new session');
         return this.createSession(profile);
@@ -164,13 +164,13 @@ export class DatabaseManager {
   }
 
   async deleteOldSessions(profile: string, days: number): Promise<number> {
-    await this.ensureInitialized();
-    return this.adapter.deleteOldSessions(profile, days);
+    await this.#ensureInitialized();
+    return this.#adapter.deleteOldSessions(profile, days);
   }
 
   async vacuum(): Promise<void> {
-    await this.ensureInitialized();
-    return this.adapter.vacuum();
+    await this.#ensureInitialized();
+    return this.#adapter.vacuum();
   }
 
   async exportChatHistory(options: ChatHistoryOptions = {}): Promise<{
@@ -178,14 +178,14 @@ export class DatabaseManager {
     messages: Record<string, ChatMessage[]>;
     stats: HistoryStats;
   }> {
-    await this.ensureInitialized();
-    return this.adapter.exportChatHistory(options);
+    await this.#ensureInitialized();
+    return this.#adapter.exportChatHistory(options);
   }
 
   async createEmergencySession(profile: string): Promise<string> {
     try {
       debugLog('Creating emergency session without database checks');
-      return this.adapter.createSession(profile);
+      return this.#adapter.createSession(profile);
     } catch (_error) {
       const sessionId = uuidv4();
       debugLog('Generated emergency session ID directly:', sessionId);

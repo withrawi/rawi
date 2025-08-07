@@ -8,7 +8,6 @@ export * from './lmstudio.provider.js';
 export * from './mistral.provider.js';
 export * from './ollama.provider.js';
 export * from './openai.provider.js';
-export * from './qwen.provider.js';
 export * from './utils.js';
 export * from './xai.provider.js';
 
@@ -23,7 +22,6 @@ import {lmstudioProvider} from './lmstudio.provider.js';
 import {mistralProvider} from './mistral.provider.js';
 import {ollamaProvider} from './ollama.provider.js';
 import {openaiProvider} from './openai.provider.js';
-import {qwenProvider} from './qwen.provider.js';
 import {xaiProvider} from './xai.provider.js';
 
 export const providers: Record<SupportedProvider, ProviderConfig> = {
@@ -36,7 +34,6 @@ export const providers: Record<SupportedProvider, ProviderConfig> = {
   mistral: mistralProvider,
   ollama: ollamaProvider,
   openai: openaiProvider,
-  qwen: qwenProvider,
   xai: xaiProvider,
   lmstudio: lmstudioProvider,
 };

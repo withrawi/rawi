@@ -69,7 +69,6 @@ export const isConfigured = (profile = DEFAULT_PROFILE): boolean => {
         credentials.providerSettings.apiKey));
 
   if (
-    credentials?.provider === 'qwen' ||
     credentials?.provider === 'xai' ||
     credentials?.provider === 'openai' ||
     credentials?.provider === 'google' ||
@@ -158,7 +157,6 @@ export const requireCredentials = (
       process.exit(1);
     }
   } else if (
-    credentials.provider === 'qwen' ||
     credentials.provider === 'xai' ||
     credentials.provider === 'openai' ||
     credentials.provider === 'google' ||

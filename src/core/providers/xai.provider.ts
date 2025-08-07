@@ -13,6 +13,9 @@ type LooseXaiModelId = Parameters<typeof xai>[0];
 export type XaiModelId = LooseToStrict<LooseXaiModelId>;
 
 const xaiModelIds = [
+  'grok-4',
+  'grok-4-0709',
+  'grok-4-latest',
   'grok-3',
   'grok-3-latest',
   'grok-3-fast',
@@ -69,7 +72,7 @@ export const streamWithXAI = async (
       model: xaiProvider(credentials.model),
       prompt,
       temperature: credentials.temperature || 0.7,
-      maxTokens: credentials.maxTokens || 2048,
+      maxOutputTokens: credentials.maxTokens || 2048,
     });
 
     return {

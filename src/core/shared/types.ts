@@ -6,7 +6,6 @@ export type LooseToStrict<T> = T extends any
 
 export type SupportedLanguage = 'english' | 'arabic';
 
-// Streaming interfaces
 export interface StreamingResponse {
   textStream: AsyncIterable<string>;
   fullResponse: Promise<string>;
@@ -44,7 +43,6 @@ export type SupportedProvider =
   | 'xai'
   | 'azure'
   | 'bedrock'
-  | 'qwen'
   | 'lmstudio'
   | 'deepseek'
   | 'mistral'
@@ -99,11 +97,6 @@ export interface BedrockSettings {
   useProviderChain?: boolean;
 }
 
-export interface QwenSettings {
-  apiKey: string;
-  baseURL?: string;
-}
-
 export interface DeepSeekSettings {
   apiKey: string;
   baseURL?: string;
@@ -127,7 +120,6 @@ export type ProviderSettings =
   | XAISettings
   | AzureSettings
   | BedrockSettings
-  | QwenSettings
   | LMStudioSettings
   | DeepSeekSettings
   | MistralSettings
