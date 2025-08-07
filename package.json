@@ -66,7 +66,7 @@
   },
   "homepage": "https://rawi.mkabumattar.com",
   "scripts": {
-    "scripts:ollama-list": "tsx scripts/ollama-list.ts",
+    "scripts:ollama": "tsx scripts/ollama-models-list.ts",
     "build": "rimraf dist && tsup --tsconfig tsconfig.json",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
@@ -79,7 +79,7 @@
     "man:build": "marked-man ./man/rawi.1.md > ./man/rawi.1",
     "man": "man ./man/rawi.1",
     "typecheck": "tsc --noEmit",
-    "prebuild": "pnpm scripts:ollama-list",
+    "prebuild": "pnpm scripts:ollama",
     "postbuild": "pnpm man:build && pnpm typecheck"
   },
   "dependencies": {
