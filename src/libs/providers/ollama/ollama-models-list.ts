@@ -1,5 +1,5 @@
 // Auto-generated from https://ollama.com/library
-// Generated on: 2025-08-07T19:25:55.582Z
+// Generated on: 2025-08-07T19:30:58.746Z
 
 // Chat Models
 export type OllamaChatModelId =
