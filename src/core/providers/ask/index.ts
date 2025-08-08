@@ -11,7 +11,7 @@ export * from './openai.provider.js';
 export * from './utils.js';
 export * from './xai.provider.js';
 
-import type {ProviderConfig, SupportedProvider} from '../shared/types.js';
+import type {ProviderConfig, SupportedProvider} from '../../shared/types.js';
 import {bedrockProvider} from './amazon-bedrock.provider.js';
 import {anthropicProvider} from './anthropic.provider.js';
 import {azureProvider} from './azura.provider.js';

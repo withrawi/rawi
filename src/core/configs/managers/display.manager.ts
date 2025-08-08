@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import {getProvider} from '../../providers/index.js';
+import {getProvider} from '../../providers/ask/index.js';
 import {maskApiKey, type RawiCredentials} from '../../shared/index.js';
 import type {IConfigDisplayManager} from '../interfaces/config-manager.interface.js';
 

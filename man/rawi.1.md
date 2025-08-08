@@ -10,6 +10,8 @@
 
 **rawi** **ask** [*query*] [*options*]
 
+**rawi** **chat** [*options*]
+
 **rawi** **configure** [*options*]
 
 **rawi** **history** [*options*] [*subcommand*]
@@ -247,6 +249,75 @@ Reset filtering configuration to defaults (enables all filter types).
 # Reset to default filtering settings
 
 **rawi ask** **--reset-filter-config**
+
+### chat \- Interactive conversations with AI
+
+**Synopsis:**
+
+**rawi chat** [*options*]
+
+**Description:**
+Start an interactive chat session for back-and-forth conversations with AI. Unlike the **ask** command which handles single requests, **chat** maintains conversation context throughout the session, making it ideal for collaborative problem-solving, code reviews, and extended discussions.
+
+**Options:**
+
+**-p, --profile** _profile_
+
+Use a specific configuration profile (default: "default")
+
+**--act** _template_
+
+Apply an expert prompt template for the entire chat session. The AI will maintain this persona throughout the conversation. Use **rawi act --list** to see available templates.
+
+**--verbose**
+
+Show detailed status information, connection details, and debug output during the chat session
+
+**Chat Commands:**
+
+Once in a chat session, you can use special commands:
+
+**/help**
+
+Show available chat commands and instructions
+
+**/quit** or **/exit**
+
+End the chat session and return to terminal
+
+**/clear**
+
+Clear the conversation history while staying in the chat
+
+**Examples:**
+
+# Start basic interactive chat
+
+**rawi chat**
+
+# Use specific profile for chat
+
+**rawi chat** **--profile** work
+
+# Apply expert persona for entire chat
+
+**rawi chat** **--act** ethereum-developer
+
+# Start chat with verbose information
+
+**rawi chat** **--verbose**
+
+# Combined options
+
+**rawi chat** **--profile** work **--act** code-reviewer **--verbose**
+
+**Use Cases:**
+
+- **Code Reviews**: Multi-round feedback and improvements
+- **Problem Solving**: Step-by-step debugging and exploration
+- **Learning**: Ask follow-up questions and dive deeper
+- **Brainstorming**: Interactive idea development
+- **Planning**: Collaborative project and architecture discussions
 
 ### configure \- Manage AI provider settings and profiles
 

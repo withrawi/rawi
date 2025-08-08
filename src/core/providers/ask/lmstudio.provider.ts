@@ -5,7 +5,7 @@ import type {
   ModelInfo,
   RawiCredentials,
   StreamingResponse,
-} from '../shared/index.js';
+} from '../../shared/index.js';
 
 type LooseLMStudioModelId = string;
 export type LMStudioModelId = LooseToStrict<LooseLMStudioModelId>;

@@ -6,7 +6,7 @@ import type {
   OpenAISettings,
   RawiCredentials,
   StreamingResponse,
-} from '../shared/index.js';
+} from '../../shared/index.js';
 
 type LooseOpenAIModelId = Parameters<typeof openai>[0];
 export type OpenAIModelId = LooseToStrict<LooseOpenAIModelId>;

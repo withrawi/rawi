@@ -6,7 +6,7 @@ import type {
   ModelInfo,
   RawiCredentials,
   StreamingResponse,
-} from '../shared/index.js';
+} from '../../shared/index.js';
 
 type LooseMistralModelId = Parameters<typeof mistral>[0];
 export type MistralModelId = LooseToStrict<LooseMistralModelId>;

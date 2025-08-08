@@ -1,6 +1,6 @@
-import {ContentFilter} from '../content-filter/content-filter.js';
-import {applyContentFiltering} from '../content-filter/middleware.js';
-import type {RawiCredentials, StreamingResponse} from '../shared/index.js';
+import {ContentFilter} from '../../content-filter/content-filter.js';
+import {applyContentFiltering} from '../../content-filter/middleware.js';
+import type {RawiCredentials, StreamingResponse} from '../../shared/index.js';
 import {
   streamWithAnthropic,
   streamWithAzure,

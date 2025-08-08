@@ -189,6 +189,37 @@ cat server.js | rawi ask "Review this Express server for security issues"
 git diff | rawi ask "Write a conventional commit message for these changes"
 ```
 
+### 💬 `rawi chat` — Interactive Conversations
+
+Start interactive chat sessions for back-and-forth conversations with AI.
+
+```bash
+# Start an interactive chat session
+rawi chat
+
+# Use specific profile for the chat session
+rawi chat --profile work
+
+# Apply a specialized persona for the entire chat
+rawi chat --act ethereum-developer
+
+# Start chat with verbose information
+rawi chat --verbose
+
+# Chat commands within a session
+# /help  - Show chat commands
+# /quit  - Exit the chat (also /exit)
+# /clear - Clear conversation history
+```
+
+**Perfect for:**
+
+- Code reviews with multiple rounds of feedback
+- Brainstorming sessions
+- Technical discussions
+- Learning and exploration
+- Problem-solving conversations
+
 ### ⚙️ `rawi configure` — Setup & Management
 
 Easy setup and profile management for all your AI providers.

@@ -111,5 +111,6 @@
   ],
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
-  }
+  },
+  "kiroAgent.configureMCP": "Disabled"
 }

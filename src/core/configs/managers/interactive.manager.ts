@@ -1,6 +1,6 @@
 import {confirm, input, password, search, select} from '@inquirer/prompts';
 import chalk from 'chalk';
-import {getAllProviders, getProvider} from '../../providers/index.js';
+import {getAllProviders, getProvider} from '../../providers/ask/index.js';
 import {
   DEFAULT_LANGUAGE,
   DEFAULT_PROFILE,
