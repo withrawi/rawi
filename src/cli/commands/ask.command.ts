@@ -107,7 +107,7 @@ export const createAskCommand = (): Command => {
         let processedQuery = filteredQuery;
         if (options.act) {
           try {
-            processedQuery = processActTemplate(
+            processedQuery = await processActTemplate(
               options.act,
               filteredQuery,
               options,

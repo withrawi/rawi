@@ -1,13 +1,13 @@
 import chalk from 'chalk';
 import {applyActTemplate} from '../../../../core/templates/utils.js';
 
-export const processActTemplate = (
+export const processActTemplate = async (
   actTemplate: string,
   query: string,
   options: any,
-): string => {
+): Promise<string> => {
   try {
-    const processedQuery = applyActTemplate(actTemplate, query);
+    const processedQuery = await applyActTemplate(actTemplate, query);
     if (options.verbose) {
       console.log(chalk.dim(`🎭 Using act template: ${actTemplate}`));
     }

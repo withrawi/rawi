@@ -120,7 +120,7 @@ Rename the current or specified session
 
 **--act** _template_
 
-Apply an expert prompt template. Use **rawi act --list** to see available templates. Templates provide specialized prompts for tasks like code review, documentation, analysis, etc.
+Apply an expert prompt template. Use **rawi act --list** to see available templates. Templates provide specialized prompts for tasks like code review, documentation, analysis, etc. Templates work globally across all profiles.
 
 **-f, --file** _path_
 
@@ -648,7 +648,7 @@ Show sessions to date (YYYY-MM-DD format)
 **rawi act** [*options*]
 
 **Description:**
-List and explore expert prompt templates (called "acts") for specialized AI interactions. Templates provide pre-built prompts for common tasks like code review, documentation, analysis, and more.
+Manage and explore expert prompt templates (called "acts") for specialized AI interactions. Templates provide pre-built prompts for common tasks like code review, documentation, analysis, and more. All templates work globally across all profiles.
 
 **Options:**
 
@@ -656,9 +656,29 @@ List and explore expert prompt templates (called "acts") for specialized AI inte
 
 List all available act templates with pagination
 
+**-b, --built-in**
+
+List only built-in act templates
+
+**-c, --custom**
+
+List only custom act templates
+
 **-s, --show** _template_
 
 Show detailed information about a specific template including its prompt text
+
+**--create**
+
+Create a new custom act template interactively
+
+**--edit** _template_
+
+Edit an existing custom act template
+
+**--delete** _template_
+
+Delete a custom act template
 
 **Template Categories:**
 
@@ -674,11 +694,31 @@ Show detailed information about a specific template including its prompt text
 
 **rawi act** **--list**
 
+# List only built-in templates
+
+**rawi act** **--built-in**
+
+# List only custom templates
+
+**rawi act** **--custom**
+
 # Show specific template details
 
 **rawi act** **--show** code-reviewer
 
-# Use template with ask command
+# Create a new custom template
+
+**rawi act** **--create**
+
+# Edit an existing custom template
+
+**rawi act** **--edit** my-template
+
+# Delete a custom template
+
+**rawi act** **--delete** my-template
+
+# Use template with ask command (works with any profile)
 
 **rawi ask** **--act** technical-writer "Document this API"
 

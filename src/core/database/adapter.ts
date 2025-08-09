@@ -406,6 +406,21 @@ export class DatabaseAdapter {
 
         debugLog('Created messages table');
 
+        await this.#client.execute(`
+          CREATE TABLE IF NOT EXISTS act_templates (
+            id TEXT PRIMARY KEY,
+            label TEXT NOT NULL,
+            category TEXT NOT NULL,
+            description TEXT NOT NULL,
+            template TEXT NOT NULL,
+            is_built_in INTEGER NOT NULL DEFAULT 0,
+            created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+            updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+          );
+        `);
+
+        debugLog('Created act_templates table');
+
         try {
           await this.#client.execute(`
             CREATE TRIGGER IF NOT EXISTS update_session_message_count_insert
@@ -976,6 +991,163 @@ export class DatabaseAdapter {
       messages,
       stats,
     };
+  }
+
+  private async ensureActTemplatesTable(): Promise<void> {
+    await this.ensureDatabaseInitialized();
+
+    await this.#client.execute(`
+      CREATE TABLE IF NOT EXISTS act_templates (
+        id TEXT PRIMARY KEY,
+        label TEXT NOT NULL,
+        category TEXT NOT NULL,
+        description TEXT NOT NULL,
+        template TEXT NOT NULL,
+        is_built_in INTEGER NOT NULL DEFAULT 0,
+        created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+        updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+      );
+    `);
+  }
+
+  async createActTemplate(template: {
+    id: string;
+    label: string;
+    category: string;
+    description: string;
+    template: string;
+  }): Promise<void> {
+    await this.ensureActTemplatesTable();
+
+    const now = Math.floor(Date.now() / 1000);
+    await this.#client.execute(
+      `INSERT INTO act_templates (id, label, category, description, template, is_built_in, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        template.id,
+        template.label,
+        template.category,
+        template.description,
+        template.template,
+        0,
+        now,
+        now,
+      ],
+    );
+  }
+
+  async updateActTemplate(
+    id: string,
+    updates: Partial<{
+      label: string;
+      category: string;
+      description: string;
+      template: string;
+    }>,
+  ): Promise<boolean> {
+    await this.ensureActTemplatesTable();
+
+    const setClause = [];
+    const values = [];
+
+    if (updates.label !== undefined) {
+      setClause.push('label = ?');
+      values.push(updates.label);
+    }
+    if (updates.category !== undefined) {
+      setClause.push('category = ?');
+      values.push(updates.category);
+    }
+    if (updates.description !== undefined) {
+      setClause.push('description = ?');
+      values.push(updates.description);
+    }
+    if (updates.template !== undefined) {
+      setClause.push('template = ?');
+      values.push(updates.template);
+    }
+
+    if (setClause.length === 0) {
+      return false;
+    }
+
+    setClause.push('updated_at = ?');
+    values.push(Math.floor(Date.now() / 1000));
+    values.push(id);
+
+    try {
+      const result = await this.#client.execute(
+        `UPDATE act_templates SET ${setClause.join(', ')} 
+         WHERE id = ? AND is_built_in = 0`,
+        values,
+      );
+
+      return result.rowsAffected > 0;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteActTemplate(id: string): Promise<boolean> {
+    await this.ensureActTemplatesTable();
+
+    try {
+      const result = await this.#client.execute(
+        'DELETE FROM act_templates WHERE id = ? AND is_built_in = 0',
+        [id],
+      );
+
+      return result.rowsAffected > 0;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getActTemplate(id: string): Promise<any | null> {
+    await this.ensureActTemplatesTable();
+
+    try {
+      const result = await this.#client.execute(
+        'SELECT * FROM act_templates WHERE id = ? LIMIT 1',
+        [id],
+      );
+
+      return result.rows.length > 0 ? result.rows[0] : null;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async listActTemplates(customOnly = false): Promise<any[]> {
+    await this.ensureActTemplatesTable();
+
+    try {
+      const whereClause = customOnly ? 'WHERE is_built_in = 0' : '';
+
+      const result = await this.#client.execute(
+        `SELECT * FROM act_templates ${whereClause} ORDER BY created_at DESC`,
+        [],
+      );
+
+      return result.rows;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async templateExists(id: string): Promise<boolean> {
+    await this.ensureActTemplatesTable();
+
+    try {
+      const result = await this.#client.execute(
+        'SELECT 1 FROM act_templates WHERE id = ? LIMIT 1',
+        [id],
+      );
+
+      return result.rows.length > 0;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async close(): Promise<void> {

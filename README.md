@@ -124,7 +124,7 @@ Access the best AI models through one unified interface:
 
 ## 🎯 Act Templates — 200+ Specialized AI Personas
 
-Transform your prompts with expertly crafted AI personas for specialized responses:
+Transform your prompts with expertly crafted AI personas for specialized responses. Templates work globally across all profiles:
 
 ```bash
 # 🔍 Browse all available templates
@@ -133,7 +133,16 @@ rawi act --list
 # 📖 Get detailed template information
 rawi act --show ethereum-developer
 
-# 🚀 Use templates in conversations
+# ➕ Create your own custom templates
+rawi act --create
+
+# ✏️ Edit existing custom templates
+rawi act --edit my-template
+
+# 🗑️ Remove custom templates
+rawi act --delete my-template
+
+# 🚀 Use templates in conversations (works with any profile)
 rawi ask --act linux-terminal "list files in home directory with details"
 rawi ask --act code-reviewer "analyze this Python function for improvements"
 rawi ask --act security-expert "audit this authentication implementation"

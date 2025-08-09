@@ -171,7 +171,7 @@ export const startEnhancedChatSession = async (
 
   if (options.act && messages.length === 0) {
     try {
-      const systemPrompt = processActTemplate(options.act, '', options);
+      const systemPrompt = await processActTemplate(options.act, '', options);
       if (systemPrompt?.trim()) {
         const assistantMessage: ChatMessage = {
           role: 'assistant',

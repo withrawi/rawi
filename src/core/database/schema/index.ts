@@ -60,3 +60,18 @@ export const messages = sqliteTable('messages', {
   editHistory: text('edit_history', {mode: 'json'}),
   reactions: text('reactions', {mode: 'json'}),
 });
+
+export const actTemplates = sqliteTable('act_templates', {
+  id: text('id').primaryKey(),
+  label: text('label').notNull(),
+  category: text('category').notNull(),
+  description: text('description').notNull(),
+  template: text('template').notNull(),
+  isBuiltIn: integer('is_built_in', {mode: 'boolean'}).notNull().default(false),
+  createdAt: integer('created_at', {mode: 'timestamp'})
+    .notNull()
+    .default(sql`(strftime('%s', 'now'))`),
+  updatedAt: integer('updated_at', {mode: 'timestamp'})
+    .notNull()
+    .default(sql`(strftime('%s', 'now'))`),
+});

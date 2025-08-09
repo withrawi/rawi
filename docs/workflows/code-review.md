@@ -261,19 +261,19 @@ jobs:
 
 ## Advanced Techniques
 
-### Multi-Profile Review
+### Global Template Usage
 
-Use different AI models for different aspects:
+Templates work consistently across all configurations:
 
 ```bash
-# Use Claude for deep analysis
-rawi ask --file complex-algorithm.js --act code-reviewer --profile claude "Deep architectural analysis"
+# Templates work with any profile automatically
+rawi ask --file complex-algorithm.js --act code-reviewer "Deep architectural analysis"
 
-# Use GPT-4 for security review
-rawi ask --file auth-system.js --act security-expert --profile openai "Security vulnerability assessment"
+# Security reviews work globally
+rawi ask --file auth-system.js --act security-expert "Security vulnerability assessment"
 
-# Use local model for quick checks
-rawi ask --file utils.js --act code-reviewer --profile local "Quick syntax and style check"
+# Use different providers with same templates
+rawi ask --file utils.js --act code-reviewer "Quick syntax and style check"
 ```
 
 ### Template Customization
