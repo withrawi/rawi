@@ -83,7 +83,6 @@ export function convertToOllamaChatMessages(
               break;
             }
             case 'tool-result': {
-              // Tool results in assistant messages should be treated as text content
               if (
                 part.output.type === 'text' ||
                 part.output.type === 'error-text'
@@ -104,7 +103,6 @@ export function convertToOllamaChatMessages(
             }
             case 'file':
             case 'reasoning': {
-              // Handle new part types that are not supported yet
               break;
             }
             default: {
@@ -126,7 +124,6 @@ export function convertToOllamaChatMessages(
       case 'tool': {
         messages.push(
           ...content.map((part) => {
-            // Handle the new output structure
             let contentValue: string;
 
             if (
@@ -148,8 +145,6 @@ export function convertToOllamaChatMessages(
             }
 
             return {
-              // Non serialized contents are not accepted by ollama, triggering the following error:
-              // "json: cannot unmarshal array into Go struct field ChatRequest.messages of type string"
               content: contentValue,
               role: 'tool' as const,
               tool_call_id: part.toolCallId,

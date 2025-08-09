@@ -1,7 +1,7 @@
 import * as readline from 'node:readline/promises';
 import chalk from 'chalk';
-import type {ChatSession} from '../../../../core/shared/types.js';
 import type {SessionManager} from '../../../../core/session/index.js';
+import type {ChatSession} from '../../../../core/shared/types.js';
 
 export interface SessionSelectionOptions {
   showPreview?: boolean;
@@ -16,9 +16,6 @@ export interface SessionActionChoice {
   newTitle?: string;
 }
 
-/**
- * Interactive session selector with search, preview, and action capabilities
- */
 export class SessionSelector {
   private readonly sessionManager: SessionManager;
   private readonly profile: string;
@@ -28,9 +25,6 @@ export class SessionSelector {
     this.profile = profile;
   }
 
-  /**
-   * Helper function to search sessions
-   */
   private searchSessions(sessions: any[], query: string): any[] {
     if (!query.trim()) return sessions;
 
@@ -46,9 +40,6 @@ export class SessionSelector {
     });
   }
 
-  /**
-   * Helper function to format date
-   */
   private formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -60,17 +51,11 @@ export class SessionSelector {
     });
   }
 
-  /**
-   * Helper function to truncate text
-   */
   private truncateText(text: string, maxLength: number): string {
     if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength - 3) + '...';
+    return `${text.substring(0, maxLength - 3)}...`;
   }
 
-  /**
-   * Display interactive session selection menu
-   */
   async selectSession(
     options: SessionSelectionOptions = {},
   ): Promise<string | null> {
@@ -93,12 +78,11 @@ export class SessionSelector {
       console.log(chalk.yellow('📝 No existing sessions found.'));
       if (allowCreateNew) {
         console.log(chalk.green('🆕 Creating a new session...'));
-        return null; // Signal to create new session
+        return null;
       }
       return null;
     }
 
-    // Search functionality
     if (enableSearch && sessions.length > 5) {
       const searchQuery = await this.promptForSearch();
       if (searchQuery) {
@@ -107,31 +91,28 @@ export class SessionSelector {
           console.log(
             chalk.yellow(`🔍 No sessions found matching "${searchQuery}"`),
           );
-          return this.selectSession(options); // Retry selection
+          return this.selectSession(options);
         }
       }
     }
 
-    // Display session list
     this.displaySessionList(sessions, showPreview);
 
-    // Get user selection
     const selectedIndex = await this.promptForSelection(
       sessions.length,
       allowCreateNew,
     );
 
     if (selectedIndex === -1) {
-      return null; // Create new session
+      return null;
     }
 
     if (selectedIndex === -2) {
-      return null; // Cancel
+      return null;
     }
 
     const selectedSession = sessions[selectedIndex];
 
-    // Show session actions menu
     const action = await this.showSessionActionMenu(selectedSession);
 
     switch (action.action) {
@@ -145,7 +126,7 @@ export class SessionSelector {
         console.log(
           chalk.green(`✅ Session "${selectedSession.title}" deleted.`),
         );
-        return this.selectSession(options); // Show selection again
+        return this.selectSession(options);
 
       case 'rename':
         if (action.newTitle) {
@@ -158,24 +139,19 @@ export class SessionSelector {
             chalk.green(`✅ Session renamed to "${action.newTitle}"`),
           );
         }
-        return this.selectSession(options); // Show selection again
+        return this.selectSession(options);
 
       case 'export':
         await this.exportSession(selectedSession);
-        return this.selectSession(options); // Show selection again
+        return this.selectSession(options);
 
       case 'create-new':
-        return null; // Create new session
-
-      case 'cancel':
+        return null;
       default:
         return null;
     }
   }
 
-  /**
-   * Prompt user for search query
-   */
   private async promptForSearch(): Promise<string | null> {
     const rl = readline.createInterface({
       input: process.stdin,
@@ -192,9 +168,6 @@ export class SessionSelector {
     }
   }
 
-  /**
-   * Display formatted list of sessions
-   */
   private displaySessionList(
     sessions: ChatSession[],
     showPreview: boolean,
@@ -213,7 +186,6 @@ export class SessionSelector {
       console.log(`${number} ${title} ${messageCount}`);
       console.log(`   ${chalk.gray('Last updated:')} ${date}`);
 
-      // Note: ChatSession doesn't have lastMessage, would need to fetch from messages
       if (showPreview && session.title) {
         const preview = this.truncateText(session.title, 80);
         console.log(
@@ -221,13 +193,10 @@ export class SessionSelector {
         );
       }
 
-      console.log(); // Empty line for spacing
+      console.log();
     });
   }
 
-  /**
-   * Prompt user for session selection
-   */
   private async promptForSelection(
     sessionCount: number,
     allowCreateNew: boolean,
@@ -250,11 +219,11 @@ export class SessionSelector {
       const trimmed = input.trim().toLowerCase();
 
       if (trimmed === 'q' || trimmed === 'quit') {
-        return -2; // Cancel
+        return -2;
       }
 
       if (trimmed === 'n' || trimmed === 'new') {
-        return -1; // Create new
+        return -1;
       }
 
       const index = Number.parseInt(trimmed, 10) - 1;
@@ -270,9 +239,6 @@ export class SessionSelector {
     }
   }
 
-  /**
-   * Show action menu for selected session
-   */
   private async showSessionActionMenu(
     session: ChatSession,
   ): Promise<SessionActionChoice> {
@@ -328,8 +294,6 @@ export class SessionSelector {
 
         case '5':
           return {action: 'create-new'};
-
-        case '6':
         default:
           return {action: 'cancel'};
       }
@@ -338,9 +302,6 @@ export class SessionSelector {
     }
   }
 
-  /**
-   * Export a session
-   */
   private async exportSession(session: ChatSession): Promise<void> {
     try {
       const exportData = await this.sessionManager.exportSessions('json', {
@@ -350,7 +311,6 @@ export class SessionSelector {
 
       const filename = `session-${session.id.substring(0, 8)}-${new Date().toISOString().split('T')[0]}.json`;
 
-      // In a real implementation, you would write to file
       console.log(chalk.green('✅ Session export prepared:'));
       console.log(chalk.blue(`📁 Filename: ${filename}`));
       console.log(
@@ -359,16 +319,12 @@ export class SessionSelector {
         ),
       );
 
-      // For now, just log the data structure
       console.log(chalk.gray('📋 Export data structure created successfully'));
     } catch (error) {
       console.error(chalk.red(`❌ Export failed: ${error}`));
     }
   }
 
-  /**
-   * Quick session search and selection
-   */
   async quickSelectSession(query?: string): Promise<string | null> {
     const sessions = await this.sessionManager.listSessions({
       profile: this.profile,
@@ -396,10 +352,9 @@ export class SessionSelector {
       }
     }
 
-    // Multiple matches or no query - show selection
     return this.selectSession({
       showPreview: true,
-      enableSearch: false, // Already searched if query provided
+      enableSearch: false,
       allowCreateNew: true,
       maxResults: 10,
     });

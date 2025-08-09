@@ -4,13 +4,7 @@ import type {
 } from '../../cli/commands/chat/types.js';
 import type {ChatSession} from '../shared/types.js';
 
-/**
- * Utility functions for session formatting and display
- */
 export namespace SessionFormatUtils {
-  /**
-   * Format session for table display
-   */
   export function formatSessionTable(sessions: ChatSession[]): string {
     if (sessions.length === 0) {
       return 'No sessions found.';
@@ -25,7 +19,7 @@ export namespace SessionFormatUtils {
       'Last Updated',
     ];
     const rows = sessions.map((session) => [
-      session.id.substring(0, 8) + '...',
+      `${session.id.substring(0, 8)}...`,
       session.title || 'Untitled',
       session.profile,
       session.messageCount.toString(),
@@ -36,16 +30,10 @@ export namespace SessionFormatUtils {
     return createTable(headers, rows);
   }
 
-  /**
-   * Format session for JSON output
-   */
   export function formatSessionJSON(sessions: ChatSession[]): string {
     return JSON.stringify(sessions, null, 2);
   }
 
-  /**
-   * Format session summary
-   */
   export function formatSessionSummary(sessions: ChatSession[]): string {
     if (sessions.length === 0) {
       return 'No sessions found.';
@@ -74,9 +62,6 @@ export namespace SessionFormatUtils {
     return summary;
   }
 
-  /**
-   * Format session for display info
-   */
   export function toDisplayInfo(session: ChatSession): SessionDisplayInfo {
     return {
       id: session.id,
@@ -90,9 +75,6 @@ export namespace SessionFormatUtils {
     };
   }
 
-  /**
-   * Format session statistics
-   */
   export function formatSessionStats(stats: SessionStats): string {
     let output = '📈 Session Statistics\n';
     output += '══════════════════════\n';
@@ -111,8 +93,6 @@ export namespace SessionFormatUtils {
 
     return output;
   }
-
-  // Helper functions
 
   function formatDate(dateString: string): string {
     const date = new Date(dateString);
@@ -142,19 +122,16 @@ export namespace SessionFormatUtils {
   }
 
   function createTable(headers: string[], rows: string[][]): string {
-    // Calculate column widths
     const widths = headers.map((header, i) => {
       const cellWidths = rows.map((row) => row[i]?.length || 0);
       return Math.max(header.length, ...cellWidths);
     });
 
-    // Create header row
     const headerRow = headers
       .map((header, i) => header.padEnd(widths[i]))
       .join(' │ ');
     const separator = widths.map((w) => '─'.repeat(w)).join('─┼─');
 
-    // Create data rows
     const dataRows = rows.map((row) =>
       row.map((cell, i) => cell.padEnd(widths[i])).join(' │ '),
     );
@@ -163,13 +140,7 @@ export namespace SessionFormatUtils {
   }
 }
 
-/**
- * Utility functions for session search and filtering
- */
 export namespace SessionSearchUtils {
-  /**
-   * Filter sessions by search query
-   */
   export function filterSessions(
     sessions: ChatSession[],
     query: string,
@@ -188,9 +159,6 @@ export namespace SessionSearchUtils {
     });
   }
 
-  /**
-   * Filter sessions by date range
-   */
   export function filterByDateRange(
     sessions: ChatSession[],
     fromDate?: string,
@@ -215,9 +183,6 @@ export namespace SessionSearchUtils {
     return filtered;
   }
 
-  /**
-   * Filter sessions by profile
-   */
   export function filterByProfile(
     sessions: ChatSession[],
     profile: string,
@@ -225,9 +190,6 @@ export namespace SessionSearchUtils {
     return sessions.filter((session) => session.profile === profile);
   }
 
-  /**
-   * Sort sessions by specified criteria
-   */
   export function sortSessions(
     sessions: ChatSession[],
     sortBy: 'createdAt' | 'updatedAt' | 'title' | 'messageCount' = 'updatedAt',
@@ -257,9 +219,6 @@ export namespace SessionSearchUtils {
     });
   }
 
-  /**
-   * Get sessions with pagination
-   */
   export function paginateSessions(
     sessions: ChatSession[],
     page = 1,
@@ -293,28 +252,15 @@ export namespace SessionSearchUtils {
   }
 }
 
-/**
- * Utility functions for session validation
- */
 export namespace SessionValidationUtils {
-  /**
-   * Validate session ID format
-   */
   export function isValidSessionId(sessionId: string): boolean {
-    // Assuming nanoid format: alphanumeric, length 21
     return /^[A-Za-z0-9_-]{21}$/.test(sessionId);
   }
 
-  /**
-   * Validate session title
-   */
   export function isValidSessionTitle(title: string): boolean {
     return title.length > 0 && title.length <= 100;
   }
 
-  /**
-   * Validate profile name
-   */
   export function isValidProfile(profile: string): boolean {
     return (
       profile.length > 0 &&
@@ -323,9 +269,6 @@ export namespace SessionValidationUtils {
     );
   }
 
-  /**
-   * Sanitize session title
-   */
   export function sanitizeTitle(title: string): string {
     return title
       .trim()
@@ -333,9 +276,6 @@ export namespace SessionValidationUtils {
       .substring(0, 100);
   }
 
-  /**
-   * Validate session data completeness
-   */
   export function validateSession(session: Partial<ChatSession>): {
     isValid: boolean;
     errors: string[];
@@ -356,13 +296,13 @@ export namespace SessionValidationUtils {
 
     if (!session.createdAt) {
       errors.push('Created date is required');
-    } else if (isNaN(new Date(session.createdAt).getTime())) {
+    } else if (Number.isNaN(new Date(session.createdAt).getTime())) {
       errors.push('Invalid created date format');
     }
 
     if (!session.updatedAt) {
       errors.push('Updated date is required');
-    } else if (isNaN(new Date(session.updatedAt).getTime())) {
+    } else if (Number.isNaN(new Date(session.updatedAt).getTime())) {
       errors.push('Invalid updated date format');
     }
 

@@ -21,26 +21,19 @@ export class SessionManager {
     this.dbManager = dbManager;
   }
 
-  /**
-   * Handle session start logic - either show recent sessions or create new one
-   * Requirements: 1.1, 1.2, 3.1, 3.2
-   */
   async handleSessionStart(options: ChatOptions): Promise<string> {
     try {
       const profile = options.profile || 'default';
 
-      // If user explicitly wants a new session
       if (options.newSession) {
         return await this.createNewSession(profile);
       }
 
-      // If user specified a session to continue
       if (options.session) {
         const session = await this.continueSession(options.session, profile);
         return session.sessionId;
       }
 
-      // Show recent sessions for selection
       const recentSessions = await this.getRecentSessions(profile, 5);
 
       if (recentSessions.length === 0) {
@@ -54,11 +47,9 @@ export class SessionManager {
         await this.displaySessionSelection(recentSessions);
 
       if (selectedSessionId === null) {
-        // User chose to create new session
         return await this.createNewSession(profile);
       }
 
-      // Validate the selected session still exists and belongs to profile
       await this.continueSession(selectedSessionId, profile);
       return selectedSessionId;
     } catch (error) {
@@ -83,10 +74,6 @@ export class SessionManager {
     }
   }
 
-  /**
-   * Create a new session with optional title
-   * Requirements: 1.1, 1.2, 3.1, 3.2
-   */
   async createNewSession(profile: string, title?: string): Promise<string> {
     try {
       const sessionId = await this.dbManager.createSession(profile, title);
@@ -101,10 +88,6 @@ export class SessionManager {
     }
   }
 
-  /**
-   * Continue an existing session with validation
-   * Requirements: 1.1, 1.2, 3.1, 3.2
-   */
   async continueSession(
     sessionId: string,
     profile: string,
@@ -128,7 +111,6 @@ export class SessionManager {
       }
       console.log(chalk.dim(`💬 Messages: ${messages.length}`));
 
-      // Return enhanced chat session (implementation will be in task 3)
       return {
         sessionId: session.id,
         profile: session.profile,
@@ -189,10 +171,6 @@ export class SessionManager {
     }
   }
 
-  /**
-   * Get recent sessions for a profile
-   * Requirements: 2.1, 2.2, 4.1, 4.2
-   */
   async getRecentSessions(profile: string, limit = 10): Promise<ChatSession[]> {
     try {
       return await this.dbManager.getSessions({profile, limit});
@@ -205,10 +183,6 @@ export class SessionManager {
     }
   }
 
-  /**
-   * Display session selection interface
-   * Requirements: 2.1, 2.2, 4.1, 4.2
-   */
   async displaySessionSelection(
     sessions: ChatSession[],
   ): Promise<string | null> {
@@ -233,7 +207,6 @@ export class SessionManager {
 
       return answer === 'new' ? null : answer;
     } catch (error) {
-      // Handle user cancellation (Ctrl+C)
       if (error instanceof Error && error.name === 'ExitPromptError') {
         console.log(chalk.yellow('\n👋 Session selection cancelled'));
         process.exit(0);
@@ -242,10 +215,6 @@ export class SessionManager {
     }
   }
 
-  /**
-   * List sessions with filtering and formatting
-   * Requirements: 2.1, 2.4, 5.3, 6.1, 8.1
-   */
   async listSessions(options: ListSessionsOptions): Promise<void> {
     try {
       const sessions = await this.dbManager.getSessions({
@@ -282,23 +251,17 @@ export class SessionManager {
     }
   }
 
-  /**
-   * Delete a session with confirmation
-   * Requirements: 2.1, 2.4, 5.3, 6.1, 8.1
-   */
   async deleteSession(
     sessionId: string,
     options: DeleteSessionOptions,
   ): Promise<boolean> {
     try {
-      // Check if session exists
       const session = await this.dbManager.getSession(sessionId);
       if (!session) {
         console.error(chalk.red(`❌ Session '${sessionId}' not found`));
         return false;
       }
 
-      // Skip confirmation if force flag is set or confirm flag is explicitly false
       if (!options.force && options.confirm !== false) {
         const shouldDelete = await confirm({
           message: `Are you sure you want to delete session '${sessionId}'${session.title ? ` (${session.title})` : ''}? This will delete all ${session.messageCount} messages.`,
@@ -323,7 +286,6 @@ export class SessionManager {
 
       return deleted;
     } catch (error) {
-      // Handle user cancellation (Ctrl+C)
       if (error instanceof Error && error.name === 'ExitPromptError') {
         console.log(chalk.yellow('\n👋 Session deletion cancelled'));
         return false;
@@ -337,20 +299,14 @@ export class SessionManager {
     }
   }
 
-  /**
-   * Rename a session
-   * Requirements: 2.1, 2.4, 5.3, 6.1, 8.1
-   */
   async renameSession(sessionId: string, newTitle: string): Promise<boolean> {
     try {
-      // Check if session exists
       const session = await this.dbManager.getSession(sessionId);
       if (!session) {
         console.error(chalk.red(`❌ Session '${sessionId}' not found`));
         return false;
       }
 
-      // Validate title
       if (!newTitle || newTitle.trim().length === 0) {
         console.error(chalk.red('❌ Session title cannot be empty'));
         return false;
@@ -387,10 +343,6 @@ export class SessionManager {
     }
   }
 
-  /**
-   * Export sessions
-   * Requirements: 2.1, 2.4, 5.3, 6.1, 8.1
-   */
   async exportSessions(options: ExportSessionsOptions): Promise<string> {
     try {
       const exportData = await this.dbManager.exportChatHistory({
@@ -399,7 +351,6 @@ export class SessionManager {
         toDate: options.toDate,
       });
 
-      // Filter sessions if specific session IDs provided
       let sessionsToExport = exportData.sessions;
       let messagesToExport = exportData.messages;
 
@@ -464,8 +415,6 @@ export class SessionManager {
       );
     }
   }
-
-  // Helper methods
 
   private formatSessionChoice(session: ChatSession): string {
     const age = this.formatAge(session.updatedAt);

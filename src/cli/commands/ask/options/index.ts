@@ -37,7 +37,6 @@ export {sessionOption} from './session.js';
 export {showFilteredOption} from './show-filtered.js';
 export {verboseOption} from './verbose.js';
 
-// Combined array of all options for easy iteration
 export const askCommandOptions: CommandOption[] = [
   profileOption,
   sessionOption,

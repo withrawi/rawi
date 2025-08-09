@@ -26,9 +26,6 @@ export class SessionManager {
     this.#databaseManager = databaseManager || new DatabaseManager();
   }
 
-  /**
-   * Create a new chat session
-   */
   async createSession(
     profile: string,
     options: SessionCreationOptions = {},
@@ -36,7 +33,6 @@ export class SessionManager {
     try {
       const {title, generateTitle} = options;
 
-      // Auto-generate title if requested and not provided
       let finalTitle = title;
       if (generateTitle && !title) {
         finalTitle = await this.#generateSessionTitle(profile);
@@ -56,9 +52,6 @@ export class SessionManager {
     }
   }
 
-  /**
-   * Get a specific session by ID
-   */
   async getSession(sessionId: string, profile?: string): Promise<ChatSession> {
     try {
       const session = await this.#databaseManager.getSession(sessionId);
@@ -67,7 +60,6 @@ export class SessionManager {
         throw new SessionNotFoundError(sessionId, profile || 'unknown');
       }
 
-      // Validate profile if provided
       if (profile && session.profile !== profile) {
         throw new ProfileMismatchError(sessionId, profile, session.profile);
       }
@@ -87,9 +79,6 @@ export class SessionManager {
     }
   }
 
-  /**
-   * List sessions with filtering and pagination
-   */
   async listSessions(
     options: ListSessionsOptions = {},
   ): Promise<SessionDisplayInfo[]> {
@@ -103,7 +92,6 @@ export class SessionManager {
         toDate,
       });
 
-      // Convert to display format
       return sessions.map((session) => this.#toDisplayInfo(session));
     } catch (error) {
       throw new DatabaseConnectionError(
@@ -113,9 +101,6 @@ export class SessionManager {
     }
   }
 
-  /**
-   * Delete a session and all its messages
-   */
   async deleteSession(
     sessionId: string,
     options: DeleteSessionOptions = {},
@@ -123,7 +108,6 @@ export class SessionManager {
     try {
       const {force = false} = options;
 
-      // Verify session exists if not forcing
       if (!force) {
         await this.getSession(sessionId);
       }
@@ -149,16 +133,12 @@ export class SessionManager {
     }
   }
 
-  /**
-   * Update session title
-   */
   async updateSessionTitle(
     sessionId: string,
     title: string,
     profile?: string,
   ): Promise<boolean> {
     try {
-      // Verify session exists and profile matches
       await this.getSession(sessionId, profile);
 
       const updated = await this.#databaseManager.updateSessionTitle(
@@ -185,11 +165,8 @@ export class SessionManager {
     }
   }
 
-  /**
-   * Export sessions and their messages
-   */
   async exportSessions(
-    _format: 'json' | 'markdown', // Format parameter for future use
+    _format: 'json' | 'markdown',
     options: Omit<ExportSessionsOptions, 'format'> = {},
   ): Promise<{
     sessions: ChatSession[];
@@ -203,7 +180,6 @@ export class SessionManager {
       let messages: Record<string, ChatMessage[]> = {};
 
       if (sessionIds && sessionIds.length > 0) {
-        // Export specific sessions
         sessions = [];
         for (const sessionId of sessionIds) {
           try {
@@ -212,7 +188,6 @@ export class SessionManager {
             messages[sessionId] =
               await this.#databaseManager.getMessages(sessionId);
           } catch (error) {
-            // Skip sessions that don't exist or don't match profile
             if (
               !(
                 error instanceof SessionNotFoundError ||
@@ -224,7 +199,6 @@ export class SessionManager {
           }
         }
       } else {
-        // Export all sessions for profile
         const exportData = await this.#databaseManager.exportChatHistory({
           profile,
         });
@@ -243,9 +217,6 @@ export class SessionManager {
     }
   }
 
-  /**
-   * Get session statistics
-   */
   async getSessionStats(profile?: string): Promise<SessionStats> {
     try {
       const stats = await this.#databaseManager.getStats(profile);
@@ -271,15 +242,9 @@ export class SessionManager {
     }
   }
 
-  /**
-   * Select a session interactively (placeholder for CLI implementation)
-   */
   async selectSession(): Promise<SessionSelectionResult> {
-    // This will be implemented in the CLI layer
     throw new Error('Session selection must be implemented in CLI layer');
   }
-
-  // Private helper methods
 
   #toDisplayInfo(session: ChatSession): SessionDisplayInfo {
     const now = new Date();
@@ -323,14 +288,10 @@ export class SessionManager {
   }
 
   #extractProviders(): string[] {
-    // This would need to be implemented based on message data
-    // For now, return empty array as placeholder
     return [];
   }
 
   #extractModels(): string[] {
-    // This would need to be implemented based on message data
-    // For now, return empty array as placeholder
     return [];
   }
 

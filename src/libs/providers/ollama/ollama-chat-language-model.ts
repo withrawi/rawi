@@ -169,7 +169,6 @@ export class OllamaChatLanguageModel implements LanguageModelV2 {
       url: `${this.config.baseURL}/chat`,
     });
 
-    // Type the response properly
     const typedResponse = response as OllamaChatResponseSchema;
 
     const content: Array<LanguageModelV2Content> = [];

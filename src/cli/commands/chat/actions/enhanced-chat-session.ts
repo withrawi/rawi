@@ -12,7 +12,6 @@ import type {ChatOptions} from '../types.js';
 import {AdvancedSessionOperations} from './advanced-operations.js';
 import {streamChatResponse} from './response-handler.js';
 
-// Enhanced message type that includes database persistence
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -21,9 +20,6 @@ interface ChatMessage {
   timestamp?: string;
 }
 
-/**
- * Enhanced chat session with session management
- */
 export const startEnhancedChatSession = async (
   dbManager: DatabaseManager,
   options: ChatOptions,
@@ -35,7 +31,6 @@ export const startEnhancedChatSession = async (
   const sessionManager = new SessionManager(dbManager);
   const advancedOps = new AdvancedSessionOperations(sessionManager, profile);
 
-  // Handle advanced operations first
   if (options.stats) {
     await advancedOps.showStatistics(options);
     return;
@@ -65,9 +60,7 @@ export const startEnhancedChatSession = async (
   let currentSessionId: string;
   let messages: ChatMessage[] = [];
 
-  // Handle session management based on options
   if (options.session) {
-    // Continue existing session
     try {
       const session = await sessionManager.getSession(options.session, profile);
       currentSessionId = session.id;
@@ -88,19 +81,15 @@ export const startEnhancedChatSession = async (
       return;
     }
   } else if (options.listSessions) {
-    // List sessions and let user choose
     await handleSessionSelection(sessionManager, profile, options);
     return;
   } else if (options.deleteSession) {
-    // Delete specified session
     await handleSessionDeletion(sessionManager, options.deleteSession);
     return;
   } else if (options.exportSessions) {
-    // Export sessions
     await handleSessionExport(sessionManager, profile, options);
     return;
   } else if (options.renameSession && options.newTitle) {
-    // Rename session
     await handleSessionRename(
       sessionManager,
       options.renameSession,
@@ -109,7 +98,6 @@ export const startEnhancedChatSession = async (
     );
     return;
   } else if (options.newSession) {
-    // Force create new session
     const sessionTitle = options.act ? `${options.act} Chat` : undefined;
     currentSessionId = await sessionManager.createSession(profile, {
       title: sessionTitle,
@@ -124,11 +112,10 @@ export const startEnhancedChatSession = async (
       );
     }
   } else {
-    // Interactive mode: show existing sessions or create new one
     const advancedOps = new AdvancedSessionOperations(sessionManager, profile);
     const existingSessions = await sessionManager.listSessions({
       profile,
-      limit: 10, // Show recent sessions
+      limit: 10,
     });
 
     if (existingSessions.length > 0 && !options.newSession) {
@@ -136,7 +123,6 @@ export const startEnhancedChatSession = async (
         await advancedOps.selectSessionInteractively(existingSessions);
 
       if (selectedSessionId) {
-        // Continue with selected session
         currentSessionId = selectedSessionId;
         messages = await dbManager.getMessages(currentSessionId);
 
@@ -148,7 +134,6 @@ export const startEnhancedChatSession = async (
           );
         }
       } else {
-        // User chose to create new session
         const sessionTitle = options.act ? `${options.act} Chat` : undefined;
         currentSessionId = await sessionManager.createSession(profile, {
           title: sessionTitle,
@@ -164,7 +149,6 @@ export const startEnhancedChatSession = async (
         }
       }
     } else {
-      // No existing sessions or force new - create new session
       const sessionTitle = options.act ? `${options.act} Chat` : undefined;
       currentSessionId = await sessionManager.createSession(profile, {
         title: sessionTitle,
@@ -181,7 +165,6 @@ export const startEnhancedChatSession = async (
     }
   }
 
-  // Apply act template if specified
   if (options.act && messages.length === 0) {
     try {
       const systemPrompt = processActTemplate(options.act, '', options);
@@ -196,7 +179,6 @@ export const startEnhancedChatSession = async (
 
         messages.push(assistantMessage);
 
-        // Save to database
         await dbManager.addMessage(
           currentSessionId,
           assistantMessage.role,
@@ -222,7 +204,6 @@ export const startEnhancedChatSession = async (
     ),
   );
 
-  // Show session info
   if (options.verbose) {
     console.log(
       chalk.dim(
@@ -303,7 +284,6 @@ export const startEnhancedChatSession = async (
         continue;
       }
 
-      // Add user message
       const userMessage: ChatMessage = {
         role: 'user',
         content: userInput.trim(),
@@ -312,7 +292,6 @@ export const startEnhancedChatSession = async (
 
       messages.push(userMessage);
 
-      // Save user message to database
       await dbManager.addMessage(
         currentSessionId,
         userMessage.role,
@@ -339,7 +318,6 @@ export const startEnhancedChatSession = async (
 
         messages.push(assistantMessage);
 
-        // Save assistant message to database
         await dbManager.addMessage(
           currentSessionId,
           assistantMessage.role,
@@ -358,9 +336,6 @@ export const startEnhancedChatSession = async (
   }
 };
 
-/**
- * Handle session selection
- */
 async function handleSessionSelection(
   sessionManager: SessionManager,
   profile: string,
@@ -381,7 +356,6 @@ async function handleSessionSelection(
       return;
     }
 
-    // For list-sessions, always show the table format with full IDs
     if (options.listSessions) {
       const format = options.format || 'table';
       const formattedOutput = await advancedOps.formatSessions(
@@ -405,32 +379,25 @@ async function handleSessionSelection(
       return;
     }
 
-    // For interactive mode (when no --list-sessions flag), use inquirer
     const selectedSessionId =
       await advancedOps.selectSessionInteractively(sessions);
     if (selectedSessionId) {
       console.log(chalk.green(`🚀 Continuing session: ${selectedSessionId}`));
-      // Continue with the selected session
-      // This would normally start the chat with the selected session
     } else {
       console.log(chalk.blue('🆕 Starting new session...'));
-      // Start a new session
     }
   } catch (error) {
     console.error(chalk.red(`❌ Failed to handle session selection: ${error}`));
   }
 }
 
-/**
- * Handle session deletion
- */
 async function handleSessionDeletion(
   sessionManager: SessionManager,
   sessionId: string,
 ): Promise<void> {
   try {
     const deleted = await sessionManager.deleteSession(sessionId, {
-      force: true, // Force deletion for CLI usage
+      force: true,
     });
 
     if (deleted) {
@@ -451,9 +418,6 @@ async function handleSessionDeletion(
   }
 }
 
-/**
- * Handle session export
- */
 async function handleSessionExport(
   sessionManager: SessionManager,
   profile: string,
@@ -462,7 +426,6 @@ async function handleSessionExport(
   try {
     const advancedOps = new AdvancedSessionOperations(sessionManager, profile);
 
-    // Get export format
     const format = options.format || 'json';
     const exportFormat =
       typeof options.exportSessions === 'string' ? 'json' : format;
@@ -478,12 +441,10 @@ async function handleSessionExport(
     );
 
     if (typeof options.exportSessions === 'string') {
-      // Export to file
       console.log(
         chalk.green(`✅ Sessions exported to ${options.exportSessions}`),
       );
     } else {
-      // Output to console in specified format
       const formattedOutput = await advancedOps.formatSessions(
         exportData.sessions,
         format,
@@ -495,9 +456,6 @@ async function handleSessionExport(
   }
 }
 
-/**
- * Handle session rename
- */
 async function handleSessionRename(
   sessionManager: SessionManager,
   sessionId: string,
@@ -512,9 +470,6 @@ async function handleSessionRename(
   }
 }
 
-/**
- * Show current session information
- */
 async function showSessionInfo(
   sessionManager: SessionManager,
   sessionId: string,

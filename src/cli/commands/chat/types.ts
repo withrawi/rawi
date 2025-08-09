@@ -9,7 +9,6 @@ export interface ChatOptions {
   act?: string;
   verbose?: boolean;
 
-  // Session management options
   session?: string;
   newSession?: boolean;
   listSessions?: boolean;
@@ -18,13 +17,11 @@ export interface ChatOptions {
   renameSession?: string;
   newTitle?: string;
 
-  // Advanced filtering options
   limit?: number;
   fromDate?: string;
   toDate?: string;
   format?: 'json' | 'table' | 'summary';
 
-  // Advanced operations
   stats?: boolean;
   backup?: string;
   restore?: string;
@@ -32,9 +29,7 @@ export interface ChatOptions {
   archive?: boolean;
 }
 
-// Session management interfaces
 export interface SessionManager {
-  // Session lifecycle management
   handleSessionStart(options: ChatOptions): Promise<string>;
   createNewSession(profile: string, title?: string): Promise<string>;
   continueSession(
@@ -42,11 +37,9 @@ export interface SessionManager {
     profile: string,
   ): Promise<EnhancedChatSession>;
 
-  // Session discovery and selection
   getRecentSessions(profile: string, limit?: number): Promise<ChatSession[]>;
   displaySessionSelection(sessions: ChatSession[]): Promise<string | null>;
 
-  // Session management operations
   listSessions(options: ListSessionsOptions): Promise<void>;
   deleteSession(
     sessionId: string,
@@ -62,23 +55,19 @@ export interface EnhancedChatSession {
   title?: string;
   messages: ChatMessage[];
 
-  // Session context display
   displaySessionInfo(): void;
   displayConversationHistory(limit?: number): void;
 
-  // Message handling with persistence
   addUserMessage(content: string): Promise<void>;
   addAssistantMessage(
     content: string,
     metadata: MessageMetadata,
   ): Promise<void>;
 
-  // Session state management
   updateSessionTitle(title: string): Promise<void>;
   getSessionStats(): SessionStats;
 }
 
-// Core data types
 export interface ChatSession {
   id: string;
   profile: string;
@@ -109,7 +98,6 @@ export interface MessageMetadata {
   [key: string]: any;
 }
 
-// Session selection and display types
 export interface SessionSelectionResult {
   action: 'new' | 'continue' | 'exit';
   sessionId?: string;
@@ -135,7 +123,6 @@ export interface SessionStats {
   models: string[];
 }
 
-// Options interfaces for session operations
 export interface ListSessionsOptions {
   profile?: string;
   limit?: number;
@@ -158,7 +145,6 @@ export interface ExportSessionsOptions {
   toDate?: string;
 }
 
-// Error handling types
 export interface SessionError extends Error {
   code: string;
   sessionId?: string;

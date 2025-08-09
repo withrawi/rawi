@@ -12,9 +12,6 @@ import type {
   SessionState,
 } from './session-state.js';
 
-/**
- * Manages session state persistence and restoration
- */
 export class SessionStateManager {
   #databaseManager: DatabaseManager;
   #activeSessions: Map<string, SessionState> = new Map();
@@ -27,47 +24,39 @@ export class SessionStateManager {
     this.#databaseManager = databaseManager || new DatabaseManager();
     this.#persistenceOptions = {
       autoSave: true,
-      saveInterval: 30000, // 30 seconds
+      saveInterval: 30000,
       maxHistoryEntries: 100,
       ...options,
     };
   }
 
-  /**
-   * Load and restore a session state
-   */
   async restoreSessionState(
     sessionId: string,
     options: SessionRestoreOptions = {},
   ): Promise<SessionState> {
     try {
-      // Check if session is already in memory
       const cachedState = this.#activeSessions.get(sessionId);
       if (cachedState) {
         await this.#updateLastAccessed(sessionId);
         return cachedState;
       }
 
-      // Load session from database
       const session = await this.#databaseManager.getSession(sessionId);
       if (!session) {
         throw new SessionNotFoundError(sessionId, 'unknown');
       }
 
-      // Load messages
       const {includeMessages = true, messageLimit = 100} = options;
 
       let messages: ChatMessage[] = [];
       if (includeMessages) {
         messages = await this.#databaseManager.getMessages(sessionId);
 
-        // Apply filtering if needed
         if (messageLimit && messages.length > messageLimit) {
           messages = messages.slice(-messageLimit);
         }
       }
 
-      // Create session state
       const sessionState: SessionState = {
         session,
         messages,
@@ -77,10 +66,8 @@ export class SessionStateManager {
         metadata: await this.#loadSessionMetadata(sessionId),
       };
 
-      // Cache the session state
       this.#activeSessions.set(sessionId, sessionState);
 
-      // Record access in history
       await this.#addHistoryEntry(sessionId, 'accessed', 'Session restored');
 
       return sessionState;
@@ -95,9 +82,6 @@ export class SessionStateManager {
     }
   }
 
-  /**
-   * Persist session state to database
-   */
   async persistSessionState(sessionId: string): Promise<void> {
     try {
       const sessionState = this.#activeSessions.get(sessionId);
@@ -105,13 +89,10 @@ export class SessionStateManager {
         throw new SessionNotFoundError(sessionId, 'unknown');
       }
 
-      // Update session metadata in database
       await this.#saveSessionMetadata(sessionId, sessionState.metadata);
 
-      // Update last accessed timestamp
       sessionState.lastAccessedAt = new Date().toISOString();
 
-      // Record persistence in history
       await this.#addHistoryEntry(
         sessionId,
         'updated',
@@ -125,9 +106,6 @@ export class SessionStateManager {
     }
   }
 
-  /**
-   * Add a message to session state and persist if auto-save is enabled
-   */
   async addMessageToSession(
     sessionId: string,
     message: ChatMessage,
@@ -135,17 +113,14 @@ export class SessionStateManager {
     try {
       const sessionState = this.#activeSessions.get(sessionId);
       if (!sessionState) {
-        // Load session state first
         await this.restoreSessionState(sessionId);
         return this.addMessageToSession(sessionId, message);
       }
 
-      // Add message to state
       sessionState.messages.push(message);
       sessionState.messageCount = sessionState.messages.length;
       sessionState.lastAccessedAt = new Date().toISOString();
 
-      // Update metadata
       if (
         message.provider &&
         !sessionState.metadata.providers.includes(message.provider)
@@ -161,12 +136,10 @@ export class SessionStateManager {
         sessionState.metadata.lastModel = message.model;
       }
 
-      // Auto-persist if enabled
       if (this.#persistenceOptions.autoSave) {
         await this.persistSessionState(sessionId);
       }
 
-      // Record in history
       await this.#addHistoryEntry(
         sessionId,
         'message_added',
@@ -180,9 +153,6 @@ export class SessionStateManager {
     }
   }
 
-  /**
-   * Update session title in state
-   */
   async updateSessionTitle(sessionId: string, title: string): Promise<void> {
     try {
       const sessionState = this.#activeSessions.get(sessionId);
@@ -191,15 +161,12 @@ export class SessionStateManager {
         sessionState.lastAccessedAt = new Date().toISOString();
       }
 
-      // Update in database
       await this.#databaseManager.updateSessionTitle(sessionId, title);
 
-      // Auto-persist if enabled
       if (this.#persistenceOptions.autoSave) {
         await this.persistSessionState(sessionId);
       }
 
-      // Record in history
       await this.#addHistoryEntry(
         sessionId,
         'title_changed',
@@ -213,13 +180,8 @@ export class SessionStateManager {
     }
   }
 
-  /**
-   * Get session history
-   */
   async getSessionHistory(_sessionId: string): Promise<SessionHistoryEntry[]> {
     try {
-      // This would typically be stored in a separate table
-      // For now, return empty array as placeholder
       return [];
     } catch {
       throw new DatabaseConnectionError(
@@ -229,20 +191,14 @@ export class SessionStateManager {
     }
   }
 
-  /**
-   * Deactivate a session (remove from memory but keep in database)
-   */
   async deactivateSession(sessionId: string): Promise<void> {
     try {
       const sessionState = this.#activeSessions.get(sessionId);
       if (sessionState) {
-        // Persist final state before deactivation
         await this.persistSessionState(sessionId);
 
-        // Mark as inactive
         sessionState.isActive = false;
 
-        // Remove from active sessions
         this.#activeSessions.delete(sessionId);
       }
     } catch (error) {
@@ -253,23 +209,14 @@ export class SessionStateManager {
     }
   }
 
-  /**
-   * Get active session IDs
-   */
   getActiveSessionIds(): string[] {
     return Array.from(this.#activeSessions.keys());
   }
 
-  /**
-   * Get active session state (from memory)
-   */
   getActiveSessionState(sessionId: string): SessionState | undefined {
     return this.#activeSessions.get(sessionId);
   }
 
-  /**
-   * Clean up inactive sessions from memory
-   */
   async cleanupInactiveSessions(maxAge = 3600000): Promise<void> {
     const now = Date.now();
     const sessionsToRemove: string[] = [];
@@ -286,8 +233,6 @@ export class SessionStateManager {
     }
   }
 
-  // Private helper methods
-
   async #updateLastAccessed(sessionId: string): Promise<void> {
     const sessionState = this.#activeSessions.get(sessionId);
     if (sessionState) {
@@ -297,7 +242,6 @@ export class SessionStateManager {
 
   async #loadSessionMetadata(sessionId: string): Promise<SessionMetadata> {
     try {
-      // Load messages to extract metadata
       const messages = await this.#databaseManager.getMessages(sessionId);
 
       const providers = [
@@ -313,8 +257,7 @@ export class SessionStateManager {
         tags: [],
         customData: {},
       };
-    } catch (error) {
-      // Return default metadata if loading fails
+    } catch (_error) {
       return {
         providers: [],
         models: [],
@@ -328,8 +271,8 @@ export class SessionStateManager {
     _sessionId: string,
     _metadata: SessionMetadata,
   ): Promise<void> {
-    // This would typically save to a metadata table
-    // For now, just store in memory as it's already cached
+    // TODO: This would typically save to a metadata table
+    // TODO:For now, just store in memory as it's already cached
   }
 
   async #addHistoryEntry(
@@ -338,8 +281,6 @@ export class SessionStateManager {
     details: string,
     _metadata?: Record<string, any>,
   ): Promise<void> {
-    // This would typically save to a session_history table
-    // For now, just log for debugging
     console.debug(`Session ${sessionId}: ${action} - ${details}`);
   }
 }

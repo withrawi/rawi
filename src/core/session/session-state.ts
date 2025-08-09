@@ -1,8 +1,5 @@
 import type {ChatMessage, ChatSession} from '../shared/types.js';
 
-/**
- * Represents the current state of a chat session
- */
 export interface SessionState {
   session: ChatSession;
   messages: ChatMessage[];
@@ -12,9 +9,6 @@ export interface SessionState {
   metadata: SessionMetadata;
 }
 
-/**
- * Session metadata for tracking additional information
- */
 export interface SessionMetadata {
   providers: string[];
   models: string[];
@@ -26,9 +20,6 @@ export interface SessionMetadata {
   customData?: Record<string, any>;
 }
 
-/**
- * Options for session restoration
- */
 export interface SessionRestoreOptions {
   includeMessages?: boolean;
   messageLimit?: number;
@@ -36,9 +27,6 @@ export interface SessionRestoreOptions {
   toDate?: string;
 }
 
-/**
- * Session history entry for tracking changes
- */
 export interface SessionHistoryEntry {
   timestamp: string;
   action:
@@ -51,11 +39,8 @@ export interface SessionHistoryEntry {
   metadata?: Record<string, any>;
 }
 
-/**
- * Options for session persistence
- */
 export interface SessionPersistenceOptions {
   autoSave?: boolean;
-  saveInterval?: number; // in milliseconds
+  saveInterval?: number;
   maxHistoryEntries?: number;
 }

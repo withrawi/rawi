@@ -1,14 +1,11 @@
-import chalk from 'chalk';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import {select} from '@inquirer/prompts';
+import chalk from 'chalk';
 import Table from 'cli-table3';
 import type {SessionManager} from '../../../../core/session/index.js';
 import type {ChatOptions} from '../types.js';
 
-/**
- * Advanced session operations for CLI
- */
 export class AdvancedSessionOperations {
   private readonly sessionManager: SessionManager;
   private readonly profile: string;
@@ -18,9 +15,6 @@ export class AdvancedSessionOperations {
     this.profile = profile;
   }
 
-  /**
-   * Show session statistics
-   */
   async showStatistics(options: ChatOptions): Promise<void> {
     try {
       console.log(chalk.cyan('\n📊 Session Statistics'));
@@ -72,7 +66,6 @@ export class AdvancedSessionOperations {
         ),
       );
 
-      // Top sessions by message count
       const topSessions = sessions
         .sort((a, b) => (b.messageCount || 0) - (a.messageCount || 0))
         .slice(0, 5);
@@ -90,9 +83,6 @@ export class AdvancedSessionOperations {
     }
   }
 
-  /**
-   * Backup sessions to file
-   */
   async backupSessions(
     backupPath: string,
     options: ChatOptions,
@@ -113,14 +103,12 @@ export class AdvancedSessionOperations {
         data: exportData,
       };
 
-      // Ensure directory exists
       const dir = path.dirname(backupPath);
       await fs.mkdir(dir, {recursive: true});
 
-      // Write backup file
       await fs.writeFile(backupPath, JSON.stringify(backup, null, 2), 'utf8');
 
-      console.log(chalk.green(`✅ Backup completed successfully!`));
+      console.log(chalk.green('✅ Backup completed successfully!'));
       console.log(chalk.blue(`📁 File: ${backupPath}`));
       console.log(
         chalk.blue(
@@ -133,14 +121,10 @@ export class AdvancedSessionOperations {
     }
   }
 
-  /**
-   * Restore sessions from backup file
-   */
   async restoreSessions(backupPath: string): Promise<void> {
     try {
       console.log(chalk.cyan(`\n📥 Restoring sessions from: ${backupPath}`));
 
-      // Read backup file
       const backupData = await fs.readFile(backupPath, 'utf8');
       const backup = JSON.parse(backupData);
 
@@ -154,8 +138,6 @@ export class AdvancedSessionOperations {
         ),
       );
 
-      // In a real implementation, you would restore sessions to the database
-      // For now, we'll just show what would be restored
       console.log(
         chalk.blue(
           `📊 Backup contains: ${backup.data.sessions.length} sessions, ${Object.values(backup.data.messages).flat().length} messages`,
@@ -176,9 +158,6 @@ export class AdvancedSessionOperations {
     }
   }
 
-  /**
-   * Batch delete sessions matching pattern
-   */
   async batchDeleteSessions(
     pattern: string,
     options: ChatOptions,
@@ -194,7 +173,6 @@ export class AdvancedSessionOperations {
         toDate: options.toDate,
       });
 
-      // Filter sessions by pattern (title or ID contains pattern)
       const matchingSessions = sessions.filter((session) => {
         const titleMatch = (session.title || '')
           .toLowerCase()
@@ -224,7 +202,6 @@ export class AdvancedSessionOperations {
         );
       });
 
-      // In a real implementation, you would confirm with the user and then delete
       console.log(
         chalk.red(
           `\n🚨 This would delete ${matchingSessions.length} sessions!`,
@@ -241,9 +218,6 @@ export class AdvancedSessionOperations {
     }
   }
 
-  /**
-   * Format sessions according to specified format
-   */
   async formatSessions(
     sessions: any[],
     format: 'json' | 'table' | 'summary',
@@ -254,16 +228,11 @@ export class AdvancedSessionOperations {
 
       case 'summary':
         return this.formatSessionsSummary(sessions);
-
-      case 'table':
       default:
         return this.formatSessionsTable(sessions);
     }
   }
 
-  /**
-   * Format sessions as table using cli-table3 with full IDs
-   */
   private formatSessionsTable(sessions: any[]): string {
     if (sessions.length === 0) {
       return chalk.yellow('No sessions found.');
@@ -295,8 +264,8 @@ export class AdvancedSessionOperations {
       );
 
       table.push([
-        chalk.white(session.id), // Show full ID
-        chalk.white(title.length > 22 ? title.substring(0, 19) + '...' : title),
+        chalk.white(session.id),
+        chalk.white(title.length > 22 ? `${title.substring(0, 19)}...` : title),
         chalk.gray(session.profile),
         chalk.yellow(messageCount.toString()),
         chalk.gray(createdDate),
@@ -307,9 +276,6 @@ export class AdvancedSessionOperations {
     return table.toString();
   }
 
-  /**
-   * Interactive session selection using inquirer
-   */
   async selectSessionInteractively(sessions: any[]): Promise<string | null> {
     if (sessions.length === 0) {
       console.log(chalk.yellow('No sessions found.'));
@@ -336,15 +302,11 @@ export class AdvancedSessionOperations {
       });
 
       return selectedId === 'new' ? null : selectedId;
-    } catch (error) {
-      // User cancelled (Ctrl+C)
+    } catch (_error) {
       return null;
     }
   }
 
-  /**
-   * Format relative time (e.g., "2h ago", "3d ago")
-   */
   private formatRelativeTime(dateString: string): string {
     const now = Date.now();
     const date = new Date(dateString).getTime();
@@ -361,9 +323,6 @@ export class AdvancedSessionOperations {
     return `${diffSeconds}s ago`;
   }
 
-  /**
-   * Format sessions as summary
-   */
   private formatSessionsSummary(sessions: any[]): string {
     if (sessions.length === 0) {
       return 'No sessions found.';
@@ -372,7 +331,7 @@ export class AdvancedSessionOperations {
     let summary = chalk.cyan(
       `📋 Session Summary (${sessions.length} sessions)\n`,
     );
-    summary += chalk.gray('─'.repeat(50)) + '\n';
+    summary += `${chalk.gray('─'.repeat(50))}\n`;
 
     sessions.forEach((session, index) => {
       const title = session.title || 'Untitled';
@@ -387,9 +346,6 @@ export class AdvancedSessionOperations {
     return summary;
   }
 
-  /**
-   * Helper function to format date
-   */
   private formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
