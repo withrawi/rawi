@@ -1074,80 +1074,55 @@ export class DatabaseAdapter {
     setClause.push('updated_at = ?');
     values.push(Math.floor(Date.now() / 1000));
     values.push(id);
-
-    try {
-      const result = await this.#client.execute(
-        `UPDATE act_templates SET ${setClause.join(', ')} 
+    const result = await this.#client.execute(
+      `UPDATE act_templates SET ${setClause.join(', ')} 
          WHERE id = ? AND is_built_in = 0`,
-        values,
-      );
+      values,
+    );
 
-      return result.rowsAffected > 0;
-    } catch (error) {
-      throw error;
-    }
+    return result.rowsAffected > 0;
   }
 
   async deleteActTemplate(id: string): Promise<boolean> {
     await this.ensureActTemplatesTable();
+    const result = await this.#client.execute(
+      'DELETE FROM act_templates WHERE id = ? AND is_built_in = 0',
+      [id],
+    );
 
-    try {
-      const result = await this.#client.execute(
-        'DELETE FROM act_templates WHERE id = ? AND is_built_in = 0',
-        [id],
-      );
-
-      return result.rowsAffected > 0;
-    } catch (error) {
-      throw error;
-    }
+    return result.rowsAffected > 0;
   }
 
   async getActTemplate(id: string): Promise<any | null> {
     await this.ensureActTemplatesTable();
+    const result = await this.#client.execute(
+      'SELECT * FROM act_templates WHERE id = ? LIMIT 1',
+      [id],
+    );
 
-    try {
-      const result = await this.#client.execute(
-        'SELECT * FROM act_templates WHERE id = ? LIMIT 1',
-        [id],
-      );
-
-      return result.rows.length > 0 ? result.rows[0] : null;
-    } catch (error) {
-      throw error;
-    }
+    return result.rows.length > 0 ? result.rows[0] : null;
   }
 
   async listActTemplates(customOnly = false): Promise<any[]> {
     await this.ensureActTemplatesTable();
+    const whereClause = customOnly ? 'WHERE is_built_in = 0' : '';
 
-    try {
-      const whereClause = customOnly ? 'WHERE is_built_in = 0' : '';
+    const result = await this.#client.execute(
+      `SELECT * FROM act_templates ${whereClause} ORDER BY created_at DESC`,
+      [],
+    );
 
-      const result = await this.#client.execute(
-        `SELECT * FROM act_templates ${whereClause} ORDER BY created_at DESC`,
-        [],
-      );
-
-      return result.rows;
-    } catch (error) {
-      throw error;
-    }
+    return result.rows;
   }
 
   async templateExists(id: string): Promise<boolean> {
     await this.ensureActTemplatesTable();
+    const result = await this.#client.execute(
+      'SELECT 1 FROM act_templates WHERE id = ? LIMIT 1',
+      [id],
+    );
 
-    try {
-      const result = await this.#client.execute(
-        'SELECT 1 FROM act_templates WHERE id = ? LIMIT 1',
-        [id],
-      );
-
-      return result.rows.length > 0;
-    } catch (error) {
-      throw error;
-    }
+    return result.rows.length > 0;
   }
 
   async close(): Promise<void> {
