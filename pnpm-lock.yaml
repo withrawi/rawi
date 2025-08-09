@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@ai-sdk/amazon-bedrock':
-        specifier: 3.0.3
-        version: 3.0.3(zod@4.0.16)
+        specifier: 3.0.4
+        version: 3.0.4(zod@4.0.16)
       '@ai-sdk/anthropic':
         specifier: 2.0.1
         version: 2.0.1(zod@4.0.16)
@@ -138,8 +138,8 @@ importers:
 
 packages:
 
-  '@ai-sdk/amazon-bedrock@3.0.3':
-    resolution: {integrity: sha512-2iQYNui0L0JmbBrRz3H3JhuwApmIotomIpVwkqWVVa0bWrvZBKq5OZXuRVpJ7bSLi3Lhomwr6IrtCtzKym58yA==}
+  '@ai-sdk/amazon-bedrock@3.0.4':
+    resolution: {integrity: sha512-I/i7MtLjeBUjBkLBa9njLizKoVPRcVnFiMUqDIclzB0vDQrHpi59Pfm2M4bit8gPWyw4mBhb1btdw9BKu5h2cw==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
@@ -2874,7 +2874,7 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/amazon-bedrock@3.0.3(zod@4.0.16)':
+  '@ai-sdk/amazon-bedrock@3.0.4(zod@4.0.16)':
     dependencies:
       '@ai-sdk/anthropic': 2.0.1(zod@4.0.16)
       '@ai-sdk/provider': 2.0.0

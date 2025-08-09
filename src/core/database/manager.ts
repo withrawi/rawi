@@ -54,9 +54,13 @@ export class DatabaseManager {
     }
   }
 
-  async createSession(profile: string, title?: string): Promise<string> {
+  async createSession(
+    profile: string,
+    title?: string,
+    type: 'ask' | 'chat' = 'ask',
+  ): Promise<string> {
     await this.#ensureInitialized();
-    return this.#adapter.createSession(profile, title);
+    return this.#adapter.createSession(profile, title, type);
   }
 
   async getSession(sessionId: string): Promise<ChatSession | null> {
@@ -81,7 +85,7 @@ export class DatabaseManager {
 
   async addMessage(
     sessionId: string,
-    role: 'user' | 'assistant',
+    role: 'user' | 'assistant' | 'system',
     content: string,
     provider: string,
     model: string,
@@ -123,7 +127,10 @@ export class DatabaseManager {
     await this.#adapter.close();
   }
 
-  async getCurrentSession(profile: string): Promise<string> {
+  async getCurrentSession(
+    profile: string,
+    type: 'ask' | 'chat' = 'ask',
+  ): Promise<string> {
     try {
       await this.#ensureInitialized();
 
@@ -134,7 +141,7 @@ export class DatabaseManager {
       }
 
       debugLog('No existing sessions found, creating a new one');
-      return this.createSession(profile);
+      return this.createSession(profile, undefined, type);
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
@@ -148,7 +155,7 @@ export class DatabaseManager {
         this.#initialized = true;
 
         debugLog('Creating new session');
-        return this.createSession(profile);
+        return this.createSession(profile, undefined, type);
       } catch (initError: unknown) {
         const initErrorMessage =
           initError instanceof Error ? initError.message : 'Unknown error';
@@ -158,7 +165,7 @@ export class DatabaseManager {
         );
         debugLog('Attempting emergency session creation');
 
-        return this.createEmergencySession(profile);
+        return this.createEmergencySession(profile, type);
       }
     }
   }
@@ -182,10 +189,13 @@ export class DatabaseManager {
     return this.#adapter.exportChatHistory(options);
   }
 
-  async createEmergencySession(profile: string): Promise<string> {
+  async createEmergencySession(
+    profile: string,
+    type: 'ask' | 'chat' = 'ask',
+  ): Promise<string> {
     try {
       debugLog('Creating emergency session without database checks');
-      return this.#adapter.createSession(profile);
+      return this.#adapter.createSession(profile, undefined, type);
     } catch (_error) {
       const sessionId = uuidv4();
       debugLog('Generated emergency session ID directly:', sessionId);

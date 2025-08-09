@@ -121,7 +121,7 @@ export class DatabaseAdapter {
 
         const tableResult = await this.#client.execute(`
           SELECT count(*) as table_count FROM sqlite_master 
-          WHERE type='table' AND name IN ('chat_sessions', 'chat_messages');
+          WHERE type='table' AND name IN ('sessions', 'messages');
         `);
 
         const tableCount = Number(tableResult.rows[0].table_count);
@@ -130,8 +130,8 @@ export class DatabaseAdapter {
           debugLog('Database schema verified, both tables exist');
 
           try {
-            await this.#client.execute('SELECT COUNT(*) FROM chat_sessions');
-            await this.#client.execute('SELECT COUNT(*) FROM chat_messages');
+            await this.#client.execute('SELECT COUNT(*) FROM sessions');
+            await this.#client.execute('SELECT COUNT(*) FROM messages');
             debugLog('Database tables are accessible');
             return;
           } catch (queryError) {
@@ -358,71 +358,89 @@ export class DatabaseAdapter {
         }
 
         await this.#client.execute(`
-          CREATE TABLE IF NOT EXISTS chat_sessions (
+          CREATE TABLE IF NOT EXISTS sessions (
             id TEXT PRIMARY KEY,
             profile TEXT NOT NULL,
+            type TEXT NOT NULL DEFAULT 'chat' CHECK (type IN ('ask', 'chat')),
             title TEXT,
-            created_at TEXT NOT NULL DEFAULT (datetime('now')),
-            updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-            message_count INTEGER NOT NULL DEFAULT 0
+            description TEXT,
+            status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'archived', 'paused', 'pending', 'completed', 'failed')),
+            created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+            updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+            last_accessed_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+            message_count INTEGER NOT NULL DEFAULT 0,
+            query TEXT,
+            files_processed TEXT,
+            content_filtered INTEGER DEFAULT 0,
+            conversation_context TEXT,
+            max_messages INTEGER,
+            is_private INTEGER DEFAULT 0,
+            tags TEXT
           );
         `);
 
-        debugLog('Created chat_sessions table');
+        debugLog('Created sessions table');
 
         await this.#client.execute(`
-          CREATE TABLE IF NOT EXISTS chat_messages (
+          CREATE TABLE IF NOT EXISTS messages (
             id TEXT PRIMARY KEY,
             session_id TEXT NOT NULL,
-            role TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+            role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'assistant', 'system')),
             content TEXT NOT NULL,
-            timestamp TEXT NOT NULL DEFAULT (datetime('now')),
+            timestamp INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+            message_order INTEGER NOT NULL,
             provider TEXT NOT NULL,
             model TEXT NOT NULL,
             temperature REAL,
             max_tokens INTEGER,
+            processing_time REAL,
+            token_usage TEXT,
             metadata TEXT,
-            FOREIGN KEY (session_id) REFERENCES chat_sessions (id) ON DELETE CASCADE
+            parent_message_id TEXT,
+            is_edited INTEGER DEFAULT 0,
+            edit_history TEXT,
+            reactions TEXT,
+            FOREIGN KEY (session_id) REFERENCES sessions (id) ON DELETE CASCADE
           );
         `);
 
-        debugLog('Created chat_messages table');
+        debugLog('Created messages table');
 
         try {
           await this.#client.execute(`
             CREATE TRIGGER IF NOT EXISTS update_session_message_count_insert
-            AFTER INSERT ON chat_messages
+            AFTER INSERT ON messages
             BEGIN
-              UPDATE chat_sessions 
+              UPDATE sessions 
               SET message_count = (
-                SELECT COUNT(*) FROM chat_messages WHERE session_id = NEW.session_id
+                SELECT COUNT(*) FROM messages WHERE session_id = NEW.session_id
               ),
-              updated_at = datetime('now')
+              updated_at = strftime('%s', 'now')
               WHERE id = NEW.session_id;
             END;
           `);
 
           await this.#client.execute(`
             CREATE TRIGGER IF NOT EXISTS update_session_message_count_delete
-            AFTER DELETE ON chat_messages
+            AFTER DELETE ON messages
             BEGIN
-              UPDATE chat_sessions 
+              UPDATE sessions 
               SET message_count = (
-                SELECT COUNT(*) FROM chat_messages WHERE session_id = OLD.session_id
+                SELECT COUNT(*) FROM messages WHERE session_id = OLD.session_id
               ),
-              updated_at = datetime('now')
+              updated_at = strftime('%s', 'now')
               WHERE id = OLD.session_id;
             END;
           `);
 
           await this.#client.execute(`
             CREATE TRIGGER IF NOT EXISTS generate_session_title
-            AFTER INSERT ON chat_messages
+            AFTER INSERT ON messages
             WHEN NEW.role = 'user' AND (
-              SELECT title FROM chat_sessions WHERE id = NEW.session_id
+              SELECT title FROM sessions WHERE id = NEW.session_id
             ) IS NULL
             BEGIN
-              UPDATE chat_sessions 
+              UPDATE sessions 
               SET title = CASE 
                 WHEN length(NEW.content) > ${DEFAULT_SESSION_TITLE_LENGTH} 
                 THEN substr(NEW.content, 1, ${DEFAULT_SESSION_TITLE_LENGTH}) || '...'
@@ -442,33 +460,48 @@ export class DatabaseAdapter {
 
         try {
           await this.#client.execute(`
-            CREATE INDEX IF NOT EXISTS idx_chat_sessions_profile 
-            ON chat_sessions (profile);
+            CREATE INDEX IF NOT EXISTS idx_sessions_profile 
+            ON sessions (profile);
           `);
 
           await this.#client.execute(`
-            CREATE INDEX IF NOT EXISTS idx_chat_sessions_created_at 
-            ON chat_sessions (created_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_sessions_created_at 
+            ON sessions (created_at DESC);
           `);
 
           await this.#client.execute(`
-            CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id 
-            ON chat_messages (session_id);
+            CREATE INDEX IF NOT EXISTS idx_sessions_type 
+            ON sessions (type);
           `);
 
           await this.#client.execute(`
-            CREATE INDEX IF NOT EXISTS idx_chat_messages_timestamp 
-            ON chat_messages (timestamp DESC);
+            CREATE INDEX IF NOT EXISTS idx_sessions_status 
+            ON sessions (status);
           `);
 
           await this.#client.execute(`
-            CREATE INDEX IF NOT EXISTS idx_chat_messages_provider 
-            ON chat_messages (provider);
+            CREATE INDEX IF NOT EXISTS idx_messages_session_id 
+            ON messages (session_id);
           `);
 
           await this.#client.execute(`
-            CREATE INDEX IF NOT EXISTS idx_chat_messages_content_fts 
-            ON chat_messages (content);
+            CREATE INDEX IF NOT EXISTS idx_messages_timestamp 
+            ON messages (timestamp DESC);
+          `);
+
+          await this.#client.execute(`
+            CREATE INDEX IF NOT EXISTS idx_messages_provider 
+            ON messages (provider);
+          `);
+
+          await this.#client.execute(`
+            CREATE INDEX IF NOT EXISTS idx_messages_content_fts 
+            ON messages (content);
+          `);
+
+          await this.#client.execute(`
+            CREATE INDEX IF NOT EXISTS idx_messages_order 
+            ON messages (session_id, message_order);
           `);
 
           debugLog('Created indexes');
@@ -481,7 +514,7 @@ export class DatabaseAdapter {
 
         const tableResult = await this.#client.execute(`
           SELECT count(*) as table_count FROM sqlite_master 
-          WHERE type='table' AND name IN ('chat_sessions', 'chat_messages');
+          WHERE type='table' AND name IN ('sessions', 'messages');
         `);
 
         const tableCount = Number(tableResult.rows[0].table_count);
@@ -512,14 +545,18 @@ export class DatabaseAdapter {
     );
   }
 
-  async createSession(profile: string, title?: string): Promise<string> {
+  async createSession(
+    profile: string,
+    title?: string,
+    type: 'ask' | 'chat' = 'ask',
+  ): Promise<string> {
     await this.ensureDatabaseInitialized();
 
     const sessionId = uuidv4();
 
     await this.#client.execute({
-      sql: 'INSERT INTO chat_sessions (id, profile, title) VALUES (?, ?, ?)',
-      args: [sessionId, profile, title || null],
+      sql: 'INSERT INTO sessions (id, profile, title, type) VALUES (?, ?, ?, ?)',
+      args: [sessionId, profile, title || null, type],
     });
 
     return sessionId;
@@ -528,7 +565,7 @@ export class DatabaseAdapter {
   async getSession(sessionId: string): Promise<ChatSession | null> {
     await this.ensureDatabaseInitialized();
     const result = await this.#client.execute({
-      sql: 'SELECT * FROM chat_sessions WHERE id = ?',
+      sql: 'SELECT * FROM sessions WHERE id = ?',
       args: [sessionId],
     });
 
@@ -541,18 +578,18 @@ export class DatabaseAdapter {
       id: row.id as string,
       profile: row.profile as string,
       title: (row.title as string) ?? undefined,
-      createdAt: row.created_at as string,
-      updatedAt: row.updated_at as string,
+      createdAt: new Date(Number(row.created_at) * 1000).toISOString(),
+      updatedAt: new Date(Number(row.updated_at) * 1000).toISOString(),
       messageCount: Number(row.message_count),
     };
   }
 
   async getSessions(options: ChatHistoryOptions = {}): Promise<ChatSession[]> {
     await this.ensureDatabaseInitialized();
-    const {profile, limit = 10, fromDate, toDate} = options;
+    const {profile, limit = 10, fromDate, toDate, type} = options;
 
     let sql = `
-      SELECT * FROM chat_sessions
+      SELECT * FROM sessions
       WHERE 1=1
     `;
     const args: any[] = [];
@@ -562,14 +599,19 @@ export class DatabaseAdapter {
       args.push(profile);
     }
 
+    if (type) {
+      sql += ' AND type = ?';
+      args.push(type);
+    }
+
     if (fromDate) {
       sql += ' AND created_at >= ?';
-      args.push(fromDate);
+      args.push(Math.floor(new Date(fromDate).getTime() / 1000));
     }
 
     if (toDate) {
       sql += ' AND created_at <= ?';
-      args.push(toDate);
+      args.push(Math.floor(new Date(toDate).getTime() / 1000));
     }
 
     sql += ' ORDER BY updated_at DESC LIMIT ?';
@@ -581,8 +623,8 @@ export class DatabaseAdapter {
       id: row.id as string,
       profile: row.profile as string,
       title: (row.title as string) ?? undefined,
-      createdAt: row.created_at as string,
-      updatedAt: row.updated_at as string,
+      createdAt: new Date(Number(row.created_at) * 1000).toISOString(),
+      updatedAt: new Date(Number(row.updated_at) * 1000).toISOString(),
       messageCount: Number(row.message_count),
     }));
   }
@@ -590,7 +632,7 @@ export class DatabaseAdapter {
   async deleteSession(sessionId: string): Promise<boolean> {
     await this.ensureDatabaseInitialized();
     const result = await this.#client.execute({
-      sql: 'DELETE FROM chat_sessions WHERE id = ?',
+      sql: 'DELETE FROM sessions WHERE id = ?',
       args: [sessionId],
     });
 
@@ -599,7 +641,7 @@ export class DatabaseAdapter {
 
   async updateSessionTitle(sessionId: string, title: string): Promise<boolean> {
     const result = await this.#client.execute({
-      sql: `UPDATE chat_sessions SET title = ?, updated_at = datetime('now') WHERE id = ?`,
+      sql: `UPDATE sessions SET title = ?, updated_at = strftime('%s', 'now') WHERE id = ?`,
       args: [title, sessionId],
     });
 
@@ -608,7 +650,7 @@ export class DatabaseAdapter {
 
   async addMessage(
     sessionId: string,
-    role: 'user' | 'assistant',
+    role: 'user' | 'assistant' | 'system',
     content: string,
     provider: string,
     model: string,
@@ -619,11 +661,17 @@ export class DatabaseAdapter {
     await this.ensureDatabaseInitialized();
     const messageId = uuidv4();
 
+    const orderResult = await this.#client.execute({
+      sql: 'SELECT COALESCE(MAX(message_order), 0) + 1 as next_order FROM messages WHERE session_id = ?',
+      args: [sessionId],
+    });
+    const messageOrder = Number(orderResult.rows[0].next_order);
+
     await this.#client.execute({
-      sql: `INSERT INTO chat_messages (
+      sql: `INSERT INTO messages (
         id, session_id, role, content, provider, model, 
-        temperature, max_tokens, metadata
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        message_order, temperature, max_tokens, metadata
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         messageId,
         sessionId,
@@ -631,6 +679,7 @@ export class DatabaseAdapter {
         content,
         provider,
         model,
+        messageOrder,
         temperature || null,
         maxTokens || null,
         metadata ? JSON.stringify(metadata) : null,
@@ -643,9 +692,9 @@ export class DatabaseAdapter {
   async getMessages(sessionId: string, limit?: number): Promise<ChatMessage[]> {
     await this.ensureDatabaseInitialized();
     let sql = `
-      SELECT * FROM chat_messages 
+      SELECT * FROM messages 
       WHERE session_id = ? 
-      ORDER BY timestamp ASC
+      ORDER BY message_order ASC
     `;
     const args: any[] = [sessionId];
 
@@ -659,9 +708,9 @@ export class DatabaseAdapter {
     return result.rows.map((row) => ({
       id: row.id as string,
       sessionId: row.session_id as string,
-      role: row.role as 'user' | 'assistant',
+      role: row.role as 'user' | 'assistant' | 'system',
       content: row.content as string,
-      timestamp: row.timestamp as string,
+      timestamp: new Date(Number(row.timestamp) * 1000).toISOString(),
       provider: row.provider as SupportedProvider,
       model: row.model as string,
       temperature: row.temperature as number | undefined,
@@ -685,8 +734,8 @@ export class DatabaseAdapter {
     } = options;
 
     let sql = `
-      SELECT m.* FROM chat_messages m
-      JOIN chat_sessions s ON m.session_id = s.id
+      SELECT m.* FROM messages m
+      JOIN sessions s ON m.session_id = s.id
       WHERE 1=1
     `;
     const args: any[] = [];
@@ -713,12 +762,12 @@ export class DatabaseAdapter {
 
     if (fromDate) {
       sql += ' AND m.timestamp >= ?';
-      args.push(fromDate);
+      args.push(Math.floor(new Date(fromDate).getTime() / 1000));
     }
 
     if (toDate) {
       sql += ' AND m.timestamp <= ?';
-      args.push(toDate);
+      args.push(Math.floor(new Date(toDate).getTime() / 1000));
     }
 
     sql += ' ORDER BY m.timestamp DESC LIMIT ?';
@@ -729,9 +778,9 @@ export class DatabaseAdapter {
     return result.rows.map((row) => ({
       id: row.id as string,
       sessionId: row.session_id as string,
-      role: row.role as 'user' | 'assistant',
+      role: row.role as 'user' | 'assistant' | 'system',
       content: row.content as string,
-      timestamp: row.timestamp as string,
+      timestamp: new Date(Number(row.timestamp) * 1000).toISOString(),
       provider: row.provider as SupportedProvider,
       model: row.model as string,
       temperature: row.temperature as number | undefined,
@@ -742,7 +791,7 @@ export class DatabaseAdapter {
 
   async getStats(profile?: string): Promise<HistoryStats> {
     await this.ensureDatabaseInitialized();
-    let sql = 'SELECT COUNT(*) as count FROM chat_sessions';
+    let sql = 'SELECT COUNT(*) as count FROM sessions';
     const args: any[] = [];
 
     if (profile) {
@@ -758,14 +807,14 @@ export class DatabaseAdapter {
         COUNT(*) as total_count,
         SUM(CASE WHEN role = 'user' THEN 1 ELSE 0 END) as user_count,
         SUM(CASE WHEN role = 'assistant' THEN 1 ELSE 0 END) as assistant_count
-      FROM chat_messages
+      FROM messages
     `;
     const messageArgs: any[] = [];
 
     if (profile) {
       messageSql += `
-        JOIN chat_sessions ON chat_messages.session_id = chat_sessions.id
-        WHERE chat_sessions.profile = ?
+        JOIN sessions ON messages.session_id = sessions.id
+        WHERE sessions.profile = ?
       `;
       messageArgs.push(profile);
     }
@@ -779,14 +828,14 @@ export class DatabaseAdapter {
 
     let providerSql = `
       SELECT provider, COUNT(*) as count
-      FROM chat_messages
+      FROM messages
     `;
     const providerArgs: any[] = [];
 
     if (profile) {
       providerSql += `
-        JOIN chat_sessions ON chat_messages.session_id = chat_sessions.id
-        WHERE chat_sessions.profile = ?
+        JOIN sessions ON messages.session_id = sessions.id
+        WHERE sessions.profile = ?
       `;
       providerArgs.push(profile);
     }
@@ -805,14 +854,14 @@ export class DatabaseAdapter {
 
     let modelSql = `
       SELECT model, COUNT(*) as count
-      FROM chat_messages
+      FROM messages
     `;
     const modelArgs: any[] = [];
 
     if (profile) {
       modelSql += `
-        JOIN chat_sessions ON chat_messages.session_id = chat_sessions.id
-        WHERE chat_sessions.profile = ?
+        JOIN sessions ON messages.session_id = sessions.id
+        WHERE sessions.profile = ?
       `;
       modelArgs.push(profile);
     }
@@ -830,10 +879,10 @@ export class DatabaseAdapter {
     });
 
     const profileSql = `
-      SELECT chat_sessions.profile, COUNT(*) as count
-      FROM chat_messages
-      JOIN chat_sessions ON chat_messages.session_id = chat_sessions.id
-      GROUP BY chat_sessions.profile
+      SELECT sessions.profile, COUNT(*) as count
+      FROM messages
+      JOIN sessions ON messages.session_id = sessions.id
+      GROUP BY sessions.profile
       ORDER BY count DESC
     `;
 
@@ -848,14 +897,14 @@ export class DatabaseAdapter {
       SELECT 
         MIN(timestamp) as oldest,
         MAX(timestamp) as newest
-      FROM chat_messages
+      FROM messages
     `;
     const timeRangeArgs: any[] = [];
 
     if (profile) {
       timeRangeSql += `
-        JOIN chat_sessions ON chat_messages.session_id = chat_sessions.id
-        WHERE chat_sessions.profile = ?
+        JOIN sessions ON messages.session_id = sessions.id
+        WHERE sessions.profile = ?
       `;
       timeRangeArgs.push(profile);
     }
@@ -871,8 +920,12 @@ export class DatabaseAdapter {
       messagesByProvider,
       messagesByModel,
       messagesByProfile,
-      oldestMessage: timeRangeResult.rows[0].oldest as string,
-      newestMessage: timeRangeResult.rows[0].newest as string,
+      oldestMessage: timeRangeResult.rows[0].oldest
+        ? new Date(Number(timeRangeResult.rows[0].oldest) * 1000).toISOString()
+        : undefined,
+      newestMessage: timeRangeResult.rows[0].newest
+        ? new Date(Number(timeRangeResult.rows[0].newest) * 1000).toISOString()
+        : undefined,
     };
   }
 
@@ -880,14 +933,14 @@ export class DatabaseAdapter {
     await this.ensureDatabaseInitialized();
     const date = new Date();
     date.setDate(date.getDate() - days);
-    const cutoffDate = date.toISOString();
+    const cutoffTimestamp = Math.floor(date.getTime() / 1000);
 
     const result = await this.#client.execute({
       sql: `
-        DELETE FROM chat_sessions 
+        DELETE FROM sessions 
         WHERE profile = ? AND created_at < ?
       `,
-      args: [profile, cutoffDate],
+      args: [profile, cutoffTimestamp],
     });
 
     return result.rowsAffected;

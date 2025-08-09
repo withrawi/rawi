@@ -13,7 +13,7 @@ import {AdvancedSessionOperations} from './advanced-operations.js';
 import {streamChatResponse} from './response-handler.js';
 
 interface ChatMessage {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
   provider?: string;
   model?: string;
@@ -102,6 +102,7 @@ export const startEnhancedChatSession = async (
     currentSessionId = await sessionManager.createSession(profile, {
       title: sessionTitle,
       generateTitle: !sessionTitle,
+      type: 'chat',
     });
 
     if (options.verbose) {
@@ -116,6 +117,7 @@ export const startEnhancedChatSession = async (
     const existingSessions = await sessionManager.listSessions({
       profile,
       limit: 10,
+      type: 'chat',
     });
 
     if (existingSessions.length > 0 && !options.newSession) {
@@ -138,6 +140,7 @@ export const startEnhancedChatSession = async (
         currentSessionId = await sessionManager.createSession(profile, {
           title: sessionTitle,
           generateTitle: !sessionTitle,
+          type: 'chat',
         });
 
         if (options.verbose) {
@@ -153,6 +156,7 @@ export const startEnhancedChatSession = async (
       currentSessionId = await sessionManager.createSession(profile, {
         title: sessionTitle,
         generateTitle: !sessionTitle,
+        type: 'chat',
       });
 
       if (options.verbose) {
@@ -349,6 +353,7 @@ async function handleSessionSelection(
       limit: options.limit || 10,
       fromDate: options.fromDate,
       toDate: options.toDate,
+      type: 'chat',
     });
 
     if (sessions.length === 0) {

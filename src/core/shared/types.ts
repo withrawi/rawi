@@ -156,23 +156,49 @@ export interface ConfigureOptions {
 export interface ChatSession {
   id: string;
   profile: string;
+  type?: 'ask' | 'chat';
   title?: string;
+  description?: string;
+  status?:
+    | 'active'
+    | 'archived'
+    | 'paused'
+    | 'pending'
+    | 'completed'
+    | 'failed';
   createdAt: string;
   updatedAt: string;
+  lastAccessedAt?: string;
   messageCount: number;
+
+  query?: string;
+  filesProcessed?: any;
+  contentFiltered?: boolean;
+
+  conversationContext?: any;
+  maxMessages?: number;
+  isPrivate?: boolean;
+  tags?: any;
 }
 
 export interface ChatMessage {
   id: string;
   sessionId: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: string;
   provider: SupportedProvider;
   model: string;
   temperature?: number;
   maxTokens?: number;
-  metadata?: string;
+  metadata?: any;
+  messageOrder?: number;
+  processingTime?: number;
+  tokenUsage?: any;
+  parentMessageId?: string;
+  isEdited?: boolean;
+  editHistory?: any;
+  reactions?: any;
 }
 
 export interface ChatHistoryOptions {
@@ -184,6 +210,7 @@ export interface ChatHistoryOptions {
   toDate?: string;
   provider?: SupportedProvider;
   model?: string;
+  type?: 'ask' | 'chat';
 }
 
 export interface HistoryStats {

@@ -72,6 +72,7 @@ export class SessionSelector {
     let sessions = await this.sessionManager.listSessions({
       profile: this.profile,
       limit: maxResults,
+      type: 'chat',
     });
 
     if (sessions.length === 0) {
@@ -329,6 +330,7 @@ export class SessionSelector {
     const sessions = await this.sessionManager.listSessions({
       profile: this.profile,
       limit: 20,
+      type: 'chat',
     });
 
     if (sessions.length === 0) {

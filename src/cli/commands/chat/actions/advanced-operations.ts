@@ -24,6 +24,7 @@ export class AdvancedSessionOperations {
         profile: this.profile,
         fromDate: options.fromDate,
         toDate: options.toDate,
+        type: 'chat',
       });
 
       const totalSessions = sessions.length;
@@ -171,6 +172,7 @@ export class AdvancedSessionOperations {
         profile: this.profile,
         fromDate: options.fromDate,
         toDate: options.toDate,
+        type: 'chat',
       });
 
       const matchingSessions = sessions.filter((session) => {

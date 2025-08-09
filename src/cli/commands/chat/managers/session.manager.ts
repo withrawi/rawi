@@ -67,6 +67,7 @@ export class SessionManager {
         console.log(chalk.dim('Creating temporary session...'));
         return await this.dbManager.createEmergencySession(
           options.profile || 'default',
+          'chat',
         );
       }
 
@@ -76,7 +77,11 @@ export class SessionManager {
 
   async createNewSession(profile: string, title?: string): Promise<string> {
     try {
-      const sessionId = await this.dbManager.createSession(profile, title);
+      const sessionId = await this.dbManager.createSession(
+        profile,
+        title,
+        'chat',
+      );
       console.log(chalk.green(`✅ Created new session: ${sessionId}`));
       return sessionId;
     } catch (error) {

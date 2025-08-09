@@ -17,6 +17,7 @@ import type {ChatMessage, ChatSession, HistoryStats} from '../shared/types.js';
 export interface SessionCreationOptions {
   title?: string;
   generateTitle?: boolean;
+  type?: 'ask' | 'chat';
 }
 
 export class SessionManager {
@@ -31,7 +32,7 @@ export class SessionManager {
     options: SessionCreationOptions = {},
   ): Promise<string> {
     try {
-      const {title, generateTitle} = options;
+      const {title, generateTitle, type = 'ask'} = options;
 
       let finalTitle = title;
       if (generateTitle && !title) {
@@ -41,6 +42,7 @@ export class SessionManager {
       const sessionId = await this.#databaseManager.createSession(
         profile,
         finalTitle,
+        type,
       );
 
       return sessionId;
@@ -83,13 +85,14 @@ export class SessionManager {
     options: ListSessionsOptions = {},
   ): Promise<SessionDisplayInfo[]> {
     try {
-      const {profile, limit = 10, fromDate, toDate} = options;
+      const {profile, limit = 10, fromDate, toDate, type} = options;
 
       const sessions = await this.#databaseManager.getSessions({
         profile,
         limit,
         fromDate,
         toDate,
+        type,
       });
 
       return sessions.map((session) => this.#toDisplayInfo(session));

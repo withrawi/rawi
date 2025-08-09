@@ -97,9 +97,9 @@ git diff | rawi ask "Review these changes for potential issues"
 cat server.js | rawi ask --act code-reviewer "Optimize this Express.js code"
 
 # 📊 Session organization and insights
-rawi history sessions --table                    # View all sessions in organized table
-rawi history export abc123 --output "backup.json" # Export important conversations
-rawi history stats                               # See your AI usage patterns
+rawi history ask --limit 10                     # View ask sessions
+rawi history chat --search "debugging"          # Search chat sessions
+rawi history ask --all-profiles --provider openai # Filter ask sessions by provider
 ```
 
 ## 🤖 AI Providers — Your Choice, Your Control
@@ -278,41 +278,32 @@ rawi configure --delete old-profile      # Delete profile
 
 ### 📚 `rawi history` — Conversation Management
 
-Powerful tools to manage your AI conversation history.
+Powerful tools to manage your AI conversation history with separate views for ask and chat sessions.
 
 ```bash
-# View recent conversations
-rawi history
+# Basic history commands
+rawi history ask                      # Show ask session history
+rawi history chat                     # Show chat session history
 
-# 🆕 Enhanced Session Management
-rawi history sessions                 # List all sessions with full details
-rawi history sessions --interactive   # Interactive session selection
-rawi history sessions --table         # Display in formatted table
-rawi history sessions --stats         # Show session statistics
+# Session listings with filtering
+rawi history ask --limit 10           # Show last 10 ask sessions
+rawi history chat --all-profiles      # Show chat sessions from all profiles
+rawi history ask --search "docker"    # Search ask sessions for "docker"
+rawi history chat --provider openai   # Show chat sessions using OpenAI
 
-# Session operations
-rawi history show abc123              # Show specific session details
-rawi history rename abc123 "New Name" # Rename session
-rawi history delete abc123            # Delete specific session
-rawi history export abc123            # Export session to JSON
+# Advanced filtering options
+rawi history ask --from 2024-01-01    # Ask sessions from specific date
+rawi history chat --model gpt-4       # Chat sessions using specific model
+rawi history ask --profile work       # Ask sessions from work profile
+rawi history chat --to 2024-12-31     # Chat sessions up to specific date
 
-# Advanced session filtering
-rawi history sessions --profile work  # Filter by profile
-rawi history sessions --limit 10      # Limit results
-rawi history sessions --search "docker" # Search session content
+# Search across message content
+rawi history ask --search "debugging react"
+rawi history chat --search "typescript errors"
 
-# Batch operations
-rawi history cleanup --days 30        # Clean up old sessions
-rawi history export --output backup.json # Export all history
-rawi history stats                    # Show usage statistics
-
-# Interactive features
-rawi history --list-sessions          # List and select sessions interactively
-rawi history --session-operations     # Interactive session management menu
-
-# Legacy search (still supported)
-rawi history --search "docker deployment"
-rawi history --provider openai --model gpt-4o --from 2024-01-01
+# Provider and model filtering
+rawi history ask --provider ollama --model llama3.2
+rawi history chat --provider anthropic --model claude-3-5-sonnet
 ```
 
 ### 🎭 `rawi act` — Template Explorer

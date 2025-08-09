@@ -14,7 +14,7 @@
 
 **rawi** **configure** [*options*]
 
-**rawi** **history** [*options*] [*subcommand*]
+**rawi** **history** **ask**|**chat** [*options*]
 
 **rawi** **act** [*options*]
 
@@ -542,12 +542,24 @@ Delete a configuration profile and all its settings
 
 **Synopsis:**
 
-**rawi history** [*options*] [*subcommand*]
+**rawi history ask** [*options*]
+
+**rawi history chat** [*options*]
 
 **Description:**
-Manage chat history, search conversations, export data, and clean up old sessions. Provides comprehensive session management with filtering and search capabilities.
+Manage chat history with separate views for ask and chat sessions. Search conversations, filter by various criteria, and organize your AI interactions by session type.
 
-**Options:**
+**Subcommands:**
+
+**ask** [*options*]
+
+Show ask session history. View and search your ask sessions and messages.
+
+**chat** [*options*]
+
+Show chat session history. View and search your chat sessions and messages.
+
+**Options (available for both ask and chat subcommands):**
 
 **-p, --profile** _profile_
 
@@ -585,111 +597,47 @@ Show sessions from date (YYYY-MM-DD format)
 
 Show sessions to date (YYYY-MM-DD format)
 
-**Subcommands:**
-
-**sessions** [*options*]
-
-List and manage chat sessions with enhanced display options and interactive navigation
-
-**show** _sessionId_
-
-Display all messages in a specific session
-
-**delete** _sessionId_
-
-Delete a session and all its messages permanently
-
-**rename** _sessionId_ _name_
-
-Rename a specific session for better organization
-
-**export** _sessionId_ [**--output** *file*]
-
-Export a specific session to JSON format
-
-**stats**
-
-Show usage statistics including token counts, most used providers, and session metrics
-
-**cleanup** [**--days** *number*]
-
-Clean up old sessions. Use **--days** to specify age threshold
-
-**export** [**--output** *file*] [**--format** *format*]
-
-Export history to file. Supports JSON and CSV formats
-
-**Sessions Subcommand Options:**
-
-**--interactive**
-
-Enable interactive session selection with navigation
-
-**--table**
-
-Display sessions in a formatted table with complete details
-
-**--stats**
-
-Show session statistics and analytics
-
-**--operations-menu**
-
-Open interactive session management menu
-
 **Examples:**
 
-# Show recent sessions
+# Show ask session history
 
-**rawi history**
+**rawi history ask**
 
-# Show work profile history
+# Show chat session history
 
-**rawi history** **--profile** work
+**rawi history chat**
 
-# Search for specific content
+# Show ask sessions from work profile
 
-**rawi history** **--search** "typescript"
+**rawi history ask** **--profile** work
 
-# Filter by provider and date
+# Search for specific content in chat sessions
 
-**rawi history** **--provider** openai **--from** 2024-01-01
+**rawi history chat** **--search** "typescript"
 
-# Interactive session management
+# Filter ask sessions by provider and date
 
-**rawi history** sessions
+**rawi history ask** **--provider** openai **--from** 2024-01-01
 
-# Enhanced session display options
+# Show recent chat sessions with limit
 
-**rawi history** sessions **--table**
+**rawi history chat** **--limit** 10
 
-**rawi history** sessions **--interactive**
+# Search ask sessions across all profiles
 
-**rawi history** sessions **--stats**
+**rawi history ask** **--search** "docker" **--all-profiles**
 
-# Session operations
+# Filter chat sessions by model
 
-**rawi history** rename abc123 "New Session Name"
+**rawi history chat** **--model** gpt-4 **--provider** openai
 
-**rawi history** export abc123 **--output** session.json
+# Show ask sessions within date range
 
-# View specific session
+**rawi history ask** **--from** 2024-01-01 **--to** 2024-12-31
 
-**rawi history** show abc123
+# Show all chat sessions without pagination
 
-# Delete old session
-
-**rawi history** delete abc123
-
-# Show usage statistics
-
-**rawi history** stats
-
-# Clean up sessions older than 30 days
-
-**rawi history** cleanup **--days** 30
-
-# Export all history
+**rawi history chat** **--all**
 
 **rawi history** export **--output** backup.json
 

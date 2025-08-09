@@ -5,7 +5,7 @@ import {spinnerManager} from '../../../../core/shared/spinner.js';
 import type {ChatOptions} from '../types.js';
 
 interface SimpleMessage {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
 }
 
