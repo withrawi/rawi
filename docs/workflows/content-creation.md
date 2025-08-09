@@ -49,21 +49,21 @@ rawi ask "What are the latest statistics on solar energy adoption globally?" --p
 #### Writing Phase
 
 ```bash
-# Start writing profile
-rawi ask --act tech-writer "Help me write an engaging introduction for a blog post about remote work productivity" --profile productivity-post
+# Start writing process
+rawi ask --act tech-writer "Help me write an engaging introduction for a blog post about remote work productivity"
 
 # Develop sections
-rawi ask --act tech-writer "Write a section about time management tools, around 300 words" --profile productivity-post
+rawi ask --act tech-writer "Write a section about time management tools, around 300 words"
 
 # Add examples and data
-rawi ask --act data-analyst "Provide 3 real-world examples of companies with successful remote work policies" --profile productivity-post
+rawi ask --act data-analyst "Provide 3 real-world examples of companies with successful remote work policies"
 ```
 
 #### Editing Phase
 
 ```bash
 # Review and edit
-rawi ask --act editor "Edit this draft for clarity, flow, and engagement:" < productivity-draft.md --profile productivity-post
+rawi ask --act editor "Edit this draft for clarity, flow, and engagement:" < productivity-draft.md
 
 # SEO optimization
 rawi ask --act tech-writer "Suggest SEO improvements for this blog post, including meta description and keywords:" < final-draft.md

@@ -3,6 +3,7 @@ import {packageInfo} from '../core/index.js';
 import {
   createActCommand,
   createAskCommand,
+  createChatCommand,
   createConfigureCommand,
   createHistoryCommand,
   createInfoCommand,
@@ -26,6 +27,7 @@ export const createProgram = (): Command => {
         'Commands:',
         '',
         '  ask         Ask AI a question and get a response',
+        '  chat        Start an interactive chat session with AI',
         '  act         List and explore act templates',
         '  configure   Configure AI provider settings and profiles',
         '  provider    Show supported AI providers and models',
@@ -51,6 +53,7 @@ export const createProgram = (): Command => {
   program.addCommand(createConfigureCommand());
   program.addCommand(createInfoCommand());
   program.addCommand(createAskCommand());
+  program.addCommand(createChatCommand());
   program.addCommand(createActCommand());
   program.addCommand(createHistoryCommand());
   program.addCommand(createProviderCommand());

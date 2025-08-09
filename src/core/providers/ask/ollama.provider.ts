@@ -3,13 +3,13 @@ import {
   ollamaModelIds as _ollamaModelIds,
   createOllama,
   type ollama,
-} from '../../libs/providers/ollama/index.js';
+} from '../../../libs/providers/ollama/index.js';
 import type {
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
   StreamingResponse,
-} from '../shared/index.js';
+} from '../../shared/index.js';
 
 type LooseOllamaModelId = Parameters<typeof ollama>[0];
 export type OllamaModelId = LooseToStrict<LooseOllamaModelId>;

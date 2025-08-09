@@ -64,7 +64,6 @@ export class OllamaImageModel implements ImageModelV2 {
       url: `${this.#config.baseURL}/generate`,
     });
 
-    // Type the response properly
     const typedResponse = response as z.infer<typeof ollamaImageResponseSchema>;
 
     return {

@@ -6,7 +6,7 @@ import type {
   ModelInfo,
   RawiCredentials,
   StreamingResponse,
-} from '../shared/index.js';
+} from '../../shared/index.js';
 
 type LooseCerebrasModelId = Parameters<typeof cerebras>[0];
 export type CerebrasModelId = LooseToStrict<LooseCerebrasModelId>;

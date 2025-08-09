@@ -6,7 +6,7 @@ import type {
   OpenAISettings,
   RawiCredentials,
   StreamingResponse,
-} from '../shared/index.js';
+} from '../../shared/index.js';
 
 type LooseOpenAIModelId = Parameters<typeof openai>[0];
 export type OpenAIModelId = LooseToStrict<LooseOpenAIModelId>;
@@ -56,6 +56,9 @@ const openAIModelIds = [
   'gpt-3.5-turbo',
   'gpt-3.5-turbo-1106',
   'chatgpt-4o-latest',
+  'gpt-5',
+  'gpt-5-mini',
+  'gpt-5-nano',
 ] as const;
 
 export const openaiModels: ModelInfo[] = openAIModelIds.map((name) => ({

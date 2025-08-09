@@ -1,3 +1,4 @@
+import {input} from '@inquirer/prompts';
 import chalk from 'chalk';
 import {Command} from 'commander';
 import {DatabaseManager} from '../../core/database/manager.js';
@@ -60,7 +61,21 @@ export const createAskCommand = (): Command => {
           fileContent = fileResult.fileContent;
         }
 
-        const finalQuery = await assembleQuery(query, fileContent);
+        let finalQuery: string;
+        try {
+          finalQuery = await assembleQuery(query, fileContent);
+        } catch (_error) {
+          if (!query && !fileContent && process.stdin.isTTY) {
+            const userInput = await input({
+              message: 'What would you like to ask?',
+              required: true,
+            });
+            finalQuery = userInput;
+          } else {
+            askCommand.help();
+            return;
+          }
+        }
 
         if (!finalQuery || finalQuery.trim() === '') {
           askCommand.help();
@@ -107,7 +122,7 @@ export const createAskCommand = (): Command => {
         let processedQuery = filteredQuery;
         if (options.act) {
           try {
-            processedQuery = processActTemplate(
+            processedQuery = await processActTemplate(
               options.act,
               filteredQuery,
               options,

@@ -1,0 +1,17 @@
+export type {
+  ChatMessage,
+  ChatSession,
+  DatabaseConnectionError,
+  DeleteSessionOptions,
+  EnhancedChatSession,
+  ExportSessionsOptions,
+  ListSessionsOptions,
+  MessageMetadata,
+  ProfileMismatchError,
+  SessionDisplayInfo,
+  SessionError,
+  SessionManager,
+  SessionNotFoundError,
+  SessionSelectionResult,
+  SessionStats,
+} from './types.js';

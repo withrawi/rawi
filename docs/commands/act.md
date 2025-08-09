@@ -1,11 +1,12 @@
-# act — Template Explorer
+# act — Template Management
 
-The `act` command helps you discover and explore the 200+ expert prompt templates that make AI responses more specialized and effective.
+The `act` command helps you discover, manage, and use the 200+ expert prompt templates that make AI responses more specialized and effective. Templates work globally across all profiles and can be customized to fit your specific needs.
 
 ## 📋 Table of Contents
 
 - [Basic Usage](#basic-usage)
 - [Options](#options)
+- [Template Management](#template-management)
 - [Template Categories](#template-categories)
 - [Popular Templates](#popular-templates)
 - [Using Templates](#using-templates)
@@ -26,10 +27,25 @@ rawi act [options]
 # Browse all templates (interactive)
 rawi act --list
 
+# Browse only built-in templates
+rawi act --built-in
+
+# Browse only custom templates
+rawi act --custom
+
 # Show details of a specific template
 rawi act --show code-reviewer
 
-# Use a template with ask command
+# Create a new custom template
+rawi act --create
+
+# Edit an existing custom template
+rawi act --edit my-template
+
+# Delete a custom template
+rawi act --delete my-template
+
+# Use a template with ask command (works with any profile)
 rawi ask --act ethereum-developer "explain smart contracts"
 ```
 
@@ -37,10 +53,65 @@ rawi ask --act ethereum-developer "explain smart contracts"
 
 ## Options
 
-| Option              | Alias | Description                             |
-| ------------------- | ----- | --------------------------------------- |
-| `--list`            | `-l`  | List all available act templates        |
-| `--show <template>` | `-s`  | Show details of a specific act template |
+| Option                | Alias | Description                             |
+| --------------------- | ----- | --------------------------------------- |
+| `--list`              | `-l`  | List all available act templates        |
+| `--built-in`          | `-b`  | List only built-in act templates        |
+| `--custom`            | `-c`  | List only custom act templates          |
+| `--show <template>`   | `-s`  | Show details of a specific act template |
+| `--create`            |       | Create a new custom act template        |
+| `--edit <template>`   |       | Edit an existing custom act template    |
+| `--delete <template>` |       | Delete a custom act template            |
+
+---
+
+## Template Management
+
+Rawi now supports creating, editing, and managing your own custom templates alongside the 200+ built-in templates.
+
+### Creating Custom Templates
+
+Create your own specialized templates for repeated tasks:
+
+```bash
+# Start interactive template creation
+rawi act --create
+```
+
+The interactive creator will guide you through:
+
+- **Template ID**: Unique identifier (e.g., `my-code-reviewer`)
+- **Label**: Display name (e.g., `My Code Reviewer`)
+- **Category**: Organizational category (e.g., `Development`)
+- **Description**: Brief description of the template's purpose
+- **Content**: The template prompt with `{userInput}` placeholder
+
+### Editing Templates
+
+Modify your custom templates:
+
+```bash
+# Edit a custom template
+rawi act --edit my-template
+```
+
+### Deleting Templates
+
+Remove custom templates you no longer need:
+
+```bash
+# Delete a custom template
+rawi act --delete my-template
+```
+
+### Template Types
+
+- **Built-in Templates**: 200+ expert-crafted templates (cannot be modified)
+- **Custom Templates**: Your own templates (can be created, edited, and deleted)
+
+### Global Templates
+
+**Important**: All templates (both built-in and custom) work globally across all profiles. You don't need to specify `--profile` when using templates - they're accessible from any profile context.
 
 ---
 
@@ -214,19 +285,19 @@ cat auth.py | rawi ask --act security-expert "Analyze for vulnerabilities"
 cat queries.sql | rawi ask --act database-admin "Optimize these queries"
 ```
 
-### With Profiles
+### Global Templates
 
-Combine templates with specific profiles:
+Templates work automatically across all profiles:
 
 ```bash
-# Use Claude for deep analysis
-rawi ask --act code-reviewer "Analyze architecture" --profile claude
+# Templates work with any profile - no --profile needed
+rawi ask --act code-reviewer "Analyze architecture"
 
-# Use local AI for quick checks
-rawi ask --act linux-terminal "ls -la" --profile ollama
+# Use local AI with global templates
+rawi ask --act linux-terminal "ls -la"
 
-# Use GPT-4 for documentation
-rawi ask --act tech-writer "Create README" --profile openai
+# Custom templates work everywhere
+rawi ask --act my-custom-template "Process this data"
 ```
 
 ---
@@ -505,12 +576,16 @@ rawi ask --act security-expert "Check this"
 rawi ask --act security-expert "Audit authentication in this Express.js API" < auth.js
 ```
 
-### 3. Combine with Profiles
+### 3. Global Template Management
 
 ```bash
-# Use appropriate AI model for the task
-rawi ask --act code-reviewer "Deep architectural analysis" --profile claude
-rawi ask --act linux-terminal "Quick command help" --profile ollama
+# Create custom templates for your workflows
+rawi act --create  # Interactive template creation
+
+# Manage your templates
+rawi act --custom  # View only your custom templates
+rawi act --edit my-template  # Edit custom templates
+rawi act --delete old-template  # Remove unused templates
 ```
 
 ### 4. Use Multiple Templates

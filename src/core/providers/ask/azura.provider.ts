@@ -5,7 +5,7 @@ import type {
   ModelInfo,
   RawiCredentials,
   StreamingResponse,
-} from '../shared/index.js';
+} from '../../shared/index.js';
 
 type LooseAzureModelId = Parameters<typeof azure>[0];
 export type AzureModelId = LooseToStrict<LooseAzureModelId>;

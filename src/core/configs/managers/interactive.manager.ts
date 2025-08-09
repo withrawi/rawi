@@ -1,6 +1,6 @@
 import {confirm, input, password, search, select} from '@inquirer/prompts';
 import chalk from 'chalk';
-import {getAllProviders, getProvider} from '../../providers/index.js';
+import {getAllProviders, getProvider} from '../../providers/ask/index.js';
 import {
   DEFAULT_LANGUAGE,
   DEFAULT_PROFILE,
@@ -45,13 +45,11 @@ export class InteractiveConfigManager {
       description: `${p.name} - ${p.displayName}`,
     }));
 
-    // Use search prompt for better provider filtering when there are many providers
     if (choices.length > 5) {
       return search({
         message: 'Select AI Provider (type to search):',
         source: async (input) => {
           if (!input) {
-            // Sort choices to show default provider first if available
             if (defaultProvider) {
               const defaultChoice = choices.find(
                 (choice) => choice.value === defaultProvider,
@@ -75,7 +73,6 @@ export class InteractiveConfigManager {
         },
       });
     } else {
-      // Use regular select for fewer providers
       return select({
         message: 'Select AI Provider:',
         choices,
@@ -104,13 +101,11 @@ export class InteractiveConfigManager {
       throw new Error(`No models available for provider: ${provider}`);
     }
 
-    // Use search prompt for better model filtering when there are many models
     if (choices.length > 5) {
       return search({
         message: `Select ${providerConfig.displayName} Model (type to search):`,
         source: async (input) => {
           if (!input) {
-            // Sort choices to show default model first if available
             if (defaultModel) {
               const defaultChoice = choices.find(
                 (choice) => choice.value === defaultModel,
@@ -134,7 +129,6 @@ export class InteractiveConfigManager {
         },
       });
     } else {
-      // Use regular select for providers with fewer models
       return select({
         message: `Select ${providerConfig.displayName} Model:`,
         choices,

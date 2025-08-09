@@ -134,8 +134,8 @@ rawi ask --act code-reviewer "Review this function for performance issues"
 # Combine with file input
 cat server.js | rawi ask --act security-expert "Analyze for vulnerabilities"
 
-# Use with profile
-rawi ask --act database-admin "Optimize this query" --profile work
+# Templates work with any profile (global templates)
+rawi ask --act database-admin "Optimize this query"
 ```
 
 ### Popular Templates
@@ -212,17 +212,19 @@ rawi ask "Quick question" --profile local
 rawi ask "Analyze this data" --profile analysis
 ```
 
-### Profile + Template Combinations
+### Global Templates
+
+Templates work across all profiles automatically:
 
 ```bash
-# Use Claude for deep code analysis
-rawi ask --act code-reviewer "Analyze architecture" --profile claude
+# Templates are global - no --profile needed
+rawi ask --act code-reviewer "Analyze architecture"
 
-# Use local AI for quick questions
-rawi ask --act linux-terminal "ls -la" --profile local
+# Works with any profile configured
+rawi ask --act linux-terminal "ls -la"
 
-# Use GPT-4 for documentation
-rawi ask --act tech-writer "Create README" --profile openai
+# Custom templates work everywhere too
+rawi ask --act my-custom-template "Process this data"
 ```
 
 ---

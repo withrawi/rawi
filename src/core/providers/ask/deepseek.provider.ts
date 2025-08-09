@@ -6,7 +6,7 @@ import type {
   ModelInfo,
   RawiCredentials,
   StreamingResponse,
-} from '../shared/index.js';
+} from '../../shared/index.js';
 
 type LooseDeepSeekModelId = Parameters<typeof deepseek>[0];
 export type DeepSeekModelId = LooseToStrict<LooseDeepSeekModelId>;

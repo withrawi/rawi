@@ -76,7 +76,6 @@ export class OllamaEmbeddingModel implements EmbeddingModelV2<string> {
       url: `${this.#config.baseURL}/embed`,
     });
 
-    // Type the response properly
     const typedResponse = response as z.infer<
       typeof ollamaTextEmbeddingResponseSchema
     >;

@@ -10,9 +10,11 @@
 
 **rawi** **ask** [*query*] [*options*]
 
+**rawi** **chat** [*options*]
+
 **rawi** **configure** [*options*]
 
-**rawi** **history** [*options*] [*subcommand*]
+**rawi** **history** **ask**|**chat** [*options*]
 
 **rawi** **act** [*options*]
 
@@ -42,11 +44,13 @@
 
 - **Multi-provider support** \- Use different AI providers seamlessly
 - **Profile management** \- Multiple configurations for different contexts
-- **Session history** \- Persistent chat sessions with search and export
+- **Enhanced session management** \- Persistent chat sessions with interactive selection, naming, and full ID display
+- **Session analytics** \- Comprehensive usage statistics and conversation insights
 - **Template system** \- Expert prompt templates for specialized tasks
 - **Piped input** \- Unix-style stdin support for scripting
 - **Interactive mode** \- Guided configuration and template selection
 - **Modern formatting** \- Clean, readable output with syntax highlighting
+- **Export capabilities** \- Backup sessions and conversation history
 
 ## GLOBAL OPTIONS
 
@@ -94,9 +98,29 @@ Continue an existing chat session by providing the session ID
 
 Force creation of a new chat session instead of continuing the last one
 
+**--session-name** _name_
+
+Create a new session with a custom name for better organization
+
+**--list-sessions**
+
+Interactively select from existing sessions to continue
+
+**--show-session-id**
+
+Display the session ID in the output for reference
+
+**--export-session** _sessionId_
+
+Export a specific session to JSON format for backup
+
+**--rename-session** _name_
+
+Rename the current or specified session
+
 **--act** _template_
 
-Apply an expert prompt template. Use **rawi act --list** to see available templates. Templates provide specialized prompts for tasks like code review, documentation, analysis, etc.
+Apply an expert prompt template. Use **rawi act --list** to see available templates. Templates provide specialized prompts for tasks like code review, documentation, analysis, etc. Templates work globally across all profiles.
 
 **-f, --file** _path_
 
@@ -194,7 +218,23 @@ Reset filtering configuration to defaults (enables all filter types).
 
 # Use expert template with file input
 
+# Use expert template with file input
+
 **rawi ask** **--act** code-reviewer **--file** src/app.js "Review this code"
+
+# Session management examples
+
+**rawi ask** "Start new project discussion" **--new-session** **--session-name** "Project Alpha"
+
+**rawi ask** "Continue where we left off" **--list-sessions**
+
+**rawi ask** "Show me the session details" **--show-session-id**
+
+**rawi ask** "Update discussion name" **--rename-session** "Updated Project Alpha"
+
+**rawi ask** "Export this conversation" **--export-session** abc123
+
+# Filter sensitive information
 
 # Combine piped input with file processing
 
@@ -247,6 +287,139 @@ Reset filtering configuration to defaults (enables all filter types).
 # Reset to default filtering settings
 
 **rawi ask** **--reset-filter-config**
+
+### chat \- Interactive conversations with AI
+
+**Synopsis:**
+
+**rawi chat** [*options*]
+
+**Description:**
+Start an interactive chat session for back-and-forth conversations with AI. Unlike the **ask** command which handles single requests, **chat** maintains conversation context throughout the session, making it ideal for collaborative problem-solving, code reviews, and extended discussions.
+
+**Options:**
+
+**-p, --profile** _profile_
+
+Use a specific configuration profile (default: "default")
+
+**--act** _template_
+
+Apply an expert prompt template for the entire chat session. The AI will maintain this persona throughout the conversation. Use **rawi act --list** to see available templates.
+
+**--verbose**
+
+Show detailed status information, connection details, and debug output during the chat session
+
+**--session** _sessionId_
+
+Continue a specific chat session by ID
+
+**--new-session**
+
+Force creation of a new chat session
+
+**--session-name** _name_
+
+Start a new session with a custom name
+
+**--list-sessions**
+
+List and select from existing sessions interactively
+
+**--show-session-id**
+
+Display the current session ID during chat
+
+**--export-session** _sessionId_
+
+Export a specific session to JSON format
+
+**--rename-session** _name_
+
+Rename the current session
+
+**--session-stats**
+
+Show statistics for the current session
+
+**Chat Commands:**
+
+Once in a chat session, you can use special commands:
+
+**/help**
+
+Show available chat commands and instructions
+
+**/quit** or **/exit**
+
+End the chat session and return to terminal
+
+**/clear**
+
+Clear the conversation history while staying in the chat
+
+**/session**
+
+Show current session information including ID and metadata
+
+**/sessions**
+
+List all available sessions for navigation
+
+**/export**
+
+Export the current session to JSON format
+
+**/rename** _name_
+
+Rename the current session
+
+**/new**
+
+Start a new session while keeping the current chat open
+
+**Examples:**
+
+# Start basic interactive chat
+
+**rawi chat**
+
+# Use specific profile for chat
+
+**rawi chat** **--profile** work
+
+# Apply expert persona for entire chat
+
+**rawi chat** **--act** ethereum-developer
+
+# Start chat with verbose information
+
+**rawi chat** **--verbose**
+
+# Combined options
+
+**rawi chat** **--profile** work **--act** code-reviewer **--verbose**
+
+# Session management examples
+
+**rawi chat** **--session-name** "Sprint Planning Session"
+
+**rawi chat** **--list-sessions**
+
+**rawi chat** **--session** abc123
+
+**rawi chat** **--new-session** **--act** debugging-expert
+
+**rawi chat** **--show-session-id** **--session-stats**
+
+**Use Cases:**
+
+- **Code Reviews**: Multi-round feedback and improvements
+- **Problem Solving**: Step-by-step debugging and exploration
+- **Learning**: Ask follow-up questions and dive deeper
+- **Brainstorming**: Interactive idea development
+- **Planning**: Collaborative project and architecture discussions
 
 ### configure \- Manage AI provider settings and profiles
 
@@ -369,12 +542,24 @@ Delete a configuration profile and all its settings
 
 **Synopsis:**
 
-**rawi history** [*options*] [*subcommand*]
+**rawi history ask** [*options*]
+
+**rawi history chat** [*options*]
 
 **Description:**
-Manage chat history, search conversations, export data, and clean up old sessions. Provides comprehensive session management with filtering and search capabilities.
+Manage chat history with separate views for ask and chat sessions. Search conversations, filter by various criteria, and organize your AI interactions by session type.
 
-**Options:**
+**Subcommands:**
+
+**ask** [*options*]
+
+Show ask session history. View and search your ask sessions and messages.
+
+**chat** [*options*]
+
+Show chat session history. View and search your chat sessions and messages.
+
+**Options (available for both ask and chat subcommands):**
 
 **-p, --profile** _profile_
 
@@ -412,71 +597,47 @@ Show sessions from date (YYYY-MM-DD format)
 
 Show sessions to date (YYYY-MM-DD format)
 
-**Subcommands:**
-
-**sessions**
-
-List and manage chat sessions with interactive navigation
-
-**show** _sessionId_
-
-Display all messages in a specific session
-
-**delete** _sessionId_
-
-Delete a session and all its messages permanently
-
-**stats**
-
-Show usage statistics including token counts, most used providers, and session metrics
-
-**cleanup** [**--days** *number*]
-
-Clean up old sessions. Use **--days** to specify age threshold
-
-**export** [**--output** *file*] [**--format** *format*]
-
-Export history to file. Supports JSON and CSV formats
-
 **Examples:**
 
-# Show recent sessions
+# Show ask session history
 
-**rawi history**
+**rawi history ask**
 
-# Show work profile history
+# Show chat session history
 
-**rawi history** **--profile** work
+**rawi history chat**
 
-# Search for specific content
+# Show ask sessions from work profile
 
-**rawi history** **--search** "typescript"
+**rawi history ask** **--profile** work
 
-# Filter by provider and date
+# Search for specific content in chat sessions
 
-**rawi history** **--provider** openai **--from** 2024-01-01
+**rawi history chat** **--search** "typescript"
 
-# Interactive session management
+# Filter ask sessions by provider and date
 
-**rawi history** sessions
+**rawi history ask** **--provider** openai **--from** 2024-01-01
 
-# View specific session
+# Show recent chat sessions with limit
 
-**rawi history** show abc123
+**rawi history chat** **--limit** 10
 
-# Delete old session
+# Search ask sessions across all profiles
 
-**rawi history** delete abc123
+**rawi history ask** **--search** "docker" **--all-profiles**
 
-# Show usage statistics
+# Filter chat sessions by model
 
-**rawi history** stats
+**rawi history chat** **--model** gpt-4 **--provider** openai
 
-# Clean up sessions older than 30 days
+# Show ask sessions within date range
 
-**rawi history** cleanup **--days** 30
+**rawi history ask** **--from** 2024-01-01 **--to** 2024-12-31
 
-# Export all history
+# Show all chat sessions without pagination
+
+**rawi history chat** **--all**
 
 **rawi history** export **--output** backup.json
 
@@ -487,7 +648,7 @@ Export history to file. Supports JSON and CSV formats
 **rawi act** [*options*]
 
 **Description:**
-List and explore expert prompt templates (called "acts") for specialized AI interactions. Templates provide pre-built prompts for common tasks like code review, documentation, analysis, and more.
+Manage and explore expert prompt templates (called "acts") for specialized AI interactions. Templates provide pre-built prompts for common tasks like code review, documentation, analysis, and more. All templates work globally across all profiles.
 
 **Options:**
 
@@ -495,9 +656,29 @@ List and explore expert prompt templates (called "acts") for specialized AI inte
 
 List all available act templates with pagination
 
+**-b, --built-in**
+
+List only built-in act templates
+
+**-c, --custom**
+
+List only custom act templates
+
 **-s, --show** _template_
 
 Show detailed information about a specific template including its prompt text
+
+**--create**
+
+Create a new custom act template interactively
+
+**--edit** _template_
+
+Edit an existing custom act template
+
+**--delete** _template_
+
+Delete a custom act template
 
 **Template Categories:**
 
@@ -513,11 +694,31 @@ Show detailed information about a specific template including its prompt text
 
 **rawi act** **--list**
 
+# List only built-in templates
+
+**rawi act** **--built-in**
+
+# List only custom templates
+
+**rawi act** **--custom**
+
 # Show specific template details
 
 **rawi act** **--show** code-reviewer
 
-# Use template with ask command
+# Create a new custom template
+
+**rawi act** **--create**
+
+# Edit an existing custom template
+
+**rawi act** **--edit** my-template
+
+# Delete a custom template
+
+**rawi act** **--delete** my-template
+
+# Use template with ask command (works with any profile)
 
 **rawi ask** **--act** technical-writer "Document this API"
 
@@ -718,18 +919,43 @@ echo "Code reviews saved to review\_\*.md files"
 
 ### History and Session Management
 
-# Start focused session
+# Start focused session with a name
 
-session_id=$(rawi ask --new-session "Let's discuss TypeScript best practices" | grep "Session:" | cut -d' ' -f2)
+**rawi ask** **--new-session** **--session-name** "TypeScript Best Practices" "Let's discuss TypeScript patterns"
+
+# Interactive session selection
+
+**rawi ask** "Continue our previous discussion" **--list-sessions**
+
+# Session operations
+
+**rawi history** sessions **--table**
+
+**rawi history** rename abc123 "Updated Session Name"
+
+**rawi history** export abc123 **--output** typescript-discussion.json
+
+# Advanced session management
+
+**rawi chat** **--session-name** "Sprint Planning" **--act** project-manager
+
+**rawi chat** **--show-session-id** **--session-stats**
+
+# Session analytics
+
+**rawi history** sessions **--stats**
+
+**rawi history** stats **--profile** work
 
 # Continue the session
 
-**rawi ask** **--session** "$session_id" "What about error handling?"
-**rawi ask** **--session** "$session_id" "How to handle async operations?"
+**rawi ask** **--session** abc123 "What about error handling?"
+
+**rawi ask** **--session** abc123 "How to handle async operations?"
 
 # Review session later
 
-**rawi history** show "$session_id"
+**rawi history** show abc123
 
 ## INTEGRATION
 
