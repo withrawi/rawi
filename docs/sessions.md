@@ -47,6 +47,18 @@ rawi ask "Let's plan a new project" --new-session
 # Continue a specific session
 rawi ask "What were we discussing?" --session abc123-def456
 
+# Start a session with a custom name
+rawi ask "Begin architecture discussion" --session-name "Microservices Design"
+
+# 🆕 Interactive session selection
+rawi ask "Continue from where I left off" --list-sessions
+rawi chat --list-sessions
+
+# 🆕 Session management options
+rawi ask "Show current session details" --show-session-id
+rawi ask "Export this conversation" --export-session abc123-def456
+rawi chat --rename-session "Updated Project Name"
+
 # Get session ID for later use
 rawi history sessions --limit 1
 ```
@@ -183,20 +195,32 @@ rawi ask "Backend API questions" --profile backend --new-session
 
 ### Listing Sessions
 
-Find your conversations:
+Find your conversations with enhanced display options:
 
 ```bash
-# Recent sessions
+# Recent sessions (enhanced with full IDs)
 rawi history sessions
 
-# More sessions
+# 🆕 Interactive session selection
+rawi history sessions --interactive
+
+# 🆕 Table format with full details
+rawi history sessions --table
+
+# 🆕 Session statistics and metrics
+rawi history sessions --stats
+
+# More sessions with limits
 rawi history sessions --limit 20
 
 # All sessions
 rawi history sessions --all
 
-# Profile-specific
+# Profile-specific sessions
 rawi history sessions --profile work
+
+# 🆕 Advanced session operations
+rawi history sessions --operations-menu
 ```
 
 ### Searching Sessions
@@ -224,73 +248,152 @@ rawi history show abc123-def456
 
 # Session metadata
 rawi history sessions | grep abc123-def456
+
+# 🆕 Session operations
+rawi history rename abc123-def456 "New Session Name"
+rawi history delete abc123-def456
+rawi history export abc123-def456 --output session.json
 ```
+
+## 🆕 Enhanced Session Features
+
+### Interactive Session Management
+
+The new interactive features make session management effortless:
+
+```bash
+# Interactive session selection with full IDs
+rawi ask "Continue discussion" --list-sessions
+# Displays: Complete session IDs, names, message counts, creation dates
+# Allows: Easy selection with arrow keys and enter
+
+# Table format display
+rawi history sessions --table
+# Shows: Organized table with full session details
+# Includes: ID, Name, Messages, Created, Profile
+
+# Session statistics dashboard
+rawi history sessions --stats
+# Displays: Total sessions, messages, usage patterns
+# Metrics: Provider distribution, model usage, activity trends
+```
+
+### Advanced Session Operations
+
+Comprehensive session management capabilities:
+
+```bash
+# Session naming and organization
+rawi chat --session-name "Project Alpha Planning"
+rawi history rename abc123 "Updated Project Name"
+
+# Session export and backup
+rawi history export abc123 --output "project-session.json"
+rawi history export --profile work --output "work-backup.json"
+
+# Session insights and analytics
+rawi history stats --profile development
+rawi history sessions --search "authentication" --table
+
+# Batch operations
+rawi history cleanup --days 30 --profile old-project
+rawi history delete-multiple --interactive
+```
+
+### Full ID Display and No Truncation
+
+All session identifiers are displayed in full:
+
+- **Complete IDs** — No more truncated session identifiers
+- **Clear Tables** — Formatted tables with all details visible
+- **Easy Selection** — Interactive prompts with full context
+- **Better Navigation** — Find and select sessions with confidence
 
 ## Session Analytics
 
 ### Usage Statistics
 
-Monitor your AI usage:
+Monitor your AI usage with comprehensive analytics:
 
 ```bash
-# Overall statistics
+# Overall statistics dashboard
 rawi history stats
+# Shows: Total sessions, messages, providers, models, time patterns
 
-# Profile-specific stats
+# 🆕 Session-specific statistics
+rawi history sessions --stats
+# Displays: Session distribution, average messages, activity trends
+
+# Profile-specific analytics
 rawi history stats --profile work
+# Shows: Work profile usage patterns and metrics
 
-# Statistics include:
-# - Total sessions
-# - Total messages
-# - Usage by provider
-# - Usage by model
-# - Time ranges
+# Enhanced statistics include:
+# - Total sessions and messages
+# - Usage by provider and model
+# - Time-based activity patterns
+# - Session duration analytics
+# - Message frequency insights
 ```
 
 ### Session Metrics
 
-Understanding your conversation patterns:
+Understanding your conversation patterns with enhanced displays:
 
 ```bash
-# View session list with metrics
-rawi history sessions
-# Shows: ID, title, message count, creation time
+# 🆕 Enhanced session list with complete metrics
+rawi history sessions --table
+# Table shows: Full IDs, names, message counts, creation dates, profiles
 
-# Detailed statistics
-rawi history stats
-# Shows: Provider usage, model preferences, activity patterns
+# 🆕 Interactive session analytics
+rawi history sessions --interactive --stats
+# Combines: Session selection with statistical insights
+
+# Detailed session-level statistics
+rawi history stats --detailed
+# Shows: Per-session metrics, usage trends, conversation analytics
 ```
 
 ## Session Cleanup and Maintenance
 
-### Managing Old Sessions
+### Managing Sessions
 
-Keep your history organized:
+Keep your history organized with enhanced management tools:
 
 ```bash
-# Delete specific session
-rawi history delete abc123-def456
+# 🆕 Enhanced session deletion
+rawi history delete abc123-def456                 # Delete specific session
+rawi history delete --interactive                 # Select sessions to delete
 
-# Clean up old sessions (30+ days)
-rawi history cleanup --days 30
+# 🆕 Session renaming
+rawi history rename abc123-def456 "New Name"      # Rename specific session
+rawi chat --rename-session "Updated Name"         # Rename current session
 
-# Clean up specific profile
-rawi history cleanup --profile old-project --days 7
+# Clean up old sessions with better filtering
+rawi history cleanup --days 30                    # Remove sessions older than 30 days
+rawi history cleanup --profile old-project --days 7 # Profile-specific cleanup
+
+# 🆕 Batch operations
+rawi history cleanup --interactive                 # Interactive cleanup selection
+rawi history sessions --operations-menu           # Session management menu
 ```
 
 ### Exporting Sessions
 
-Backup your conversation history:
+Backup your conversation history with enhanced export options:
 
 ```bash
-# Export all history
-rawi history export --output backup.json
+# 🆕 Enhanced export capabilities
+rawi history export --output backup.json          # Export all history
+rawi history export abc123 --output session.json  # Export specific session
 
-# Export specific profile
+# Advanced export options
 rawi history export --profile work --output work-conversations.json
-
-# Export specific time range
 rawi history export --from 2024-01-01 --to 2024-03-31 --output q1-history.json
+
+# 🆕 Export with full metadata preservation
+rawi history export abc123 --include-metadata --output detailed-session.json
+rawi history export --stats --output usage-report.json
 ```
 
 ## Best Practices
@@ -365,11 +468,11 @@ rawi ask "Deep dive into performance" --profile claude --session arch-session
 **Session not found:**
 
 ```bash
-# Check if session exists
-rawi history sessions | grep abc123
+# Check if session exists with enhanced display
+rawi history sessions --table | grep abc123
 
-# List recent sessions
-rawi history sessions --limit 10
+# List recent sessions with full details
+rawi history sessions --limit 10 --table
 ```
 
 **Context lost:**
@@ -388,17 +491,33 @@ rawi ask "Summarize our previous discussion about X" --new-session
 rawi ask "Continue discussion" --profile correct-profile --session abc123
 ```
 
-### Session Recovery
+**🆕 Interactive selection issues:**
 
 ```bash
-# View session details
-rawi history show abc123-def456
+# If interactive selection doesn't work, try direct approach:
+rawi history sessions --table                     # View all sessions
+rawi ask "Continue" --session [specific-id]       # Use specific session ID
 
-# Export session for backup
-rawi history export --session abc123-def456 --output session-backup.json
+# Check terminal compatibility for interactive features
+rawi history sessions --no-interactive            # Fallback to table display
+```
 
-# Search for similar discussions
-rawi history --search "relevant keywords"
+### Session Recovery
+
+Enhanced recovery options:
+
+```bash
+# View comprehensive session details
+rawi history show abc123-def456 --detailed
+
+# Export session for backup with full metadata
+rawi history export abc123-def456 --include-metadata --output recovery.json
+
+# Search for similar discussions with enhanced search
+rawi history --search "relevant keywords" --table
+
+# 🆕 Session analytics for pattern matching
+rawi history stats --find-similar abc123-def456
 ```
 
 ## Related Documentation

@@ -87,13 +87,19 @@ rawi ask "Fix this Python error: NameError: name 'x' is not defined"
 # 🎭 Get specialized AI personas
 rawi ask --act security-expert "Analyze this authentication code for vulnerabilities"
 
-# 💬 Continue conversations
+# 💬 Smart session management
 rawi ask "How do I handle state management?" --new-session
 rawi ask "What about Redux specifically?" --session abc123
+rawi chat --session-name "React Learning" --list-sessions
 
 # 🔧 Integrate with your workflow
 git diff | rawi ask "Review these changes for potential issues"
 cat server.js | rawi ask --act code-reviewer "Optimize this Express.js code"
+
+# 📊 Session organization and insights
+rawi history sessions --table                    # View all sessions in organized table
+rawi history export abc123 --output "backup.json" # Export important conversations
+rawi history stats                               # See your AI usage patterns
 ```
 
 ## 🤖 AI Providers — Your Choice, Your Control
@@ -178,8 +184,11 @@ rawi ask "How do I optimize this SQL query?"
 # Use specific profiles for different projects
 rawi ask "Review this code" --profile work
 
-# Continue conversations with context
+# 🆕 Enhanced Session Management
 rawi ask "What about performance optimization?" --session abc123
+rawi ask "Start new discussion" --new-session
+rawi ask "Continue from list" --list-sessions
+rawi ask "Named session" --session-name "API Design Discussion"
 
 # Apply specialized AI personas
 rawi ask --act security-expert "Analyze this authentication logic"
@@ -187,6 +196,11 @@ rawi ask --act security-expert "Analyze this authentication logic"
 # Pipe input for analysis
 cat server.js | rawi ask "Review this Express server for security issues"
 git diff | rawi ask "Write a conventional commit message for these changes"
+
+# Session management options
+rawi ask "Show session details" --show-session-id
+rawi ask "Export this conversation" --export-session abc123
+rawi ask "Rename session" --rename-session "New Session Name"
 ```
 
 ### 💬 `rawi chat` — Interactive Conversations
@@ -206,10 +220,27 @@ rawi chat --act ethereum-developer
 # Start chat with verbose information
 rawi chat --verbose
 
+# 🆕 Session Management Options
+rawi chat --new-session              # Force create new session
+rawi chat --session abc123           # Continue specific session
+rawi chat --session-name "Project X" # Start with custom session name
+rawi chat --list-sessions            # List and select from existing sessions
+rawi chat --export-session abc123    # Export session to JSON file
+
+# Advanced session options
+rawi chat --show-session-id          # Display current session ID
+rawi chat --session-stats            # Show session statistics
+rawi chat --rename-session "New Name" # Rename current session
+
 # Chat commands within a session
-# /help  - Show chat commands
-# /quit  - Exit the chat (also /exit)
-# /clear - Clear conversation history
+# /help     - Show chat commands
+# /quit     - Exit the chat (also /exit)
+# /clear    - Clear conversation history
+# /session  - Show current session info
+# /sessions - List all sessions
+# /export   - Export current session
+# /rename   - Rename current session
+# /new      - Start new session
 ```
 
 **Perfect for:**
@@ -253,18 +284,35 @@ Powerful tools to manage your AI conversation history.
 # View recent conversations
 rawi history
 
-# Search conversation history
+# 🆕 Enhanced Session Management
+rawi history sessions                 # List all sessions with full details
+rawi history sessions --interactive   # Interactive session selection
+rawi history sessions --table         # Display in formatted table
+rawi history sessions --stats         # Show session statistics
+
+# Session operations
+rawi history show abc123              # Show specific session details
+rawi history rename abc123 "New Name" # Rename session
+rawi history delete abc123            # Delete specific session
+rawi history export abc123            # Export session to JSON
+
+# Advanced session filtering
+rawi history sessions --profile work  # Filter by profile
+rawi history sessions --limit 10      # Limit results
+rawi history sessions --search "docker" # Search session content
+
+# Batch operations
+rawi history cleanup --days 30        # Clean up old sessions
+rawi history export --output backup.json # Export all history
+rawi history stats                    # Show usage statistics
+
+# Interactive features
+rawi history --list-sessions          # List and select sessions interactively
+rawi history --session-operations     # Interactive session management menu
+
+# Legacy search (still supported)
 rawi history --search "docker deployment"
-
-# Show specific session details
-rawi history show abc123
-
-# Advanced filtering
 rawi history --provider openai --model gpt-4o --from 2024-01-01
-
-# Export and cleanup
-rawi history export --output backup.json
-rawi history cleanup --days 30
 ```
 
 ### 🎭 `rawi act` — Template Explorer
@@ -307,7 +355,164 @@ rawi info
 rawi info --profiles
 ```
 
-## 🛠️ Configuration Made Simple
+## � Session Management — Persistent AI Conversations
+
+Rawi's advanced session management system lets you maintain context across conversations, organize your AI interactions, and never lose track of important discussions.
+
+### 🎯 What Are Sessions?
+
+Sessions are persistent conversation threads that:
+
+- **Preserve context** — AI remembers your entire conversation history
+- **Maintain organization** — Group related discussions together
+- **Enable continuation** — Resume conversations from where you left off
+- **Provide insights** — Track usage statistics and conversation metrics
+
+### 🚀 Quick Session Examples
+
+```bash
+# Start a focused work session
+rawi chat --session-name "API Design Review" --profile work
+
+# Continue yesterday's conversation
+rawi ask "What about the security concerns we discussed?" --session abc123
+
+# List and select from your sessions interactively
+rawi ask "Continue where we left off" --list-sessions
+
+# Export important conversations
+rawi history export abc123 --output "project-discussion.json"
+```
+
+### 💡 Session Workflow Examples
+
+**📋 Project Planning Session**
+
+```bash
+# Start dedicated project session
+rawi chat --session-name "E-commerce Platform Design" --act solution-architect
+
+# Within chat: plan architecture, discuss features, review decisions
+# Exit and continue later
+rawi ask "Let's finalize the database schema" --session ecommerce-123
+```
+
+**🐛 Debugging Session**
+
+```bash
+# Start debugging session with context
+rawi ask "I'm getting authentication errors" --new-session --act debugging-expert
+
+# Continue with code snippets and logs
+cat error.log | rawi ask "Analyze these authentication errors" --session debug-456
+
+# Come back with solutions
+rawi ask "The JWT validation fix worked, now what about rate limiting?" --session debug-456
+```
+
+**📚 Learning Session**
+
+```bash
+# Long-term learning conversation
+rawi chat --session-name "Machine Learning Journey" --act ai-instructor
+
+# Build knowledge over multiple days
+rawi ask "Yesterday we covered neural networks, today let's discuss transformers" --session ml-789
+```
+
+### 🛠️ Session Operations
+
+**Create and Name Sessions**
+
+```bash
+rawi chat --session-name "Sprint Planning Q1"    # Named interactive session
+rawi ask "Quick question" --new-session          # Force new session
+```
+
+**Navigate and Select Sessions**
+
+```bash
+rawi history sessions                             # List all sessions
+rawi history sessions --interactive               # Pick from interactive list
+rawi chat --list-sessions                        # Select session for chat
+```
+
+**Session Information**
+
+```bash
+rawi history show abc123                         # View full conversation
+rawi history sessions --stats                    # Usage statistics
+rawi chat --show-session-id                     # Display current session ID
+```
+
+**Organize and Clean Up**
+
+```bash
+rawi history rename abc123 "Updated Name"       # Rename sessions
+rawi history delete abc123                      # Remove unwanted sessions
+rawi history cleanup --days 30                  # Bulk cleanup old sessions
+```
+
+**Export and Backup**
+
+```bash
+rawi history export abc123                      # Export single session
+rawi history export --output "backup.json"     # Export all history
+```
+
+### 🎨 Session Best Practices
+
+1. **🏷️ Use Meaningful Names** — Create sessions with descriptive names for important topics
+2. **📁 Organize by Profile** — Use different profiles for work, personal, and project contexts
+3. **🔄 Continue Related Discussions** — Keep context by continuing relevant sessions
+4. **🧹 Clean Up Regularly** — Remove old or temporary sessions to stay organized
+5. **💾 Export Important Conversations** — Backup valuable discussions and insights
+
+### 📈 Session Analytics
+
+Track your AI usage patterns:
+
+```bash
+# Overall statistics
+rawi history stats
+# Shows: Total sessions, messages, provider usage, time patterns
+
+# Session-specific metrics
+rawi history sessions --table
+# Shows: Session IDs, names, message counts, creation dates
+
+# Usage insights
+rawi history sessions --profile work --stats
+# Shows: Work-specific session analytics
+```
+
+### 🔧 Advanced Session Features
+
+**Interactive Selection with Full IDs**
+
+- Sessions display complete identifiers (no truncation)
+- Table format shows all session details clearly
+- Interactive prompts for easy session selection
+
+**Smart Session Continuation**
+
+- Automatic session detection based on context
+- Profile-aware session grouping
+- Intelligent session suggestions
+
+**Export Capabilities**
+
+- JSON format with full conversation history
+- Metadata preservation (timestamps, providers, models)
+- Batch export options for backup and analysis
+
+### 📚 Session Documentation
+
+- [**Detailed Session Guide**](./docs/sessions.md) — Complete session management documentation
+- [**History Command Reference**](./docs/commands/history.md) — All history command options
+- [**Ask Command Guide**](./docs/commands/ask.md) — Session options for ask command
+
+## �🛠️ Configuration Made Simple
 
 Get up and running with any AI provider in minutes:
 

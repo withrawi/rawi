@@ -3,11 +3,16 @@ import chalk from 'chalk';
 import {getChatProvider} from '../../../../core/providers/chat/index.js';
 import {spinnerManager} from '../../../../core/shared/spinner.js';
 import type {ChatOptions} from '../types.js';
-import type {ChatMessage} from './chat-session.js';
+
+// Simple message type for in-memory conversation
+interface SimpleMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
 export const streamChatResponse = async (
   credentials: any,
-  messages: ChatMessage[],
+  messages: SimpleMessage[],
   options: ChatOptions,
   terminal?: any,
 ): Promise<string> => {

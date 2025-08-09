@@ -44,11 +44,13 @@
 
 - **Multi-provider support** \- Use different AI providers seamlessly
 - **Profile management** \- Multiple configurations for different contexts
-- **Session history** \- Persistent chat sessions with search and export
+- **Enhanced session management** \- Persistent chat sessions with interactive selection, naming, and full ID display
+- **Session analytics** \- Comprehensive usage statistics and conversation insights
 - **Template system** \- Expert prompt templates for specialized tasks
 - **Piped input** \- Unix-style stdin support for scripting
 - **Interactive mode** \- Guided configuration and template selection
 - **Modern formatting** \- Clean, readable output with syntax highlighting
+- **Export capabilities** \- Backup sessions and conversation history
 
 ## GLOBAL OPTIONS
 
@@ -95,6 +97,26 @@ Continue an existing chat session by providing the session ID
 **-n, --new-session**
 
 Force creation of a new chat session instead of continuing the last one
+
+**--session-name** _name_
+
+Create a new session with a custom name for better organization
+
+**--list-sessions**
+
+Interactively select from existing sessions to continue
+
+**--show-session-id**
+
+Display the session ID in the output for reference
+
+**--export-session** _sessionId_
+
+Export a specific session to JSON format for backup
+
+**--rename-session** _name_
+
+Rename the current or specified session
 
 **--act** _template_
 
@@ -196,7 +218,23 @@ Reset filtering configuration to defaults (enables all filter types).
 
 # Use expert template with file input
 
+# Use expert template with file input
+
 **rawi ask** **--act** code-reviewer **--file** src/app.js "Review this code"
+
+# Session management examples
+
+**rawi ask** "Start new project discussion" **--new-session** **--session-name** "Project Alpha"
+
+**rawi ask** "Continue where we left off" **--list-sessions**
+
+**rawi ask** "Show me the session details" **--show-session-id**
+
+**rawi ask** "Update discussion name" **--rename-session** "Updated Project Alpha"
+
+**rawi ask** "Export this conversation" **--export-session** abc123
+
+# Filter sensitive information
 
 # Combine piped input with file processing
 
@@ -273,6 +311,38 @@ Apply an expert prompt template for the entire chat session. The AI will maintai
 
 Show detailed status information, connection details, and debug output during the chat session
 
+**--session** _sessionId_
+
+Continue a specific chat session by ID
+
+**--new-session**
+
+Force creation of a new chat session
+
+**--session-name** _name_
+
+Start a new session with a custom name
+
+**--list-sessions**
+
+List and select from existing sessions interactively
+
+**--show-session-id**
+
+Display the current session ID during chat
+
+**--export-session** _sessionId_
+
+Export a specific session to JSON format
+
+**--rename-session** _name_
+
+Rename the current session
+
+**--session-stats**
+
+Show statistics for the current session
+
 **Chat Commands:**
 
 Once in a chat session, you can use special commands:
@@ -288,6 +358,26 @@ End the chat session and return to terminal
 **/clear**
 
 Clear the conversation history while staying in the chat
+
+**/session**
+
+Show current session information including ID and metadata
+
+**/sessions**
+
+List all available sessions for navigation
+
+**/export**
+
+Export the current session to JSON format
+
+**/rename** _name_
+
+Rename the current session
+
+**/new**
+
+Start a new session while keeping the current chat open
 
 **Examples:**
 
@@ -310,6 +400,18 @@ Clear the conversation history while staying in the chat
 # Combined options
 
 **rawi chat** **--profile** work **--act** code-reviewer **--verbose**
+
+# Session management examples
+
+**rawi chat** **--session-name** "Sprint Planning Session"
+
+**rawi chat** **--list-sessions**
+
+**rawi chat** **--session** abc123
+
+**rawi chat** **--new-session** **--act** debugging-expert
+
+**rawi chat** **--show-session-id** **--session-stats**
 
 **Use Cases:**
 
@@ -485,9 +587,9 @@ Show sessions to date (YYYY-MM-DD format)
 
 **Subcommands:**
 
-**sessions**
+**sessions** [*options*]
 
-List and manage chat sessions with interactive navigation
+List and manage chat sessions with enhanced display options and interactive navigation
 
 **show** _sessionId_
 
@@ -496,6 +598,14 @@ Display all messages in a specific session
 **delete** _sessionId_
 
 Delete a session and all its messages permanently
+
+**rename** _sessionId_ _name_
+
+Rename a specific session for better organization
+
+**export** _sessionId_ [**--output** *file*]
+
+Export a specific session to JSON format
 
 **stats**
 
@@ -508,6 +618,24 @@ Clean up old sessions. Use **--days** to specify age threshold
 **export** [**--output** *file*] [**--format** *format*]
 
 Export history to file. Supports JSON and CSV formats
+
+**Sessions Subcommand Options:**
+
+**--interactive**
+
+Enable interactive session selection with navigation
+
+**--table**
+
+Display sessions in a formatted table with complete details
+
+**--stats**
+
+Show session statistics and analytics
+
+**--operations-menu**
+
+Open interactive session management menu
 
 **Examples:**
 
@@ -530,6 +658,20 @@ Export history to file. Supports JSON and CSV formats
 # Interactive session management
 
 **rawi history** sessions
+
+# Enhanced session display options
+
+**rawi history** sessions **--table**
+
+**rawi history** sessions **--interactive**
+
+**rawi history** sessions **--stats**
+
+# Session operations
+
+**rawi history** rename abc123 "New Session Name"
+
+**rawi history** export abc123 **--output** session.json
 
 # View specific session
 
@@ -789,18 +931,43 @@ echo "Code reviews saved to review\_\*.md files"
 
 ### History and Session Management
 
-# Start focused session
+# Start focused session with a name
 
-session_id=$(rawi ask --new-session "Let's discuss TypeScript best practices" | grep "Session:" | cut -d' ' -f2)
+**rawi ask** **--new-session** **--session-name** "TypeScript Best Practices" "Let's discuss TypeScript patterns"
+
+# Interactive session selection
+
+**rawi ask** "Continue our previous discussion" **--list-sessions**
+
+# Session operations
+
+**rawi history** sessions **--table**
+
+**rawi history** rename abc123 "Updated Session Name"
+
+**rawi history** export abc123 **--output** typescript-discussion.json
+
+# Advanced session management
+
+**rawi chat** **--session-name** "Sprint Planning" **--act** project-manager
+
+**rawi chat** **--show-session-id** **--session-stats**
+
+# Session analytics
+
+**rawi history** sessions **--stats**
+
+**rawi history** stats **--profile** work
 
 # Continue the session
 
-**rawi ask** **--session** "$session_id" "What about error handling?"
-**rawi ask** **--session** "$session_id" "How to handle async operations?"
+**rawi ask** **--session** abc123 "What about error handling?"
+
+**rawi ask** **--session** abc123 "How to handle async operations?"
 
 # Review session later
 
-**rawi history** show "$session_id"
+**rawi history** show abc123
 
 ## INTEGRATION
 
