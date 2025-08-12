@@ -361,7 +361,7 @@ export class DatabaseAdapter {
           CREATE TABLE IF NOT EXISTS sessions (
             id TEXT PRIMARY KEY,
             profile TEXT NOT NULL,
-            type TEXT NOT NULL DEFAULT 'chat' CHECK (type IN ('ask', 'chat')),
+            type TEXT NOT NULL DEFAULT 'ask',
             title TEXT,
             description TEXT,
             status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'archived', 'paused', 'pending', 'completed', 'failed')),
@@ -563,7 +563,7 @@ export class DatabaseAdapter {
   async createSession(
     profile: string,
     title?: string,
-    type: 'ask' | 'chat' = 'ask',
+    type: 'ask' | 'chat' | 'exec' = 'ask',
   ): Promise<string> {
     await this.ensureDatabaseInitialized();
 

@@ -21,6 +21,14 @@ rawi [global-options]
 
 > Ask AI questions and get intelligent responses. Supports conversation sessions, act templates, and piped input.
 
+`chat`
+
+> Start interactive chat sessions for back-and-forth conversations with AI models.
+
+`exec`
+
+> Convert natural language descriptions into executable CLI commands with safety validation.
+
 `configure`
 
 > Configure AI provider settings and manage configuration profiles.
@@ -61,9 +69,11 @@ rawi [global-options]
 
 ### AI Interaction
 
-**Primary Command**
+**Primary Commands**
 
 - `ask` - Main interface for AI conversations
+- `chat` - Interactive chat sessions for extended conversations
+- `exec` - Convert natural language to executable commands
 
 **Supporting Commands**
 
@@ -94,6 +104,22 @@ rawi ask --act developer "Review this code"
 
 # With file input
 cat file.txt | rawi ask "Summarize this"
+```
+
+### Command Generation
+
+```bash
+# Generate and execute commands
+rawi exec "list all files in current directory"
+
+# Dry run to see command without executing
+rawi exec "find large files" --dry-run
+
+# With piped input
+echo "show disk usage" | rawi exec
+
+# Interactive mode
+rawi exec
 ```
 
 ### Configuration Workflow

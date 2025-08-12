@@ -91,6 +91,8 @@ Welcome to the **Rawi (راوي)** documentation wiki! This comprehensive guide 
 
 - [**Commands Overview**](commands/README.md) — All available commands
 - [**ask** — AI Assistant](commands/ask.md) — Interactive AI conversations
+- [**chat** — Interactive Sessions](commands/chat.md) — Extended chat conversations
+- [**exec** — Command Generation](commands/exec.md) — Convert natural language to CLI commands
 - [**configure** — Setup & Management](commands/configure.md) — Configuration and settings
 - [**history** — Conversation Management](commands/history.md) — View and manage conversation history
 - [**act** — Template Explorer](commands/act.md) — Role-based AI interactions

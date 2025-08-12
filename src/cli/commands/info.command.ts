@@ -16,6 +16,7 @@ export const createInfoCommand = (): Command => {
         chalk.gray(
           'Show version, author, license, configuration status, and more.',
         ),
+        '─'.repeat(80),
       ].join('\n'),
     )
     .option('--profiles', chalk.white('Show configured profiles'))

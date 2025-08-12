@@ -17,6 +17,7 @@ export const createProviderCommand = (): Command => {
         chalk.gray(
           'Use this to discover available providers and their capabilities.',
         ),
+        '─'.repeat(80),
       ].join('\n'),
     )
     .option('-l, --list', chalk.white('List all supported AI providers'))

@@ -4,7 +4,7 @@ import {integer, real, sqliteTable, text} from 'drizzle-orm/sqlite-core';
 export const sessions = sqliteTable('sessions', {
   id: text('id').primaryKey(),
   profile: text('profile').notNull(),
-  type: text('type', {enum: ['ask', 'chat']})
+  type: text('type', {enum: ['ask', 'chat', 'exec']})
     .notNull()
     .default('ask'),
   title: text('title'),

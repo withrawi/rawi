@@ -21,6 +21,7 @@ export const createActCommand = (): Command => {
         '',
         chalk.gray('Create, edit, and use custom act templates.'),
         chalk.gray('View built-in templates and manage your own.'),
+        '─'.repeat(80),
       ].join('\n'),
     )
     .option('-l, --list', chalk.white('List all available act templates'))
