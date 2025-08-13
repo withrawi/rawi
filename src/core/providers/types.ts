@@ -1,4 +1,16 @@
 import type {ModelMessage} from 'ai';
+import type {RawiCredentials} from '../shared/index.js';
+
+export interface ExecGenerationOptions {
+  credentials: RawiCredentials;
+  systemPrompt: string;
+  userPrompt: string;
+}
+
+export interface ExecGenerationResult {
+  command: string;
+  generationTime: number;
+}
 
 export interface ChatProvider {
   name: string;

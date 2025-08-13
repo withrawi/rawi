@@ -1,7 +1,4 @@
-import type {
-  ExecGenerationOptions,
-  ExecGenerationResult,
-} from '../providers/exec/index.js';
+import {generateWithProvider} from '../providers/utils.js';
 import type {RawiCredentials} from '../shared/index.js';
 import {buildExecContext, formatContextForPrompt} from './context.js';
 import {createSystemPrompt, createUserPrompt} from './prompts.js';
@@ -22,15 +19,11 @@ export interface GeneratedCommand {
 export async function generateCommand(
   options: GenerateCommandOptions,
 ): Promise<GeneratedCommand> {
-  // Build system context
   const context = await buildExecContext();
   const contextInfo = formatContextForPrompt(context);
-
-  // Prepare prompts
   const systemPrompt = createSystemPrompt(contextInfo);
   const userPrompt = createUserPrompt(options.description);
 
-  // Generate the command using the appropriate provider
   const result = await generateWithProvider({
     credentials: options.credentials,
     systemPrompt,
@@ -43,83 +36,6 @@ export async function generateCommand(
     context: contextInfo,
     generationTime: result.generationTime,
   };
-}
-
-async function generateWithProvider(
-  options: ExecGenerationOptions,
-): Promise<ExecGenerationResult> {
-  const providerName = options.credentials.provider;
-
-  switch (providerName) {
-    case 'ollama': {
-      const {generateWithOllama} = await import(
-        '../providers/exec/ollama.provider.js'
-      );
-      return generateWithOllama(options);
-    }
-    case 'openai': {
-      const {generateWithOpenAI} = await import(
-        '../providers/exec/openai.provider.js'
-      );
-      return generateWithOpenAI(options);
-    }
-    case 'anthropic': {
-      const {generateWithAnthropic} = await import(
-        '../providers/exec/anthropic.provider.js'
-      );
-      return generateWithAnthropic(options);
-    }
-    case 'google': {
-      const {generateWithGoogle} = await import(
-        '../providers/exec/google.provider.js'
-      );
-      return generateWithGoogle(options);
-    }
-    case 'xai': {
-      const {generateWithXAI} = await import(
-        '../providers/exec/xai.provider.js'
-      );
-      return generateWithXAI(options);
-    }
-    case 'deepseek': {
-      const {generateWithDeepSeek} = await import(
-        '../providers/exec/deepseek.provider.js'
-      );
-      return generateWithDeepSeek(options);
-    }
-    case 'mistral': {
-      const {generateWithMistral} = await import(
-        '../providers/exec/mistral.provider.js'
-      );
-      return generateWithMistral(options);
-    }
-    case 'cerebras': {
-      const {generateWithCerebras} = await import(
-        '../providers/exec/cerebras.provider.js'
-      );
-      return generateWithCerebras(options);
-    }
-    case 'lmstudio': {
-      const {generateWithLMStudio} = await import(
-        '../providers/exec/lmstudio.provider.js'
-      );
-      return generateWithLMStudio(options);
-    }
-    case 'azure': {
-      const {generateWithAzure} = await import(
-        '../providers/exec/azure.provider.js'
-      );
-      return generateWithAzure(options);
-    }
-    case 'bedrock': {
-      const {generateWithBedrock} = await import(
-        '../providers/exec/amazon-bedrock.provider.js'
-      );
-      return generateWithBedrock(options);
-    }
-    default:
-      throw new Error(`Unsupported provider for exec: ${providerName}`);
-  }
 }
 
 export function validateCommand(command: string): {

@@ -1,7 +1,18 @@
-import {ContentFilter} from '../../content-filter/content-filter.js';
-import {applyContentFiltering} from '../../content-filter/middleware.js';
-import type {RawiCredentials, StreamingResponse} from '../../shared/index.js';
+import {ContentFilter} from '../content-filter/content-filter.js';
+import {applyContentFiltering} from '../content-filter/middleware.js';
+import type {RawiCredentials, StreamingResponse} from '../shared/index.js';
 import {
+  generateWithAnthropic,
+  generateWithAzure,
+  generateWithBedrock,
+  generateWithCerebras,
+  generateWithDeepSeek,
+  generateWithGoogle,
+  generateWithLMStudio,
+  generateWithMistral,
+  generateWithOllama,
+  generateWithOpenAI,
+  generateWithXAI,
   streamWithAnthropic,
   streamWithAzure,
   streamWithBedrock,
@@ -14,6 +25,7 @@ import {
   streamWithOpenAI,
   streamWithXAI,
 } from './index.js';
+import type {ExecGenerationOptions, ExecGenerationResult} from './types.js';
 
 export interface StreamResponseOptions {
   filtering?: {
@@ -130,3 +142,47 @@ export const processQuery = async (
     throw error;
   }
 };
+
+export async function generateWithProvider(
+  options: ExecGenerationOptions,
+): Promise<ExecGenerationResult> {
+  const providerName = options.credentials.provider;
+
+  switch (providerName) {
+    case 'ollama': {
+      return generateWithOllama(options);
+    }
+    case 'openai': {
+      return generateWithOpenAI(options);
+    }
+    case 'anthropic': {
+      return generateWithAnthropic(options);
+    }
+    case 'google': {
+      return generateWithGoogle(options);
+    }
+    case 'xai': {
+      return generateWithXAI(options);
+    }
+    case 'deepseek': {
+      return generateWithDeepSeek(options);
+    }
+    case 'mistral': {
+      return generateWithMistral(options);
+    }
+    case 'cerebras': {
+      return generateWithCerebras(options);
+    }
+    case 'lmstudio': {
+      return generateWithLMStudio(options);
+    }
+    case 'azure': {
+      return generateWithAzure(options);
+    }
+    case 'bedrock': {
+      return generateWithBedrock(options);
+    }
+    default:
+      throw new Error(`Unsupported provider for exec: ${providerName}`);
+  }
+}

@@ -1,12 +1,21 @@
 import {type bedrock, createAmazonBedrock} from '@ai-sdk/amazon-bedrock';
-import {streamText} from 'ai';
+import type {ModelMessage} from 'ai';
+import {generateText, streamText} from 'ai';
+import {parseCommandFromResponse} from '../exec/parser.js';
 import type {
   BedrockSettings,
   LooseToStrict,
   ModelInfo,
   RawiCredentials,
   StreamingResponse,
-} from '../../shared/index.js';
+} from '../shared/index.js';
+import type {
+  ChatCredentials,
+  ChatProvider,
+  ChatStreamOptions,
+  ExecGenerationOptions,
+  ExecGenerationResult,
+} from './types.js';
 
 type LooseBedrockModelId = Parameters<typeof bedrock>[0];
 export type BedrockModelId = LooseToStrict<LooseBedrockModelId>;
@@ -82,7 +91,7 @@ export const bedrockModels: ModelInfo[] = bedrockModelIds.map((name) => ({
 
 export const bedrockProvider = {
   name: 'bedrock' as const,
-  displayName: '🟠 Amazon Bedrock',
+  displayName: '🟡 Amazon Bedrock',
   models: bedrockModels,
 };
 
@@ -94,7 +103,6 @@ export const streamWithBedrock = async (
     const settings = credentials.providerSettings as
       | BedrockSettings
       | undefined;
-
     const region = settings?.region || process.env.AWS_REGION || 'us-east-1';
 
     let bedrockClient: ReturnType<typeof createAmazonBedrock>;
@@ -104,7 +112,6 @@ export const streamWithBedrock = async (
         const {fromNodeProviderChain} = await import(
           '@aws-sdk/credential-providers'
         );
-
         bedrockClient = createAmazonBedrock({
           region,
           credentialProvider: fromNodeProviderChain(),
@@ -131,9 +138,12 @@ export const streamWithBedrock = async (
 
       bedrockClient = createAmazonBedrock({
         region,
-        accessKeyId,
-        secretAccessKey,
-        sessionToken,
+        credentialProvider: () =>
+          Promise.resolve({
+            accessKeyId,
+            secretAccessKey,
+            sessionToken,
+          }),
       });
     }
 
@@ -154,5 +164,135 @@ export const streamWithBedrock = async (
         error instanceof Error ? error.message : String(error)
       }`,
     );
+  }
+};
+
+export const bedrockChatProvider: ChatProvider = {
+  name: 'bedrock',
+  displayName: '🟡 Amazon Bedrock',
+
+  async streamChat(
+    credentials: ChatCredentials,
+    messages: ModelMessage[],
+    options: ChatStreamOptions = {},
+  ): Promise<AsyncIterable<string>> {
+    const settings = (credentials.providerSettings as BedrockSettings) || {};
+    const region = settings.region || process.env.AWS_REGION || 'us-east-1';
+
+    let bedrockClient: ReturnType<typeof createAmazonBedrock>;
+
+    if (settings.useProviderChain) {
+      try {
+        const {fromNodeProviderChain} = await import(
+          '@aws-sdk/credential-providers'
+        );
+        bedrockClient = createAmazonBedrock({
+          region,
+          credentialProvider: fromNodeProviderChain(),
+        });
+      } catch (_) {
+        throw new Error('Failed to load AWS credential provider chain.');
+      }
+    } else {
+      const accessKeyId = settings.accessKeyId || process.env.AWS_ACCESS_KEY_ID;
+      const secretAccessKey =
+        settings.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+      const sessionToken =
+        settings?.sessionToken || process.env.AWS_SESSION_TOKEN;
+
+      if (!accessKeyId || !secretAccessKey) {
+        throw new Error(
+          'AWS access key ID and secret access key are required for Amazon Bedrock',
+        );
+      }
+
+      bedrockClient = createAmazonBedrock({
+        region,
+        credentialProvider: () =>
+          Promise.resolve({
+            accessKeyId,
+            secretAccessKey,
+            sessionToken,
+          }),
+      });
+    }
+
+    const result = streamText({
+      model: bedrockClient(credentials.model),
+      messages,
+      temperature: credentials.temperature || options.temperature || 0.7,
+      maxOutputTokens: credentials.maxTokens || options.maxTokens || 2048,
+    });
+
+    return result.textStream;
+  },
+};
+
+export const generateWithBedrock = async (
+  options: ExecGenerationOptions,
+): Promise<ExecGenerationResult> => {
+  const startTime = Date.now();
+
+  try {
+    const settings = options.credentials.providerSettings as
+      | BedrockSettings
+      | undefined;
+    const region = settings?.region || process.env.AWS_REGION || 'us-east-1';
+
+    let bedrockClient: ReturnType<typeof createAmazonBedrock>;
+
+    if (settings?.useProviderChain) {
+      try {
+        const {fromNodeProviderChain} = await import(
+          '@aws-sdk/credential-providers'
+        );
+        bedrockClient = createAmazonBedrock({
+          region,
+          credentialProvider: fromNodeProviderChain(),
+        });
+      } catch (_) {
+        throw new Error('Failed to load AWS credential provider chain.');
+      }
+    } else {
+      const accessKeyId =
+        settings?.accessKeyId || process.env.AWS_ACCESS_KEY_ID;
+      const secretAccessKey =
+        settings?.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+      const sessionToken =
+        settings?.sessionToken || process.env.AWS_SESSION_TOKEN;
+
+      if (!accessKeyId || !secretAccessKey) {
+        throw new Error(
+          'AWS access key ID and secret access key are required for Amazon Bedrock',
+        );
+      }
+
+      bedrockClient = createAmazonBedrock({
+        region,
+        credentialProvider: () =>
+          Promise.resolve({
+            accessKeyId,
+            secretAccessKey,
+            sessionToken,
+          }),
+      });
+    }
+
+    const result = await generateText({
+      model: bedrockClient(options.credentials.model),
+      system: options.systemPrompt,
+      prompt: options.userPrompt,
+    });
+
+    const generationTime = Date.now() - startTime;
+
+    const command = parseCommandFromResponse(result.text);
+
+    return {
+      command,
+      generationTime,
+    };
+  } catch (error) {
+    throw new Error(`Amazon Bedrock exec generation failed: ${error}`);
   }
 };

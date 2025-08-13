@@ -1,12 +1,21 @@
 import {createOpenAI, type openai} from '@ai-sdk/openai';
-import {streamText} from 'ai';
+import type {ModelMessage} from 'ai';
+import {generateText, streamText} from 'ai';
+import {parseCommandFromResponse} from '../exec/parser.js';
 import type {
   LooseToStrict,
   ModelInfo,
   OpenAISettings,
   RawiCredentials,
   StreamingResponse,
-} from '../../shared/index.js';
+} from '../shared/index.js';
+import type {
+  ChatCredentials,
+  ChatProvider,
+  ChatStreamOptions,
+  ExecGenerationOptions,
+  ExecGenerationResult,
+} from './types.js';
 
 type LooseOpenAIModelId = Parameters<typeof openai>[0];
 export type OpenAIModelId = LooseToStrict<LooseOpenAIModelId>;
@@ -109,5 +118,70 @@ export const streamWithOpenAI = async (
         error instanceof Error ? error.message : String(error)
       }`,
     );
+  }
+};
+
+export const openaiChatProvider: ChatProvider = {
+  name: 'openai',
+  displayName: '🔵 OpenAI (GPT)',
+
+  async streamChat(
+    credentials: ChatCredentials,
+    messages: ModelMessage[],
+    options: ChatStreamOptions = {},
+  ): Promise<AsyncIterable<string>> {
+    const settings = credentials.providerSettings || {};
+    const apiKey = settings.apiKey || credentials.apiKey;
+
+    if (!apiKey) {
+      throw new Error('API key is required for OpenAI');
+    }
+
+    const openaiProvider = createOpenAI({
+      apiKey: apiKey,
+      baseURL: settings.baseURL || 'https://api.openai.com/v1',
+    });
+
+    const result = streamText({
+      model: openaiProvider(credentials.model),
+      messages,
+      temperature: credentials.temperature || options.temperature || 0.7,
+      maxOutputTokens: credentials.maxTokens || options.maxTokens || 2048,
+    });
+
+    return result.textStream;
+  },
+};
+
+export const generateWithOpenAI = async (
+  options: ExecGenerationOptions,
+): Promise<ExecGenerationResult> => {
+  const startTime = Date.now();
+
+  try {
+    const openAISettings = options.credentials
+      .providerSettings as OpenAISettings;
+
+    const openAIProvider = createOpenAI({
+      apiKey: options.credentials.apiKey,
+      baseURL: openAISettings?.baseURL,
+    });
+
+    const result = await generateText({
+      model: openAIProvider(options.credentials.model),
+      system: options.systemPrompt,
+      prompt: options.userPrompt,
+    });
+
+    const generationTime = Date.now() - startTime;
+
+    const command = parseCommandFromResponse(result.text);
+
+    return {
+      command,
+      generationTime,
+    };
+  } catch (error) {
+    throw new Error(`OpenAI exec generation failed: ${error}`);
   }
 };
