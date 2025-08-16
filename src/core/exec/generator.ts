@@ -38,13 +38,24 @@ export async function generateCommand(
   };
 }
 
-export function validateCommand(command: string): {
+export function validateCommand(command: string, context?: any): {
   isValid: boolean;
   isDangerous: boolean;
   warnings: string[];
 } {
   const warnings: string[] = [];
   let isDangerous = false;
+
+  // Check for platform mismatch
+  if (context && process.platform === 'win32' && (context.shell?.includes('pwsh') || context.shell?.includes('powershell'))) {
+    const unixCommands = ['ls', 'grep', 'du', 'ps', 'find', 'cat', 'head', 'tail', 'awk', 'sed', 'chmod', 'chown'];
+    const commandWords = command.split(/\s+/);
+    const firstCommand = commandWords[0];
+    
+    if (unixCommands.includes(firstCommand)) {
+      warnings.push(`Unix command '${firstCommand}' detected on Windows PowerShell - should use PowerShell cmdlets instead`);
+    }
+  }
 
   const dangerousPatterns = [
     /rm\s+-rf\s*\/\s*$/, // rm -rf /

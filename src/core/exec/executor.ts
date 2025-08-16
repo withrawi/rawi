@@ -59,8 +59,27 @@ export async function executeCommand(
       await ensureSSHAgent();
     }
 
+    // Detect appropriate shell based on platform
+    let defaultShell: string;
+    if (process.platform === 'win32') {
+      // On Windows, detect PowerShell vs cmd
+      if (process.env.PSModulePath) {
+        // We're in PowerShell, check if it's PowerShell Core (pwsh) or Windows PowerShell
+        const isCore = process.env.PSEdition === 'Core' || 
+                       process.env.POWERSHELL_DISTRIBUTION_CHANNEL?.includes('PowerShell') ||
+                       process.env.PSVersionTable !== undefined;
+        defaultShell = isCore ? 'pwsh.exe' : 'powershell.exe';
+      } else {
+        // We're in cmd.exe
+        defaultShell = 'cmd.exe';
+      }
+    } else {
+      // On Unix-like systems, use SHELL environment variable or bash
+      defaultShell = process.env.SHELL || '/bin/bash';
+    }
+
     const execOptions = {
-      shell: options.shell || process.env.SHELL || '/bin/bash',
+      shell: options.shell || defaultShell,
       cwd: options.cwd || process.cwd(),
       timeout: options.timeout || 30000,
       maxBuffer: 1024 * 1024,

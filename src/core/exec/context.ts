@@ -20,6 +20,25 @@ export async function buildExecContext(): Promise<ExecContext> {
   const totalMem = os.totalmem();
   const freeMem = os.freemem();
 
+  // Detect default shell based on platform
+  let defaultShell = 'unknown';
+  if (process.platform === 'win32') {
+    // On Windows, detect PowerShell vs cmd
+    if (process.env.PSModulePath) {
+      // We're in PowerShell, check if it's PowerShell Core (pwsh) or Windows PowerShell
+      const isCore = process.env.PSEdition === 'Core' || 
+                     process.env.POWERSHELL_DISTRIBUTION_CHANNEL?.includes('PowerShell') ||
+                     process.env.PSVersionTable !== undefined;
+      defaultShell = isCore ? 'pwsh.exe' : 'powershell.exe';
+    } else {
+      // We're in cmd.exe
+      defaultShell = 'cmd.exe';
+    }
+  } else {
+    // On Unix-like systems, use SHELL environment variable
+    defaultShell = process.env.SHELL || '/bin/bash';
+  }
+
   return {
     os: {
       type: os.type(),
@@ -30,7 +49,7 @@ export async function buildExecContext(): Promise<ExecContext> {
     node: {
       version: process.version,
     },
-    shell: process.env.SHELL || 'unknown',
+    shell: defaultShell,
     cwd: process.cwd(),
     home: os.homedir(),
     cpu: {

@@ -2,6 +2,7 @@ import {input} from '@inquirer/prompts';
 import chalk from 'chalk';
 import {ConfigManager} from '../../../../core/configs/managers/config.manager.js';
 import type {DatabaseManager} from '../../../../core/database/manager.js';
+import {buildExecContext} from '../../../../core/exec/context.js';
 import {
   executeCommand,
   formatExecutionResult,
@@ -110,7 +111,9 @@ export async function processExecCommand(
 
   console.log(chalk.cyan(`🤖 Generated command: ${generated.command}`));
 
-  const validation = validateCommand(generated.command);
+  // Get context for validation
+  const context = await buildExecContext();
+  const validation = validateCommand(generated.command, context);
 
   if (!validation.isValid) {
     throw new Error(
