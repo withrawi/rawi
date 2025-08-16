@@ -9,6 +9,14 @@ export interface OSInfo {
   platform: NodeJS.Platform;
   release: string;
   version?: string;
+  distro?: LinuxDistro;
+}
+
+export interface LinuxDistro {
+  name: string;
+  family: 'Arch' | 'Debian' | 'RedHat' | 'SUSE' | 'Fedora' | 'Unknown';
+  packageManager: 'pacman' | 'apt' | 'yum' | 'zypper' | 'dnf' | 'unknown';
+  version?: string;
 }
 
 export interface ShellInfo {
@@ -26,7 +34,7 @@ export interface ToolInfo {
 }
 
 export interface InstallCommand {
-  os: OSInfo['type'];
+  os: OSInfo['type'] | string;
   commands: string[];
   packageManager?: string;
   notes?: string;

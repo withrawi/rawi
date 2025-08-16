@@ -1,9 +1,132 @@
 import {exec} from 'node:child_process';
 import os from 'node:os';
 import {promisify} from 'node:util';
-import type {OSInfo, ShellInfo, SystemInfo} from './types.js';
+import type {LinuxDistro, OSInfo, ShellInfo, SystemInfo} from './types.js';
 
 const execAsync = promisify(exec);
+
+export async function detectLinuxDistro(): Promise<LinuxDistro> {
+  try {
+    // Try to detect Linux distribution
+    const distroInfo: LinuxDistro = {
+      name: 'Unknown',
+      family: 'Unknown',
+      packageManager: 'unknown',
+    };
+
+    // Try reading /etc/os-release first (most modern distributions)
+    try {
+      const {stdout} = await execAsync('cat /etc/os-release');
+      const lines = stdout.split('\n');
+      const info: Record<string, string> = {};
+
+      for (const line of lines) {
+        const [key, value] = line.split('=');
+        if (key && value) {
+          info[key] = value.replace(/"/g, '');
+        }
+      }
+
+      distroInfo.name = info.NAME || info.ID || 'Unknown';
+      distroInfo.version = info.VERSION || info.VERSION_ID;
+
+      // Determine family and package manager based on ID or NAME
+      const id = (info.ID || info.NAME || '').toLowerCase();
+      const idLike = (info.ID_LIKE || '').toLowerCase();
+
+      if (
+        id.includes('arch') ||
+        id.includes('manjaro') ||
+        id.includes('endeavour')
+      ) {
+        distroInfo.family = 'Arch';
+        distroInfo.packageManager = 'pacman';
+      } else if (
+        id.includes('ubuntu') ||
+        id.includes('debian') ||
+        id.includes('mint') ||
+        idLike.includes('debian')
+      ) {
+        distroInfo.family = 'Debian';
+        distroInfo.packageManager = 'apt';
+      } else if (id.includes('fedora')) {
+        distroInfo.family = 'Fedora';
+        distroInfo.packageManager = 'dnf';
+      } else if (
+        id.includes('rhel') ||
+        id.includes('centos') ||
+        id.includes('rocky') ||
+        id.includes('alma') ||
+        idLike.includes('rhel')
+      ) {
+        distroInfo.family = 'RedHat';
+        distroInfo.packageManager =
+          id.includes('centos') && !id.includes('centos:8') ? 'yum' : 'dnf';
+      } else if (
+        id.includes('suse') ||
+        id.includes('opensuse') ||
+        idLike.includes('suse')
+      ) {
+        distroInfo.family = 'SUSE';
+        distroInfo.packageManager = 'zypper';
+      }
+    } catch {
+      // Fallback: try other methods
+      try {
+        // Try lsb_release
+        const {stdout} = await execAsync('lsb_release -is');
+        const distro = stdout.trim().toLowerCase();
+
+        if (distro.includes('ubuntu') || distro.includes('debian')) {
+          distroInfo.family = 'Debian';
+          distroInfo.packageManager = 'apt';
+          distroInfo.name = stdout.trim();
+        }
+      } catch {
+        // Try checking for specific package managers
+        try {
+          await execAsync('which pacman');
+          distroInfo.family = 'Arch';
+          distroInfo.packageManager = 'pacman';
+        } catch {
+          try {
+            await execAsync('which apt');
+            distroInfo.family = 'Debian';
+            distroInfo.packageManager = 'apt';
+          } catch {
+            try {
+              await execAsync('which dnf');
+              distroInfo.family = 'Fedora';
+              distroInfo.packageManager = 'dnf';
+            } catch {
+              try {
+                await execAsync('which yum');
+                distroInfo.family = 'RedHat';
+                distroInfo.packageManager = 'yum';
+              } catch {
+                try {
+                  await execAsync('which zypper');
+                  distroInfo.family = 'SUSE';
+                  distroInfo.packageManager = 'zypper';
+                } catch {
+                  // Unknown distribution
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return distroInfo;
+  } catch {
+    return {
+      name: 'Unknown',
+      family: 'Unknown',
+      packageManager: 'unknown',
+    };
+  }
+}
 
 export async function detectOS(): Promise<OSInfo> {
   const platform = os.platform();
@@ -11,6 +134,7 @@ export async function detectOS(): Promise<OSInfo> {
 
   let type: OSInfo['type'];
   let version: string | undefined;
+  let distro: LinuxDistro | undefined;
 
   switch (platform) {
     case 'win32':
@@ -33,6 +157,7 @@ export async function detectOS(): Promise<OSInfo> {
       break;
     case 'linux':
       type = 'Linux';
+      distro = await detectLinuxDistro();
       try {
         const {stdout} = await execAsync(
           "lsb_release -ds 2>/dev/null || cat /etc/os-release | grep PRETTY_NAME | cut -d= -f2 | tr -d '\"'",
@@ -52,6 +177,7 @@ export async function detectOS(): Promise<OSInfo> {
     platform,
     release,
     version,
+    distro,
   };
 }
 
