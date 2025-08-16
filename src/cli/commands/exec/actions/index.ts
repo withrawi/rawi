@@ -155,6 +155,7 @@ export async function processExecCommand(
     cwd: options.workingDirectory,
     timeout: options.timeout ? Number(options.timeout) : undefined,
     dryRun: options.dryRun,
+    skipToolValidation: options.skipToolValidation,
   });
 
   return result;

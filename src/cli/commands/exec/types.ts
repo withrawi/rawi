@@ -3,6 +3,7 @@ export interface ExecOptions {
   verbose?: boolean;
   dryRun?: boolean;
   confirm?: boolean;
+  skipToolValidation?: boolean;
   timeout?: number;
   shell?: string;
   workingDirectory?: string;

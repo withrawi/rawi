@@ -27,6 +27,12 @@ export const execCommandOptions: CommandOption[] = [
     defaultValue: false,
   },
   {
+    flags: '--skip-tool-validation',
+    description:
+      'Skip checking if required tools are installed before execution',
+    defaultValue: false,
+  },
+  {
     flags: '-t, --timeout <timeout>',
     description: 'Set command execution timeout in milliseconds',
     defaultValue: '30000',

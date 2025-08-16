@@ -1,6 +1,10 @@
 import {exec} from 'node:child_process';
 import {promisify} from 'node:util';
 import type {ExecResult} from '../../cli/commands/exec/types.js';
+import {
+  formatInstallationSuggestions,
+  validateCommandTools,
+} from '../system/tool-detector.js';
 
 const execAsync = promisify(exec);
 
@@ -10,6 +14,7 @@ export interface ExecuteCommandOptions {
   cwd?: string;
   timeout?: number;
   dryRun?: boolean;
+  skipToolValidation?: boolean;
 }
 
 export async function executeCommand(
@@ -26,6 +31,27 @@ export async function executeCommand(
       executionTime: Date.now() - startTime,
       success: true,
     };
+  }
+
+  if (!options.skipToolValidation) {
+    const validation = await validateCommandTools(options.command);
+
+    if (!validation.canExecute) {
+      const errorMessage =
+        validation.errorMessage || 'Required tools not found';
+      const installSuggestions = formatInstallationSuggestions(
+        validation.missingTools,
+      );
+
+      return {
+        command: options.command,
+        stdout: undefined,
+        stderr: `${errorMessage}${installSuggestions}`,
+        exitCode: 127,
+        executionTime: Date.now() - startTime,
+        success: false,
+      };
+    }
   }
 
   try {

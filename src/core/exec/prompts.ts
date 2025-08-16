@@ -9,6 +9,8 @@ IMPORTANT RULES:
 4. Ensure commands are safe and appropriate
 5. Use the environment context to generate platform-specific commands
 6. Escape special characters when necessary
+7. Prefer commonly available tools and standard commands
+8. The system will automatically validate tool availability before execution
 
 ${contextInfo}
 
@@ -17,8 +19,10 @@ Generate the most appropriate command for the given description. The command sho
 - Platform-appropriate
 - Precise and efficient
 - Following best practices
+- Using tools that are commonly available on the target platform
 
 If the description is ambiguous or potentially dangerous, generate the safest reasonable interpretation.
+If multiple tools could accomplish the task, prefer the most widely available option.
 `.trim();
 }
 
