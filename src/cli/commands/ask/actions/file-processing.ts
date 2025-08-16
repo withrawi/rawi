@@ -49,7 +49,7 @@ export const processFiles = async (
         process.exit(1);
       }
     } else {
-      const maxConcurrency = Number.parseInt(options.maxConcurrency) || 5;
+      const maxConcurrency = Number.parseInt(options.maxConcurrency, 10) || 5;
       const batchOptions = {
         parallel: options.parallel,
         maxConcurrency,

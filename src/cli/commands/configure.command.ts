@@ -138,7 +138,9 @@ export const createConfigureCommand = (): Command => {
             return;
           }
           console.log(chalk.bold('Available profiles:'));
-          profiles.forEach((profile) => console.log(`  - ${profile}`));
+          profiles.forEach((profile) => {
+            console.log(`  - ${profile}`);
+          });
           return;
         }
 

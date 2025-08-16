@@ -148,7 +148,7 @@ async function handleHistoryAction(
       profile: options.allProfiles ? undefined : options.profile,
       limit: options.all
         ? 1000
-        : Number.parseInt(options.limit) || DEFAULT_HISTORY_LIMIT,
+        : Number.parseInt(options.limit, 10) || DEFAULT_HISTORY_LIMIT,
       search: options.search,
       provider: options.provider,
       model: options.model,
