@@ -1,6 +1,6 @@
 # history — Conversation Management
 
-The `history` command lets you search, manage, and analyze your AI conversation history with separate views for ask and chat sessions.
+The `history` command lets you search, manage, and analyze your AI conversation history with separate views for ask, chat, and exec sessions.
 
 ## 📋 Table of Contents
 
@@ -23,6 +23,9 @@ rawi history ask
 
 # Show chat session history
 rawi history chat
+
+# Show exec session history
+rawi history exec
 ```
 
 ### Quick Commands
@@ -33,6 +36,9 @@ rawi history ask --search "docker"
 
 # Show recent chat sessions
 rawi history chat --limit 10
+
+# Show recent exec commands
+rawi history exec --limit 20
 
 # Filter by profile
 rawi history ask --profile work
@@ -48,6 +54,22 @@ Show ask session history. View and search your ask sessions and messages.
 
 ```bash
 rawi history ask [options]
+```
+
+### `chat`
+
+Show chat session history. View and search your chat sessions and messages.
+
+```bash
+rawi history chat [options]
+```
+
+### `exec`
+
+Show exec session history. View and search your exec sessions and generated commands.
+
+```bash
+rawi history exec [options]
 ```
 
 **Purpose:** View all your one-off questions and quick interactions with AI models.
@@ -153,9 +175,13 @@ rawi history ask
 # Show recent chat sessions
 rawi history chat
 
+# Show recent exec sessions
+rawi history exec
+
 # Limit results
 rawi history ask --limit 5
 rawi history chat --limit 10
+rawi history exec --limit 15
 ```
 
 **Example output:**
@@ -185,8 +211,12 @@ rawi history ask --search "docker"
 # Search for debugging in chat sessions
 rawi history chat --search "debugging"
 
+# Search for file operations in exec sessions
+rawi history exec --search "file"
+
 # Search across all profiles
 rawi history ask --search "react" --all-profiles
+rawi history exec --search "git" --all-profiles
 ```
 
 ### Advanced Filtering
@@ -198,8 +228,11 @@ rawi history ask --provider openai --from 2024-01-01
 # Chat sessions using GPT-4 in work profile
 rawi history chat --model gpt-4 --profile work
 
-# All chat sessions without pagination
-rawi history chat --all
+# Exec sessions with commands from last week
+rawi history exec --from $(date -d '1 week ago' +%Y-%m-%d)
+
+# All exec sessions without pagination
+rawi history exec --all
 
 # Recent ask sessions from specific date range
 rawi history ask --from 2024-01-01 --to 2024-01-31 --limit 20
@@ -208,17 +241,20 @@ rawi history ask --from 2024-01-01 --to 2024-01-31 --limit 20
 ### Cross-Session Type Analysis
 
 ```bash
-# Compare ask vs chat activity
+# Compare ask vs chat vs exec activity
 rawi history ask --limit 10
 rawi history chat --limit 10
+rawi history exec --limit 10
 
-# Search same topic across both types
+# Search same topic across all types
 rawi history ask --search "kubernetes"
 rawi history chat --search "kubernetes"
+rawi history exec --search "kubernetes"
 
 # Find all OpenAI interactions
 rawi history ask --provider openai
 rawi history chat --provider openai
+rawi history exec --provider openai
 ```
 
 ---
@@ -232,9 +268,14 @@ rawi history chat --provider openai
 rawi history ask --search "code review"
 rawi history chat --search "debugging"
 
+# Review command generation history
+rawi history exec --search "docker"
+rawi history exec --search "git"
+
 # Find specific technology discussions
 rawi history ask --search "typescript"
 rawi history chat --search "react"
+rawi history exec --search "npm"
 ```
 
 ### Project Organization

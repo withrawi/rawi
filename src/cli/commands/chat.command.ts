@@ -14,6 +14,7 @@ export const createChatCommand = (): Command => {
       chalk.gray('Engage in back-and-forth conversations with AI models.'),
       chalk.gray('Use --act <template> for expert prompt templates.'),
       chalk.gray('Type /quit or /exit to end the chat session.'),
+      '─'.repeat(80),
     ].join('\n'),
   );
 

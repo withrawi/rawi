@@ -8,10 +8,10 @@ export interface CustomActTemplate extends ActTemplate {
 }
 
 export class ActTemplateManager {
-  private adapter: DatabaseAdapter;
+  #adapter: DatabaseAdapter;
 
   constructor() {
-    this.adapter = new DatabaseAdapter();
+    this.#adapter = new DatabaseAdapter();
   }
 
   async createTemplate(template: {
@@ -21,12 +21,12 @@ export class ActTemplateManager {
     description: string;
     template: string;
   }): Promise<void> {
-    const exists = await this.adapter.templateExists(template.id);
+    const exists = await this.#adapter.templateExists(template.id);
     if (exists) {
       throw new Error(`Template with ID '${template.id}' already exists`);
     }
 
-    await this.adapter.createActTemplate(template);
+    await this.#adapter.createActTemplate(template);
   }
 
   async updateTemplate(
@@ -35,35 +35,35 @@ export class ActTemplateManager {
       Pick<CustomActTemplate, 'label' | 'category' | 'description' | 'template'>
     >,
   ): Promise<void> {
-    const updated = await this.adapter.updateActTemplate(id, updates);
+    const updated = await this.#adapter.updateActTemplate(id, updates);
     if (!updated) {
       throw new Error(`Template '${id}' not found or could not be updated`);
     }
   }
 
   async deleteTemplate(id: string): Promise<void> {
-    const deleted = await this.adapter.deleteActTemplate(id);
+    const deleted = await this.#adapter.deleteActTemplate(id);
     if (!deleted) {
       throw new Error(`Template '${id}' not found or could not be deleted`);
     }
   }
 
   async getTemplate(id: string): Promise<CustomActTemplate | null> {
-    const row = await this.adapter.getActTemplate(id);
-    return row ? this.mapToCustomActTemplate(row) : null;
+    const row = await this.#adapter.getActTemplate(id);
+    return row ? this.#mapToCustomActTemplate(row) : null;
   }
 
   async listCustomTemplates(): Promise<CustomActTemplate[]> {
-    const rows = await this.adapter.listActTemplates(true);
-    return rows.map(this.mapToCustomActTemplate);
+    const rows = await this.#adapter.listActTemplates(true);
+    return rows.map(this.#mapToCustomActTemplate);
   }
 
   async listAllTemplates(): Promise<CustomActTemplate[]> {
-    const rows = await this.adapter.listActTemplates(false);
-    return rows.map(this.mapToCustomActTemplate);
+    const rows = await this.#adapter.listActTemplates(false);
+    return rows.map(this.#mapToCustomActTemplate);
   }
 
-  private mapToCustomActTemplate(row: any): CustomActTemplate {
+  #mapToCustomActTemplate(row: any): CustomActTemplate {
     return {
       id: row.id,
       label: row.label,

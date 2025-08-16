@@ -7,12 +7,12 @@ import type {SessionManager} from '../../../../core/session/index.js';
 import type {ChatOptions} from '../types.js';
 
 export class AdvancedSessionOperations {
-  private readonly sessionManager: SessionManager;
-  private readonly profile: string;
+  readonly #sessionManager: SessionManager;
+  readonly #profile: string;
 
   constructor(sessionManager: SessionManager, profile: string) {
-    this.sessionManager = sessionManager;
-    this.profile = profile;
+    this.#sessionManager = sessionManager;
+    this.#profile = profile;
   }
 
   async showStatistics(options: ChatOptions): Promise<void> {
@@ -20,8 +20,8 @@ export class AdvancedSessionOperations {
       console.log(chalk.cyan('\n📊 Session Statistics'));
       console.log(chalk.gray('─'.repeat(50)));
 
-      const sessions = await this.sessionManager.listSessions({
-        profile: this.profile,
+      const sessions = await this.#sessionManager.listSessions({
+        profile: this.#profile,
         fromDate: options.fromDate,
         toDate: options.toDate,
         type: 'chat',
@@ -63,7 +63,7 @@ export class AdvancedSessionOperations {
       );
       console.log(
         chalk.white(
-          `📅 Date Range: ${this.formatDate(oldestSession.createdAt)} → ${this.formatDate(newestSession.createdAt)}`,
+          `📅 Date Range: ${this.#formatDate(oldestSession.createdAt)} → ${this.#formatDate(newestSession.createdAt)}`,
         ),
       );
 
@@ -91,15 +91,15 @@ export class AdvancedSessionOperations {
     try {
       console.log(chalk.cyan(`\n💾 Backing up sessions to: ${backupPath}`));
 
-      const exportData = await this.sessionManager.exportSessions('json', {
-        profile: this.profile,
+      const exportData = await this.#sessionManager.exportSessions('json', {
+        profile: this.#profile,
         fromDate: options.fromDate,
         toDate: options.toDate,
       });
 
       const backup = {
         timestamp: new Date().toISOString(),
-        profile: this.profile,
+        profile: this.#profile,
         version: '1.0.0',
         data: exportData,
       };
@@ -168,8 +168,8 @@ export class AdvancedSessionOperations {
         chalk.cyan(`\n🗑️ Batch delete sessions matching pattern: "${pattern}"`),
       );
 
-      const sessions = await this.sessionManager.listSessions({
-        profile: this.profile,
+      const sessions = await this.#sessionManager.listSessions({
+        profile: this.#profile,
         fromDate: options.fromDate,
         toDate: options.toDate,
         type: 'chat',
@@ -229,13 +229,13 @@ export class AdvancedSessionOperations {
         return JSON.stringify(sessions, null, 2);
 
       case 'summary':
-        return this.formatSessionsSummary(sessions);
+        return this.#formatSessionsSummary(sessions);
       default:
-        return this.formatSessionsTable(sessions);
+        return this.#formatSessionsTable(sessions);
     }
   }
 
-  private formatSessionsTable(sessions: any[]): string {
+  #formatSessionsTable(sessions: any[]): string {
     if (sessions.length === 0) {
       return chalk.yellow('No sessions found.');
     }
@@ -260,8 +260,8 @@ export class AdvancedSessionOperations {
     sessions.forEach((session) => {
       const title = session.title || 'Untitled';
       const messageCount = session.messageCount || 0;
-      const createdDate = this.formatDate(session.createdAt);
-      const updatedTime = this.formatRelativeTime(
+      const createdDate = this.#formatDate(session.createdAt);
+      const updatedTime = this.#formatRelativeTime(
         session.updatedAt || session.createdAt,
       );
 
@@ -285,7 +285,7 @@ export class AdvancedSessionOperations {
     }
 
     const choices = sessions.map((session) => ({
-      name: `${session.title || 'Untitled'} (${session.messageCount || 0} messages) - ${this.formatRelativeTime(session.updatedAt)}`,
+      name: `${session.title || 'Untitled'} (${session.messageCount || 0} messages) - ${this.#formatRelativeTime(session.updatedAt)}`,
       value: session.id,
       description: `ID: ${session.id}`,
     }));
@@ -309,7 +309,7 @@ export class AdvancedSessionOperations {
     }
   }
 
-  private formatRelativeTime(dateString: string): string {
+  #formatRelativeTime(dateString: string): string {
     const now = Date.now();
     const date = new Date(dateString).getTime();
     const diffMs = now - date;
@@ -325,7 +325,7 @@ export class AdvancedSessionOperations {
     return `${diffSeconds}s ago`;
   }
 
-  private formatSessionsSummary(sessions: any[]): string {
+  #formatSessionsSummary(sessions: any[]): string {
     if (sessions.length === 0) {
       return 'No sessions found.';
     }
@@ -338,7 +338,7 @@ export class AdvancedSessionOperations {
     sessions.forEach((session, index) => {
       const title = session.title || 'Untitled';
       const messageCount = session.messageCount || 0;
-      const date = this.formatDate(session.updatedAt || session.createdAt);
+      const date = this.#formatDate(session.updatedAt || session.createdAt);
 
       summary += chalk.white(`${index + 1}. ${title}\n`);
       summary += chalk.gray(`   ${messageCount} messages • ${date}\n`);
@@ -348,7 +348,7 @@ export class AdvancedSessionOperations {
     return summary;
   }
 
-  private formatDate(dateString: string): string {
+  #formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',

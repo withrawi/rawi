@@ -11,6 +11,7 @@ Rawi can assist with various development tasks:
 - Documentation generation
 - Refactoring assistance
 - Testing strategy
+- Command generation for development tasks
 
 ## Basic Development Setup
 
@@ -54,6 +55,30 @@ rawi ask --act debugging-expert "Why might this function be returning unexpected
 
 # Analyze stack trace
 rawi ask --act debugging-expert "Explain this stack trace and suggest fixes:" < stack-trace.txt
+```
+
+### Command Generation for Development
+
+```bash
+# Development server management
+rawi exec "start development server on port 3000"
+rawi exec "run tests in watch mode"
+rawi exec "build production bundle"
+
+# Git operations
+rawi exec "create new feature branch for user authentication"
+rawi exec "commit all changes with descriptive message"
+rawi exec "merge feature branch and delete it"
+
+# Package management
+rawi exec "install TypeScript as dev dependency"
+rawi exec "update all npm packages to latest versions"
+rawi exec "remove unused dependencies"
+
+# Build and deploy
+rawi exec "run linter and fix auto-fixable issues"
+rawi exec "generate production build with source maps"
+rawi exec "deploy to staging environment"
 ```
 
 ### Documentation Generation

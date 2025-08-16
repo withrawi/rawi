@@ -71,7 +71,7 @@ export interface EnhancedChatSession {
 export interface ChatSession {
   id: string;
   profile: string;
-  type?: 'ask' | 'chat';
+  type?: 'ask' | 'chat' | 'exec';
   title?: string;
   description?: string;
   status?:

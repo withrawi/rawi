@@ -15,10 +15,10 @@ import {
 } from '../types.js';
 
 export class SessionManager {
-  private dbManager: DatabaseManager;
+  #dbManager: DatabaseManager;
 
   constructor(dbManager: DatabaseManager) {
-    this.dbManager = dbManager;
+    this.#dbManager = dbManager;
   }
 
   async handleSessionStart(options: ChatOptions): Promise<string> {
@@ -65,7 +65,7 @@ export class SessionManager {
       if (error instanceof DatabaseConnectionError) {
         console.error(chalk.red(`❌ Database error: ${error.message}`));
         console.log(chalk.dim('Creating temporary session...'));
-        return await this.dbManager.createEmergencySession(
+        return await this.#dbManager.createEmergencySession(
           options.profile || 'default',
           'chat',
         );
@@ -77,7 +77,7 @@ export class SessionManager {
 
   async createNewSession(profile: string, title?: string): Promise<string> {
     try {
-      const sessionId = await this.dbManager.createSession(
+      const sessionId = await this.#dbManager.createSession(
         profile,
         title,
         'chat',
@@ -98,7 +98,7 @@ export class SessionManager {
     profile: string,
   ): Promise<EnhancedChatSession> {
     try {
-      const session = await this.dbManager.getSession(sessionId);
+      const session = await this.#dbManager.getSession(sessionId);
 
       if (!session) {
         throw new SessionNotFoundError(sessionId, profile);
@@ -108,7 +108,7 @@ export class SessionManager {
         throw new ProfileMismatchError(sessionId, profile, session.profile);
       }
 
-      const messages = await this.dbManager.getMessages(sessionId);
+      const messages = await this.#dbManager.getMessages(sessionId);
 
       console.log(chalk.green(`✅ Continuing session: ${sessionId}`));
       if (session.title) {
@@ -121,11 +121,11 @@ export class SessionManager {
         profile: session.profile,
         title: session.title,
         messages,
-        displaySessionInfo: () => this.displaySessionInfo(session),
+        displaySessionInfo: () => this.#displaySessionInfo(session),
         displayConversationHistory: (limit?: number) =>
-          this.displayConversationHistory(messages, limit),
+          this.#displayConversationHistory(messages, limit),
         addUserMessage: async (content: string) => {
-          await this.dbManager.addMessage(
+          await this.#dbManager.addMessage(
             sessionId,
             'user',
             content,
@@ -134,7 +134,7 @@ export class SessionManager {
           );
         },
         addAssistantMessage: async (content: string, metadata: any) => {
-          await this.dbManager.addMessage(
+          await this.#dbManager.addMessage(
             sessionId,
             'assistant',
             content,
@@ -146,13 +146,13 @@ export class SessionManager {
           );
         },
         updateSessionTitle: async (newTitle: string) => {
-          await this.dbManager.updateSessionTitle(sessionId, newTitle);
+          await this.#dbManager.updateSessionTitle(sessionId, newTitle);
         },
         getSessionStats: () => ({
           messageCount: messages.length,
           createdAt: session.createdAt,
           updatedAt: session.updatedAt,
-          duration: this.calculateDuration(
+          duration: this.#calculateDuration(
             session.createdAt,
             session.updatedAt,
           ),
@@ -178,7 +178,7 @@ export class SessionManager {
 
   async getRecentSessions(profile: string, limit = 10): Promise<ChatSession[]> {
     try {
-      return await this.dbManager.getSessions({profile, limit});
+      return await this.#dbManager.getSessions({profile, limit});
     } catch (error) {
       console.error(chalk.red(`❌ Failed to get recent sessions: ${error}`));
       throw new DatabaseConnectionError(
@@ -199,7 +199,7 @@ export class SessionManager {
         value: 'new',
       },
       ...sessions.map((session) => ({
-        name: this.formatSessionChoice(session),
+        name: this.#formatSessionChoice(session),
         value: session.id,
       })),
     ];
@@ -222,7 +222,7 @@ export class SessionManager {
 
   async listSessions(options: ListSessionsOptions): Promise<void> {
     try {
-      const sessions = await this.dbManager.getSessions({
+      const sessions = await this.#dbManager.getSessions({
         profile: options.profile,
         limit: options.limit || 20,
         fromDate: options.fromDate,
@@ -241,10 +241,10 @@ export class SessionManager {
           console.log(JSON.stringify(sessions, null, 2));
           break;
         case 'summary':
-          this.displaySessionsSummary(sessions);
+          this.#displaySessionsSummary(sessions);
           break;
         default:
-          this.displaySessionsTable(sessions);
+          this.#displaySessionsTable(sessions);
           break;
       }
     } catch (error) {
@@ -261,7 +261,7 @@ export class SessionManager {
     options: DeleteSessionOptions,
   ): Promise<boolean> {
     try {
-      const session = await this.dbManager.getSession(sessionId);
+      const session = await this.#dbManager.getSession(sessionId);
       if (!session) {
         console.error(chalk.red(`❌ Session '${sessionId}' not found`));
         return false;
@@ -279,7 +279,7 @@ export class SessionManager {
         }
       }
 
-      const deleted = await this.dbManager.deleteSession(sessionId);
+      const deleted = await this.#dbManager.deleteSession(sessionId);
 
       if (deleted) {
         console.log(
@@ -306,7 +306,7 @@ export class SessionManager {
 
   async renameSession(sessionId: string, newTitle: string): Promise<boolean> {
     try {
-      const session = await this.dbManager.getSession(sessionId);
+      const session = await this.#dbManager.getSession(sessionId);
       if (!session) {
         console.error(chalk.red(`❌ Session '${sessionId}' not found`));
         return false;
@@ -325,7 +325,7 @@ export class SessionManager {
         return false;
       }
 
-      const updated = await this.dbManager.updateSessionTitle(
+      const updated = await this.#dbManager.updateSessionTitle(
         sessionId,
         trimmedTitle,
       );
@@ -350,7 +350,7 @@ export class SessionManager {
 
   async exportSessions(options: ExportSessionsOptions): Promise<string> {
     try {
-      const exportData = await this.dbManager.exportChatHistory({
+      const exportData = await this.#dbManager.exportChatHistory({
         profile: options.profile,
         fromDate: options.fromDate,
         toDate: options.toDate,
@@ -395,7 +395,7 @@ export class SessionManager {
           );
           break;
         case 'markdown':
-          content = this.formatSessionsAsMarkdown(
+          content = this.#formatSessionsAsMarkdown(
             sessionsToExport,
             messagesToExport,
           );
@@ -421,15 +421,15 @@ export class SessionManager {
     }
   }
 
-  private formatSessionChoice(session: ChatSession): string {
-    const age = this.formatAge(session.updatedAt);
+  #formatSessionChoice(session: ChatSession): string {
+    const age = this.#formatAge(session.updatedAt);
     const title = session.title || 'Untitled';
     const messageCount = session.messageCount;
 
     return `${chalk.cyan(session.id.slice(0, 8))} - ${chalk.white(title)} ${chalk.dim(`(${messageCount} messages, ${age})`)}`;
   }
 
-  private formatAge(dateString: string): string {
+  #formatAge(dateString: string): string {
     const date = new Date(dateString);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -446,7 +446,7 @@ export class SessionManager {
     }
   }
 
-  private calculateDuration(createdAt: string, updatedAt: string): string {
+  #calculateDuration(createdAt: string, updatedAt: string): string {
     const created = new Date(createdAt);
     const updated = new Date(updatedAt);
     const diffMs = updated.getTime() - created.getTime();
@@ -463,7 +463,7 @@ export class SessionManager {
     }
   }
 
-  private displaySessionInfo(session: ChatSession): void {
+  #displaySessionInfo(session: ChatSession): void {
     console.log(chalk.dim(`ID: ${session.id}`));
     console.log(chalk.dim(`Profile: ${session.profile}`));
     if (session.title) {
@@ -478,7 +478,7 @@ export class SessionManager {
     console.log(chalk.dim(`Messages: ${session.messageCount}`));
   }
 
-  private displayConversationHistory(messages: any[], limit?: number): void {
+  #displayConversationHistory(messages: any[], limit?: number): void {
     const messagesToShow = limit ? messages.slice(-limit) : messages;
 
     if (messagesToShow.length === 0) {
@@ -499,7 +499,7 @@ export class SessionManager {
     console.log('');
   }
 
-  private displaySessionsTable(sessions: ChatSession[]): void {
+  #displaySessionsTable(sessions: ChatSession[]): void {
     console.log(chalk.bold.blue('\n📋 Sessions:'));
     console.log(
       chalk.dim(
@@ -515,7 +515,7 @@ export class SessionManager {
       const id = session.id.slice(0, 8);
       const title = (session.title || 'Untitled').slice(0, 28);
       const messages = session.messageCount.toString();
-      const updated = this.formatAge(session.updatedAt);
+      const updated = this.#formatAge(session.updatedAt);
 
       console.log(
         chalk.cyan(id.padEnd(10)) +
@@ -527,7 +527,7 @@ export class SessionManager {
     console.log('');
   }
 
-  private displaySessionsSummary(sessions: ChatSession[]): void {
+  #displaySessionsSummary(sessions: ChatSession[]): void {
     console.log(chalk.bold.blue('\n📋 Sessions Summary:'));
     sessions.forEach((session) => {
       console.log(chalk.cyan(`\n🔹 ${session.id.slice(0, 8)}`));
@@ -547,7 +547,7 @@ export class SessionManager {
     console.log('');
   }
 
-  private formatSessionsAsMarkdown(
+  #formatSessionsAsMarkdown(
     sessions: ChatSession[],
     messages: Record<string, any[]>,
   ): string {

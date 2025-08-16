@@ -31,6 +31,7 @@ export const createConfigureCommand = (): Command => {
         ),
         chalk.gray('Supports interactive and manual configuration.'),
         chalk.gray('Use --list to see all profiles, --show for details.'),
+        '─'.repeat(80),
       ].join('\n'),
     )
     .option(
@@ -137,7 +138,9 @@ export const createConfigureCommand = (): Command => {
             return;
           }
           console.log(chalk.bold('Available profiles:'));
-          profiles.forEach((profile) => console.log(`  - ${profile}`));
+          profiles.forEach((profile) => {
+            console.log(`  - ${profile}`);
+          });
           return;
         }
 

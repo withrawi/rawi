@@ -19,7 +19,7 @@ This section provides practical, real-world examples of how to integrate Rawi in
 
 ### 📝 [Development Workflow](development.md) **[WF-100]**
 
-Integrate Rawi into your software development process for code review, debugging, documentation, and refactoring assistance.
+Integrate Rawi into your software development process for code review, debugging, documentation, refactoring assistance, and command generation.
 
 ### ✍️ [Content Creation Workflow](content-creation.md) **[WF-101]**
 
@@ -43,11 +43,15 @@ Automate creation of README files, API documentation, code comments, and compreh
 
 ### 🔌 [API Development Workflow](api-development.md) **[WF-004]**
 
-Streamline API development with design assistance, implementation guidance, testing, and optimization.
+Streamline API development with design assistance, implementation guidance, testing, optimization, and command generation.
 
 ### 🧪 [Testing Workflow](testing.md) **[WF-005]**
 
-Comprehensive testing strategies including unit tests, integration tests, e2e tests, and performance testing.
+Comprehensive testing strategies including unit tests, integration tests, e2e tests, performance testing, and test command generation.
+
+### 🔐 [Security Operations Workflow](security-operations.md) **[WF-006]**
+
+Streamline security operations with key generation, security auditing, access management, and secure configuration, including interactive command handling.
 
 ### 📊 [Data Analysis Workflow](data-analysis.md) **[WF-006]**
 

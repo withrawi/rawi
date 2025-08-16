@@ -48,6 +48,27 @@ rawi ask --file src/models.py --act test-engineer "Create pytest unit tests with
 rawi ask --file src/components/Button.tsx --act test-engineer "Create React Testing Library tests with accessibility checks"
 ```
 
+### 2.1. Test Command Generation
+
+Generate and execute testing commands:
+
+```bash
+# Run specific test suites
+rawi exec "run all unit tests for authentication module"
+rawi exec "run integration tests with coverage report"
+rawi exec "execute end-to-end tests in headless mode"
+
+# Test setup and configuration
+rawi exec "install Jest and testing dependencies for React project"
+rawi exec "configure Cypress for e2e testing"
+rawi exec "set up test database for integration tests"
+
+# Test execution with different configurations
+rawi exec "run tests in watch mode for development"
+rawi exec "run tests with verbose output and coverage"
+rawi exec "execute tests in CI environment with XML output"
+```
+
 ### 3. Integration Test Generation
 
 Create integration test suites:

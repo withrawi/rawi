@@ -55,6 +55,7 @@ Rawi isn't just another AI CLI tool — it's your complete AI-powered developmen
 ⚡ **Developer Optimized** — Built specifically for coding workflows and technical tasks  
 🔄 **Shell Integration** — Perfect pipes, redirects, and script automation  
 📊 **Smart Sessions** — Persistent conversations with context awareness  
+🔐 **Interactive Commands** — Secure handling of passwords, passphrases, and prompts  
 🎯 **200+ Templates** — Expert-level prompt templates for specialized responses  
 🌍 **Multilingual** — Full support for English and Arabic (راوي)  
 📚 **Rich History** — Search, export, and manage your AI conversations  
@@ -99,6 +100,7 @@ cat server.js | rawi ask --act code-reviewer "Optimize this Express.js code"
 # 📊 Session organization and insights
 rawi history ask --limit 10                     # View ask sessions
 rawi history chat --search "debugging"          # Search chat sessions
+rawi history exec --search "system"             # Search exec sessions
 rawi history ask --all-profiles --provider openai # Filter ask sessions by provider
 ```
 
@@ -260,6 +262,56 @@ rawi chat --rename-session "New Name" # Rename current session
 - Learning and exploration
 - Problem-solving conversations
 
+### ⚡ `rawi exec` — Command Generation
+
+Convert natural language descriptions into executable CLI commands with safety validation and interactive input handling.
+
+```bash
+# Basic command generation
+rawi exec "list all files in current directory"
+rawi exec "show disk usage for home directory"
+rawi exec "find all Python files larger than 1MB"
+
+# Use with piped input
+echo "compress all log files" | rawi exec
+printf "backup database\n" | rawi exec --dry-run
+
+# Interactive mode (prompts for description)
+rawi exec
+
+# Safety and validation options
+rawi exec "restart nginx service" --dry-run      # Preview without executing
+rawi exec "delete old files" --confirm           # Force confirmation prompt
+rawi exec "long backup process" --timeout 300    # Set custom timeout
+
+# Interactive command examples (with secure input handling)
+rawi exec "generate SSH key for GitHub"          # Handles passphrase securely
+rawi exec "connect to remote database"           # Handles password input
+rawi exec "create a GPG signing key"             # Handles all interactive prompts
+
+# Advanced options
+rawi exec "server deployment commands" --profile production
+rawi exec "complex git operations" --verbose
+rawi exec "run specialized tool" --skip-tool-validation
+rawi exec "build in specific directory" --working-directory ~/projects
+```
+
+**Perfect for:**
+
+- System administration and server management
+- Security operations and key management
+- Development workflow automation
+- Learning new CLI tools and their syntax
+- File operations and data processing
+- Quick one-off command generation
+
+**Safety Features:**
+
+- Command validation and safety checks
+- Dry-run mode for preview without execution
+- Timeout protection for long-running commands
+- User confirmation for potentially dangerous operations
+
 ### ⚙️ `rawi configure` — Setup & Management
 
 Easy setup and profile management for all your AI providers.
@@ -293,26 +345,32 @@ Powerful tools to manage your AI conversation history with separate views for as
 # Basic history commands
 rawi history ask                      # Show ask session history
 rawi history chat                     # Show chat session history
+rawi history exec                     # Show exec session history
 
 # Session listings with filtering
 rawi history ask --limit 10           # Show last 10 ask sessions
 rawi history chat --all-profiles      # Show chat sessions from all profiles
+rawi history exec --limit 5           # Show last 5 exec sessions
 rawi history ask --search "docker"    # Search ask sessions for "docker"
 rawi history chat --provider openai   # Show chat sessions using OpenAI
+rawi history exec --search "git"      # Search exec sessions for "git"
 
 # Advanced filtering options
 rawi history ask --from 2024-01-01    # Ask sessions from specific date
 rawi history chat --model gpt-4       # Chat sessions using specific model
+rawi history exec --profile work      # Exec sessions from work profile
 rawi history ask --profile work       # Ask sessions from work profile
 rawi history chat --to 2024-12-31     # Chat sessions up to specific date
 
 # Search across message content
 rawi history ask --search "debugging react"
 rawi history chat --search "typescript errors"
+rawi history exec --search "system commands"
 
 # Provider and model filtering
 rawi history ask --provider ollama --model llama3.2
 rawi history chat --provider anthropic --model claude-3-5-sonnet
+rawi history exec --provider openai --model gpt-4
 ```
 
 ### 🎭 `rawi act` — Template Explorer
@@ -636,8 +694,16 @@ rawi ask "Generate Docker configuration for this Node.js app"
 # Generate CI/CD workflows
 rawi ask "Create a GitHub Actions workflow for CI/CD" > .github/workflows/deploy.yml
 
+# Create command automation
+rawi exec "create a backup script for all project files"
+rawi exec "setup development environment for new team member"
+
 # Create backup scripts
 rawi ask "Create a database backup script for PostgreSQL" > backup.sh
+
+# Execute system tasks
+rawi exec "find and clean up old log files safely"
+echo "optimize system performance" | rawi exec --dry-run
 
 # Generate server configurations
 rawi ask "Generate nginx config for this Express app" > nginx.conf

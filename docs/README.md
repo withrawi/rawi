@@ -46,6 +46,7 @@ Welcome to the **Rawi (راوي)** documentation wiki! This comprehensive guide 
 - 🎯 **200+ Templates** — Expert-level prompt templates
 - 🔄 **Shell Integration** — Perfect pipes, redirects, and script automation
 - 📊 **Smart Sessions** — Persistent conversations with context awareness
+- 🔐 **Interactive Commands** — Secure handling of prompts, passwords, and passphrases
 - 🌍 **Multilingual** — Full support for English and Arabic
 - 📚 **Rich History** — Search, export, and manage conversations
 
@@ -91,6 +92,8 @@ Welcome to the **Rawi (راوي)** documentation wiki! This comprehensive guide 
 
 - [**Commands Overview**](commands/README.md) — All available commands
 - [**ask** — AI Assistant](commands/ask.md) — Interactive AI conversations
+- [**chat** — Interactive Sessions](commands/chat.md) — Extended chat conversations
+- [**exec** — Command Generation](commands/exec.md) — Convert natural language to CLI commands
 - [**configure** — Setup & Management](commands/configure.md) — Configuration and settings
 - [**history** — Conversation Management](commands/history.md) — View and manage conversation history
 - [**act** — Template Explorer](commands/act.md) — Role-based AI interactions

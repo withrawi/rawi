@@ -1,6 +1,6 @@
 import type {ModelMessage} from 'ai';
 import chalk from 'chalk';
-import {getChatProvider} from '../../../../core/providers/chat/index.js';
+import {getChatProvider} from '../../../../core/providers/index.js';
 import {spinnerManager} from '../../../../core/shared/spinner.js';
 import type {ChatOptions} from '../types.js';
 

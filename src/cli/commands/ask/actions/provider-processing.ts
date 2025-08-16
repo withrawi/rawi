@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import {ContentFilter} from '../../../../core/content-filter/content-filter.js';
 import type {DatabaseManager} from '../../../../core/database/manager.js';
-import {processQuery} from '../../../../core/providers/ask/utils.js';
+import {processQuery} from '../../../../core/providers/utils.js';
 import {spinnerManager} from '../../../../core/shared/spinner.js';
 
 export const streamAIResponse = async (

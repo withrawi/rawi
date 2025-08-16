@@ -1,5 +1,5 @@
 // Auto-generated from https://ollama.com/library
-// Generated on: 2025-08-09T14:24:40.987Z
+// Generated on: 2025-08-16T15:36:44.027Z
 
 // Chat Models
 export type OllamaChatModelId =
@@ -6687,6 +6687,11 @@ export type OllamaVisionModelId =
   | 'gemma3:1b-it-q4_K_M'
   | 'gemma3:1b-it-q8_0'
   | 'gemma3:1b-it-qat'
+  | 'gemma3:270m'
+  | 'gemma3:270m-it-bf16'
+  | 'gemma3:270m-it-fp16'
+  | 'gemma3:270m-it-q8_0'
+  | 'gemma3:270m-it-qat'
   | 'gemma3:27b'
   | 'gemma3:27b-it-fp16'
   | 'gemma3:27b-it-q4_K_M'
@@ -21001,6 +21006,11 @@ export const OLLAMA_MODELS: Record<string, OllamaModelInfo> = {
       'gemma3:1b-it-q4_K_M',
       'gemma3:1b-it-q8_0',
       'gemma3:1b-it-qat',
+      'gemma3:270m',
+      'gemma3:270m-it-bf16',
+      'gemma3:270m-it-fp16',
+      'gemma3:270m-it-q8_0',
+      'gemma3:270m-it-qat',
       'gemma3:27b',
       'gemma3:27b-it-fp16',
       'gemma3:27b-it-q4_K_M',
@@ -21483,6 +21493,6 @@ export function getModelType(
 export const MODEL_COUNTS = {
   chat: 6589,
   embedding: 60,
-  vision: 244,
-  total: 6893,
+  vision: 249,
+  total: 6898,
 } as const;

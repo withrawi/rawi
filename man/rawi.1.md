@@ -12,9 +12,11 @@
 
 **rawi** **chat** [*options*]
 
+**rawi** **exec** [*description*] [*options*]
+
 **rawi** **configure** [*options*]
 
-**rawi** **history** **ask**|**chat** [*options*]
+**rawi** **history** **ask**|**chat**|**exec** [*options*]
 
 **rawi** **act** [*options*]
 
@@ -47,6 +49,7 @@
 - **Enhanced session management** \- Persistent chat sessions with interactive selection, naming, and full ID display
 - **Session analytics** \- Comprehensive usage statistics and conversation insights
 - **Template system** \- Expert prompt templates for specialized tasks
+- **Interactive command handling** \- Secure handling of passwords, passphrases, and interactive prompts
 - **Piped input** \- Unix-style stdin support for scripting
 - **Interactive mode** \- Guided configuration and template selection
 - **Modern formatting** \- Clean, readable output with syntax highlighting
@@ -421,6 +424,117 @@ Start a new session while keeping the current chat open
 - **Brainstorming**: Interactive idea development
 - **Planning**: Collaborative project and architecture discussions
 
+### exec \- Convert natural language to executable CLI commands
+
+**Synopsis:**
+
+**rawi exec** [*description*] [*options*]
+**echo** "_description_" **|** **rawi exec** [*options*]
+**rawi exec** [*options*]
+
+**Description:**
+Convert natural language descriptions into executable CLI commands. Describe what you want to accomplish and get the right command with safety validation and optional dry-run mode. Supports interactive prompts when no description is provided and can read from piped input. Automatically detects and handles commands that require interactive input, such as password prompts and passphrases.
+
+**Arguments:**
+
+_description_
+
+Description of what you want to accomplish with the command. If not provided, rawi will prompt interactively or read from stdin.
+
+**Options:**
+
+**-p, --profile** _profile_
+
+Use a specific configuration profile (default: "default")
+
+**-d, --dry-run**
+
+Show the generated command without executing it. Useful for validation and learning.
+
+**-t, --timeout** _timeout_
+
+Maximum execution time for the generated command in milliseconds (default: 30000)
+
+**-v, --verbose**
+
+Show detailed information including provider type, model used, and execution steps
+
+**-c, --confirm**
+
+Always prompt for confirmation before executing commands, even for safe operations
+
+**--skip-tool-validation**
+
+Skip checking if required tools are installed before execution
+
+**-s, --shell** _shell_
+
+Specify which shell to use for command execution
+
+**-w, --working-directory** _directory_
+
+Set the working directory for command execution
+
+**Examples:**
+
+# Basic command generation
+
+**rawi exec** "list all files in current directory"
+
+# Use with piped input
+
+**echo** "show disk usage" **|** **rawi exec**
+
+# Interactive mode (prompts for description)
+
+**rawi exec**
+
+# Dry run to see command without executing
+
+**rawi exec** "find large files over 100MB" **--dry-run**
+
+# Use specific profile
+
+**rawi exec** "restart nginx service" **--profile** server
+
+# Set timeout and confirmation
+
+**rawi exec** "backup database" **--timeout** 300000 **--confirm**
+
+# Interactive commands with secure input handling
+
+**rawi exec** "generate a new SSH key named work-key"
+
+**rawi exec** "create a GPG signing key for git"
+
+**rawi exec** "connect to remote MySQL database"
+
+# Using advanced options
+
+**rawi exec** "install docker" **--verbose**
+
+**rawi exec** "run specialized tool" **--skip-tool-validation**
+
+**rawi exec** "build project" **--working-directory** ~/projects **--shell** /bin/zsh
+
+**Use Cases:**
+
+- **System Administration**: Generate commands for server management and maintenance
+- **Security Operations**: Generate SSH/GPG keys and handle interactive security prompts
+- **File Operations**: Create complex find, grep, and file manipulation commands
+- **Development**: Generate build, test, and deployment commands
+- **Learning**: Discover CLI tools and their proper usage
+- **Access Management**: Handle user, permission, and credential operations securely
+- **Automation**: Create one-off commands for specific tasks
+
+**Safety Features:**
+
+- Command validation and safety checks before execution
+- Dry-run mode for command preview
+- Timeout protection for long-running commands
+- User confirmation for potentially dangerous operations
+- Session logging for command history and review
+
 ### configure \- Manage AI provider settings and profiles
 
 **Synopsis:**
@@ -546,8 +660,10 @@ Delete a configuration profile and all its settings
 
 **rawi history chat** [*options*]
 
+**rawi history exec** [*options*]
+
 **Description:**
-Manage chat history with separate views for ask and chat sessions. Search conversations, filter by various criteria, and organize your AI interactions by session type.
+Manage chat history with separate views for ask, chat, and exec sessions. Search conversations, filter by various criteria, and organize your AI interactions by session type.
 
 **Subcommands:**
 
@@ -559,7 +675,11 @@ Show ask session history. View and search your ask sessions and messages.
 
 Show chat session history. View and search your chat sessions and messages.
 
-**Options (available for both ask and chat subcommands):**
+**exec** [*options*]
+
+Show exec session history. View and search your exec sessions and generated commands.
+
+**Options (available for ask, chat, and exec subcommands):**
 
 **-p, --profile** _profile_
 
@@ -607,6 +727,10 @@ Show sessions to date (YYYY-MM-DD format)
 
 **rawi history chat**
 
+# Show exec session history
+
+**rawi history exec**
+
 # Show ask sessions from work profile
 
 **rawi history ask** **--profile** work
@@ -614,6 +738,10 @@ Show sessions to date (YYYY-MM-DD format)
 # Search for specific content in chat sessions
 
 **rawi history chat** **--search** "typescript"
+
+# Search for specific commands in exec sessions
+
+**rawi history exec** **--search** "docker"
 
 # Filter ask sessions by provider and date
 
@@ -623,6 +751,10 @@ Show sessions to date (YYYY-MM-DD format)
 
 **rawi history chat** **--limit** 10
 
+# Show recent exec sessions
+
+**rawi history exec** **--limit** 20
+
 # Search ask sessions across all profiles
 
 **rawi history ask** **--search** "docker" **--all-profiles**
@@ -630,6 +762,10 @@ Show sessions to date (YYYY-MM-DD format)
 # Filter chat sessions by model
 
 **rawi history chat** **--model** gpt-4 **--provider** openai
+
+# Filter exec sessions by provider
+
+**rawi history exec** **--provider** anthropic
 
 # Show ask sessions within date range
 
@@ -639,7 +775,9 @@ Show sessions to date (YYYY-MM-DD format)
 
 **rawi history chat** **--all**
 
-**rawi history** export **--output** backup.json
+# Show all exec sessions from all profiles
+
+**rawi history exec** **--all-profiles**
 
 ### act \- Expert prompt template system
 

@@ -156,7 +156,7 @@ export interface ConfigureOptions {
 export interface ChatSession {
   id: string;
   profile: string;
-  type?: 'ask' | 'chat';
+  type?: 'ask' | 'chat' | 'exec';
   title?: string;
   description?: string;
   status?:
@@ -210,7 +210,7 @@ export interface ChatHistoryOptions {
   toDate?: string;
   provider?: SupportedProvider;
   model?: string;
-  type?: 'ask' | 'chat';
+  type?: 'ask' | 'chat' | 'exec';
 }
 
 export interface HistoryStats {

@@ -2,7 +2,7 @@ import {select} from '@inquirer/prompts';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import {Command} from 'commander';
-import {getAllProviders, getProvider} from '../../core/providers/ask/index.js';
+import {getAllProviders, getProvider} from '../../core/providers/index.js';
 
 export const createProviderCommand = (): Command => {
   const command = new Command('provider');
@@ -17,6 +17,7 @@ export const createProviderCommand = (): Command => {
         chalk.gray(
           'Use this to discover available providers and their capabilities.',
         ),
+        '─'.repeat(80),
       ].join('\n'),
     )
     .option('-l, --list', chalk.white('List all supported AI providers'))

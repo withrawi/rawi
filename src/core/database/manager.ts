@@ -57,7 +57,7 @@ export class DatabaseManager {
   async createSession(
     profile: string,
     title?: string,
-    type: 'ask' | 'chat' = 'ask',
+    type: 'ask' | 'chat' | 'exec' = 'ask',
   ): Promise<string> {
     await this.#ensureInitialized();
     return this.#adapter.createSession(profile, title, type);
@@ -129,7 +129,7 @@ export class DatabaseManager {
 
   async getCurrentSession(
     profile: string,
-    type: 'ask' | 'chat' = 'ask',
+    type: 'ask' | 'chat' | 'exec' = 'ask',
   ): Promise<string> {
     try {
       await this.#ensureInitialized();
@@ -191,7 +191,7 @@ export class DatabaseManager {
 
   async createEmergencySession(
     profile: string,
-    type: 'ask' | 'chat' = 'ask',
+    type: 'ask' | 'chat' | 'exec' = 'ask',
   ): Promise<string> {
     try {
       debugLog('Creating emergency session without database checks');

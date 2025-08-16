@@ -32,6 +32,7 @@ export const createAskCommand = (): Command => {
         chalk.gray('Supports piped input from stdin and file processing.'),
         chalk.gray('Use --act <template> for expert prompt templates.'),
         chalk.gray('See all templates with "rawi act --list".'),
+        '─'.repeat(80),
       ].join('\n'),
     )
     .argument(

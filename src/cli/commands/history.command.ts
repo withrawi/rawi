@@ -18,9 +18,9 @@ export const createHistoryCommand = (): Command => {
       chalk.bold('Manage chat history and sessions.'),
       '',
       chalk.gray('Search, filter, export, and clean up your AI chat history.'),
-      chalk.gray(
-        'Use "rawi history ask" or "rawi history chat" to view specific session types.',
-      ),
+      chalk.gray('Use "rawi history ask", "rawi history chat",'),
+      chalk.gray('or "rawi history exec" to view specific session types.'),
+      '─'.repeat(80),
     ].join('\n'),
   );
 
@@ -96,12 +96,48 @@ export const createHistoryCommand = (): Command => {
       await handleHistoryAction(options, 'chat');
     });
 
+  historyCommand
+    .command('exec')
+    .description(
+      [
+        chalk.bold('Show exec session history.'),
+        '',
+        chalk.gray('View and search your exec sessions and messages.'),
+      ].join('\n'),
+    )
+    .option(
+      '-p, --profile <profile>',
+      chalk.white('Profile to show history for'),
+      DEFAULT_PROFILE,
+    )
+    .option(
+      '-l, --limit <number>',
+      chalk.white('Number of sessions to show'),
+      DEFAULT_HISTORY_LIMIT.toString(),
+    )
+    .option('--all', chalk.white('Show all sessions without pagination limit'))
+    .option('--all-profiles', chalk.white('Show sessions from all profiles'))
+    .option(
+      '-s, --search <query>',
+      chalk.white('Search messages containing text'),
+    )
+    .option('--provider <provider>', chalk.white('Filter by AI provider'))
+    .option('--model <model>', chalk.white('Filter by AI model'))
+    .option(
+      '--from <date>',
+      chalk.white('Show sessions from date (YYYY-MM-DD)'),
+    )
+    .option('--to <date>', chalk.white('Show sessions to date (YYYY-MM-DD)'))
+    .action(async (options) => {
+      await handleHistoryAction(options, 'exec');
+    });
+
   return historyCommand;
 };
 
 async function handleHistoryAction(
   options: any,
-  sessionType: 'ask' | 'chat',
+  sessionType: 'ask' | 'chat' | 'exec',
 ): Promise<void> {
   let dbManager: DatabaseManager | null = null;
 
@@ -112,13 +148,13 @@ async function handleHistoryAction(
       profile: options.allProfiles ? undefined : options.profile,
       limit: options.all
         ? 1000
-        : Number.parseInt(options.limit) || DEFAULT_HISTORY_LIMIT,
+        : Number.parseInt(options.limit, 10) || DEFAULT_HISTORY_LIMIT,
       search: options.search,
       provider: options.provider,
       model: options.model,
       fromDate: options.from,
       toDate: options.to,
-      type: sessionType, // Filter by session type
+      type: sessionType,
     };
 
     const pageSize = 10;

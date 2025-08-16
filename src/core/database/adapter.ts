@@ -361,7 +361,7 @@ export class DatabaseAdapter {
           CREATE TABLE IF NOT EXISTS sessions (
             id TEXT PRIMARY KEY,
             profile TEXT NOT NULL,
-            type TEXT NOT NULL DEFAULT 'chat' CHECK (type IN ('ask', 'chat')),
+            type TEXT NOT NULL DEFAULT 'ask',
             title TEXT,
             description TEXT,
             status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'archived', 'paused', 'pending', 'completed', 'failed')),
@@ -563,7 +563,7 @@ export class DatabaseAdapter {
   async createSession(
     profile: string,
     title?: string,
-    type: 'ask' | 'chat' = 'ask',
+    type: 'ask' | 'chat' | 'exec' = 'ask',
   ): Promise<string> {
     await this.ensureDatabaseInitialized();
 
@@ -993,7 +993,7 @@ export class DatabaseAdapter {
     };
   }
 
-  private async ensureActTemplatesTable(): Promise<void> {
+  async #ensureActTemplatesTable(): Promise<void> {
     await this.ensureDatabaseInitialized();
 
     await this.#client.execute(`
@@ -1017,7 +1017,7 @@ export class DatabaseAdapter {
     description: string;
     template: string;
   }): Promise<void> {
-    await this.ensureActTemplatesTable();
+    await this.#ensureActTemplatesTable();
 
     const now = Math.floor(Date.now() / 1000);
     await this.#client.execute(
@@ -1045,7 +1045,7 @@ export class DatabaseAdapter {
       template: string;
     }>,
   ): Promise<boolean> {
-    await this.ensureActTemplatesTable();
+    await this.#ensureActTemplatesTable();
 
     const setClause = [];
     const values = [];
@@ -1084,7 +1084,7 @@ export class DatabaseAdapter {
   }
 
   async deleteActTemplate(id: string): Promise<boolean> {
-    await this.ensureActTemplatesTable();
+    await this.#ensureActTemplatesTable();
     const result = await this.#client.execute(
       'DELETE FROM act_templates WHERE id = ? AND is_built_in = 0',
       [id],
@@ -1094,7 +1094,7 @@ export class DatabaseAdapter {
   }
 
   async getActTemplate(id: string): Promise<any | null> {
-    await this.ensureActTemplatesTable();
+    await this.#ensureActTemplatesTable();
     const result = await this.#client.execute(
       'SELECT * FROM act_templates WHERE id = ? LIMIT 1',
       [id],
@@ -1104,7 +1104,7 @@ export class DatabaseAdapter {
   }
 
   async listActTemplates(customOnly = false): Promise<any[]> {
-    await this.ensureActTemplatesTable();
+    await this.#ensureActTemplatesTable();
     const whereClause = customOnly ? 'WHERE is_built_in = 0' : '';
 
     const result = await this.#client.execute(
@@ -1116,7 +1116,7 @@ export class DatabaseAdapter {
   }
 
   async templateExists(id: string): Promise<boolean> {
-    await this.ensureActTemplatesTable();
+    await this.#ensureActTemplatesTable();
     const result = await this.#client.execute(
       'SELECT 1 FROM act_templates WHERE id = ? LIMIT 1',
       [id],
