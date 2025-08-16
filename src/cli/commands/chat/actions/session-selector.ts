@@ -17,15 +17,15 @@ export interface SessionActionChoice {
 }
 
 export class SessionSelector {
-  private readonly sessionManager: SessionManager;
-  private readonly profile: string;
+  readonly #sessionManager: SessionManager;
+  readonly #profile: string;
 
   constructor(sessionManager: SessionManager, profile: string) {
-    this.sessionManager = sessionManager;
-    this.profile = profile;
+    this.#sessionManager = sessionManager;
+    this.#profile = profile;
   }
 
-  private searchSessions(sessions: any[], query: string): any[] {
+  #searchSessions(sessions: any[], query: string): any[] {
     if (!query.trim()) return sessions;
 
     const lowerQuery = query.toLowerCase();
@@ -40,7 +40,7 @@ export class SessionSelector {
     });
   }
 
-  private formatDate(dateString: string): string {
+  #formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -51,7 +51,7 @@ export class SessionSelector {
     });
   }
 
-  private truncateText(text: string, maxLength: number): string {
+  #truncateText(text: string, maxLength: number): string {
     if (text.length <= maxLength) return text;
     return `${text.substring(0, maxLength - 3)}...`;
   }
@@ -69,8 +69,8 @@ export class SessionSelector {
     console.log(chalk.cyan('\n🔍 Session Selection'));
     console.log(chalk.gray('─'.repeat(50)));
 
-    let sessions = await this.sessionManager.listSessions({
-      profile: this.profile,
+    let sessions = await this.#sessionManager.listSessions({
+      profile: this.#profile,
       limit: maxResults,
       type: 'chat',
     });
@@ -85,9 +85,9 @@ export class SessionSelector {
     }
 
     if (enableSearch && sessions.length > 5) {
-      const searchQuery = await this.promptForSearch();
+      const searchQuery = await this.#promptForSearch();
       if (searchQuery) {
-        sessions = this.searchSessions(sessions, searchQuery);
+        sessions = this.#searchSessions(sessions, searchQuery);
         if (sessions.length === 0) {
           console.log(
             chalk.yellow(`🔍 No sessions found matching "${searchQuery}"`),
@@ -97,9 +97,9 @@ export class SessionSelector {
       }
     }
 
-    this.displaySessionList(sessions, showPreview);
+    this.#displaySessionList(sessions, showPreview);
 
-    const selectedIndex = await this.promptForSelection(
+    const selectedIndex = await this.#promptForSelection(
       sessions.length,
       allowCreateNew,
     );
@@ -114,14 +114,14 @@ export class SessionSelector {
 
     const selectedSession = sessions[selectedIndex];
 
-    const action = await this.showSessionActionMenu(selectedSession);
+    const action = await this.#showSessionActionMenu(selectedSession);
 
     switch (action.action) {
       case 'continue':
         return selectedSession.id;
 
       case 'delete':
-        await this.sessionManager.deleteSession(selectedSession.id, {
+        await this.#sessionManager.deleteSession(selectedSession.id, {
           force: true,
         });
         console.log(
@@ -131,10 +131,10 @@ export class SessionSelector {
 
       case 'rename':
         if (action.newTitle) {
-          await this.sessionManager.updateSessionTitle(
+          await this.#sessionManager.updateSessionTitle(
             selectedSession.id,
             action.newTitle,
-            this.profile,
+            this.#profile,
           );
           console.log(
             chalk.green(`✅ Session renamed to "${action.newTitle}"`),
@@ -143,7 +143,7 @@ export class SessionSelector {
         return this.selectSession(options);
 
       case 'export':
-        await this.exportSession(selectedSession);
+        await this.#exportSession(selectedSession);
         return this.selectSession(options);
 
       case 'create-new':
@@ -153,7 +153,7 @@ export class SessionSelector {
     }
   }
 
-  private async promptForSearch(): Promise<string | null> {
+  async #promptForSearch(): Promise<string | null> {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
@@ -169,17 +169,14 @@ export class SessionSelector {
     }
   }
 
-  private displaySessionList(
-    sessions: ChatSession[],
-    showPreview: boolean,
-  ): void {
+  #displaySessionList(sessions: ChatSession[], showPreview: boolean): void {
     console.log(chalk.cyan(`\n📋 Available Sessions (${sessions.length})`));
     console.log(chalk.gray('─'.repeat(50)));
 
     sessions.forEach((session, index) => {
       const number = chalk.cyan(`${index + 1}.`);
       const title = chalk.white(session.title);
-      const date = chalk.gray(this.formatDate(session.updatedAt));
+      const date = chalk.gray(this.#formatDate(session.updatedAt));
       const messageCount = chalk.yellow(
         `(${session.messageCount || 0} messages)`,
       );
@@ -188,7 +185,7 @@ export class SessionSelector {
       console.log(`   ${chalk.gray('Last updated:')} ${date}`);
 
       if (showPreview && session.title) {
-        const preview = this.truncateText(session.title, 80);
+        const preview = this.#truncateText(session.title, 80);
         console.log(
           `   ${chalk.gray('Title preview:')} ${chalk.italic(preview)}`,
         );
@@ -198,7 +195,7 @@ export class SessionSelector {
     });
   }
 
-  private async promptForSelection(
+  async #promptForSelection(
     sessionCount: number,
     allowCreateNew: boolean,
   ): Promise<number> {
@@ -231,7 +228,7 @@ export class SessionSelector {
 
       if (Number.isNaN(index) || index < 0 || index >= sessionCount) {
         console.log(chalk.red('❌ Invalid selection. Please try again.'));
-        return this.promptForSelection(sessionCount, allowCreateNew);
+        return this.#promptForSelection(sessionCount, allowCreateNew);
       }
 
       return index;
@@ -240,7 +237,7 @@ export class SessionSelector {
     }
   }
 
-  private async showSessionActionMenu(
+  async #showSessionActionMenu(
     session: ChatSession,
   ): Promise<SessionActionChoice> {
     console.log(chalk.cyan(`\n⚡ Actions for "${session.title}"`));
@@ -303,10 +300,10 @@ export class SessionSelector {
     }
   }
 
-  private async exportSession(session: ChatSession): Promise<void> {
+  async #exportSession(session: ChatSession): Promise<void> {
     try {
-      const exportData = await this.sessionManager.exportSessions('json', {
-        profile: this.profile,
+      const exportData = await this.#sessionManager.exportSessions('json', {
+        profile: this.#profile,
         sessions: [session.id],
       });
 
@@ -327,8 +324,8 @@ export class SessionSelector {
   }
 
   async quickSelectSession(query?: string): Promise<string | null> {
-    const sessions = await this.sessionManager.listSessions({
-      profile: this.profile,
+    const sessions = await this.#sessionManager.listSessions({
+      profile: this.#profile,
       limit: 20,
       type: 'chat',
     });
@@ -340,7 +337,7 @@ export class SessionSelector {
     let filteredSessions = sessions;
 
     if (query) {
-      filteredSessions = this.searchSessions(sessions, query);
+      filteredSessions = this.#searchSessions(sessions, query);
 
       if (filteredSessions.length === 0) {
         console.log(chalk.yellow(`🔍 No sessions found matching "${query}"`));

@@ -55,6 +55,7 @@ Rawi isn't just another AI CLI tool — it's your complete AI-powered developmen
 ⚡ **Developer Optimized** — Built specifically for coding workflows and technical tasks  
 🔄 **Shell Integration** — Perfect pipes, redirects, and script automation  
 📊 **Smart Sessions** — Persistent conversations with context awareness  
+🔐 **Interactive Commands** — Secure handling of passwords, passphrases, and prompts  
 🎯 **200+ Templates** — Expert-level prompt templates for specialized responses  
 🌍 **Multilingual** — Full support for English and Arabic (راوي)  
 📚 **Rich History** — Search, export, and manage your AI conversations  
@@ -263,7 +264,7 @@ rawi chat --rename-session "New Name" # Rename current session
 
 ### ⚡ `rawi exec` — Command Generation
 
-Convert natural language descriptions into executable CLI commands with safety validation.
+Convert natural language descriptions into executable CLI commands with safety validation and interactive input handling.
 
 ```bash
 # Basic command generation
@@ -283,16 +284,22 @@ rawi exec "restart nginx service" --dry-run      # Preview without executing
 rawi exec "delete old files" --confirm           # Force confirmation prompt
 rawi exec "long backup process" --timeout 300    # Set custom timeout
 
-# Use specific profile
-rawi exec "server deployment commands" --profile production
+# Interactive command examples (with secure input handling)
+rawi exec "generate SSH key for GitHub"          # Handles passphrase securely
+rawi exec "connect to remote database"           # Handles password input
+rawi exec "create a GPG signing key"             # Handles all interactive prompts
 
-# Verbose output with debugging
+# Advanced options
+rawi exec "server deployment commands" --profile production
 rawi exec "complex git operations" --verbose
+rawi exec "run specialized tool" --skip-tool-validation
+rawi exec "build in specific directory" --working-directory ~/projects
 ```
 
 **Perfect for:**
 
 - System administration and server management
+- Security operations and key management
 - Development workflow automation
 - Learning new CLI tools and their syntax
 - File operations and data processing

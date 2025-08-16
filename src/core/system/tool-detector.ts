@@ -573,14 +573,11 @@ function getInstallSuggestions(
 ): InstallCommand[] {
   const suggestions = TOOL_INSTALL_COMMANDS[toolName] || [];
 
-  // Filter suggestions based on OS and Linux distribution
   return suggestions.filter((suggestion) => {
     if (osInfo.type === 'Linux' && osInfo.distro) {
-      // For Linux, check if suggestion matches the specific distribution
       const linuxVariant = `Linux-${osInfo.distro.family}`;
       return suggestion.os === linuxVariant || suggestion.os === 'Linux';
     }
-    // For non-Linux systems, match exactly
     return suggestion.os === osInfo.type;
   });
 }

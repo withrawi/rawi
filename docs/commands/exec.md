@@ -36,7 +36,7 @@ Use a specific configuration profile for AI provider settings.
 rawi exec "list running processes" --profile work
 ```
 
-**`--dry-run`**
+**`-d, --dry-run`**
 
 Show the generated command without executing it. Useful for learning and validation.
 
@@ -44,15 +44,15 @@ Show the generated command without executing it. Useful for learning and validat
 rawi exec "backup my home directory" --dry-run
 ```
 
-**`--timeout <seconds>`**
+**`-t, --timeout <timeout>`**
 
-Set maximum execution time for the generated command (default: 30 seconds).
+Set maximum execution time for the generated command in milliseconds (default: 30000).
 
 ```bash
-rawi exec "compile large project" --timeout 300
+rawi exec "compile large project" --timeout 300000
 ```
 
-**`--verbose`**
+**`-v, --verbose`**
 
 Show detailed information including provider type, model used, and execution steps.
 
@@ -60,12 +60,36 @@ Show detailed information including provider type, model used, and execution ste
 rawi exec "system diagnostics" --verbose
 ```
 
-**`--confirm`**
+**`-c, --confirm`**
 
 Always prompt for confirmation before executing commands, even for safe operations.
 
 ```bash
 rawi exec "restart service" --confirm
+```
+
+**`--skip-tool-validation`**
+
+Skip checking if required tools are installed before execution.
+
+```bash
+rawi exec "run specialized command" --skip-tool-validation
+```
+
+**`-s, --shell <shell>`**
+
+Specify which shell to use for command execution.
+
+```bash
+rawi exec "list files" --shell /bin/zsh
+```
+
+**`-w, --working-directory <directory>`**
+
+Set the working directory for command execution.
+
+```bash
+rawi exec "build project" --working-directory ~/projects/myapp
 ```
 
 ## Usage Examples
@@ -166,12 +190,21 @@ rawi exec "complex git operation" --profile production
 - **Syntax Checking**: Generated commands are validated for proper syntax
 - **Safety Analysis**: Potentially dangerous operations are flagged
 - **Context Awareness**: Commands are generated with awareness of current system state
+- **Tool Validation**: Verifies required tools are installed before execution
 
 ### User Control
 
 - **Dry Run Mode**: Preview commands before execution
 - **Confirmation Prompts**: User approval required for execution
 - **Timeout Protection**: Automatic termination of long-running commands
+- **Interactive Input Handling**: Secure handling of passwords, passphrases, and other sensitive inputs
+
+### Interactive Security
+
+- **Passphrase Masking**: Sensitive inputs aren't displayed on screen
+- **No Persistence**: Passwords and passphrases are never stored or logged
+- **Direct Terminal Integration**: Input handled by standard system TTY for maximum security
+- **Automatic Detection**: Intelligently detects when commands require interactive input
 
 ### Session Logging
 
@@ -212,6 +245,40 @@ rawi ask --act devops "What command should I use to monitor disk I/O?"
 # Then use the suggestion with exec
 rawi exec "monitor disk I/O in real-time"
 ```
+
+## Interactive Commands
+
+Rawi now intelligently detects and handles commands that require interactive user input, such as password prompts, passphrases, or confirmation questions.
+
+### How It Works
+
+1. When a command that typically requires user input is detected (like `ssh-keygen`), Rawi automatically switches to interactive mode
+2. User prompts (like "Enter passphrase:") are passed through to your terminal
+3. Your input is securely collected (with masking for passwords/passphrases)
+4. The command completes successfully with your provided input
+
+### Example Interactive Commands
+
+```bash
+# Generate SSH key (will prompt for passphrase)
+rawi exec "generate an SSH key named rawi"
+
+# Connect to remote server (will prompt for password)
+rawi exec "ssh into myserver.example.com"
+
+# Database operations (will prompt for password)
+rawi exec "connect to MySQL database"
+
+# GPG key management (will prompt for various inputs)
+rawi exec "generate a new GPG key"
+```
+
+### Security Features
+
+- Passphrases and passwords are never stored or logged
+- Sensitive input is masked (not displayed) when entered
+- No temporary files are created for password storage
+- Input handling respects standard TTY security practices
 
 ## Best Practices
 
@@ -262,6 +329,12 @@ rawi exec "monitor disk I/O in real-time"
 - Generated command requires elevated privileges
 - Consider if `sudo` is needed or use a different approach
 
+**Interactive prompt not appearing**
+
+- Ensure you're running in a proper interactive terminal
+- Some environments (like CI/CD pipelines) don't support interactive prompts
+- Try providing all required inputs as command arguments instead
+
 ### Getting Better Results
 
 1. **Be specific** about your environment and requirements
@@ -308,4 +381,13 @@ rawi exec "create new Git branch for feature development"
 rawi exec "extract specific columns from CSV file"
 rawi exec "count lines in all Python files"
 rawi exec "search for pattern in log files from last week"
+```
+
+### Interactive Tools
+
+```bash
+rawi exec "generate SSH key for GitHub"
+rawi exec "create a GPG signing key"
+rawi exec "connect to remote server via SSH"
+rawi exec "run MySQL client and connect to database"
 ```

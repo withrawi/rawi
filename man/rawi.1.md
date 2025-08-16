@@ -49,6 +49,7 @@
 - **Enhanced session management** \- Persistent chat sessions with interactive selection, naming, and full ID display
 - **Session analytics** \- Comprehensive usage statistics and conversation insights
 - **Template system** \- Expert prompt templates for specialized tasks
+- **Interactive command handling** \- Secure handling of passwords, passphrases, and interactive prompts
 - **Piped input** \- Unix-style stdin support for scripting
 - **Interactive mode** \- Guided configuration and template selection
 - **Modern formatting** \- Clean, readable output with syntax highlighting
@@ -432,7 +433,7 @@ Start a new session while keeping the current chat open
 **rawi exec** [*options*]
 
 **Description:**
-Convert natural language descriptions into executable CLI commands. Describe what you want to accomplish and get the right command with safety validation and optional dry-run mode. Supports interactive prompts when no description is provided and can read from piped input.
+Convert natural language descriptions into executable CLI commands. Describe what you want to accomplish and get the right command with safety validation and optional dry-run mode. Supports interactive prompts when no description is provided and can read from piped input. Automatically detects and handles commands that require interactive input, such as password prompts and passphrases.
 
 **Arguments:**
 
@@ -446,21 +447,33 @@ Description of what you want to accomplish with the command. If not provided, ra
 
 Use a specific configuration profile (default: "default")
 
-**--dry-run**
+**-d, --dry-run**
 
 Show the generated command without executing it. Useful for validation and learning.
 
-**--timeout** _seconds_
+**-t, --timeout** _timeout_
 
-Maximum execution time for the generated command (default: 30 seconds)
+Maximum execution time for the generated command in milliseconds (default: 30000)
 
-**--verbose**
+**-v, --verbose**
 
 Show detailed information including provider type, model used, and execution steps
 
-**--confirm**
+**-c, --confirm**
 
 Always prompt for confirmation before executing commands, even for safe operations
+
+**--skip-tool-validation**
+
+Skip checking if required tools are installed before execution
+
+**-s, --shell** _shell_
+
+Specify which shell to use for command execution
+
+**-w, --working-directory** _directory_
+
+Set the working directory for command execution
 
 **Examples:**
 
@@ -486,18 +499,32 @@ Always prompt for confirmation before executing commands, even for safe operatio
 
 # Set timeout and confirmation
 
-**rawi exec** "backup database" **--timeout** 300 **--confirm**
+**rawi exec** "backup database" **--timeout** 300000 **--confirm**
 
-# Verbose output with debugging
+# Interactive commands with secure input handling
+
+**rawi exec** "generate a new SSH key named work-key"
+
+**rawi exec** "create a GPG signing key for git"
+
+**rawi exec** "connect to remote MySQL database"
+
+# Using advanced options
 
 **rawi exec** "install docker" **--verbose**
+
+**rawi exec** "run specialized tool" **--skip-tool-validation**
+
+**rawi exec** "build project" **--working-directory** ~/projects **--shell** /bin/zsh
 
 **Use Cases:**
 
 - **System Administration**: Generate commands for server management and maintenance
+- **Security Operations**: Generate SSH/GPG keys and handle interactive security prompts
 - **File Operations**: Create complex find, grep, and file manipulation commands
 - **Development**: Generate build, test, and deployment commands
 - **Learning**: Discover CLI tools and their proper usage
+- **Access Management**: Handle user, permission, and credential operations securely
 - **Automation**: Create one-off commands for specific tasks
 
 **Safety Features:**

@@ -46,6 +46,7 @@ Welcome to the **Rawi (راوي)** documentation wiki! This comprehensive guide 
 - 🎯 **200+ Templates** — Expert-level prompt templates
 - 🔄 **Shell Integration** — Perfect pipes, redirects, and script automation
 - 📊 **Smart Sessions** — Persistent conversations with context awareness
+- 🔐 **Interactive Commands** — Secure handling of prompts, passwords, and passphrases
 - 🌍 **Multilingual** — Full support for English and Arabic
 - 📚 **Rich History** — Search, export, and manage conversations
 

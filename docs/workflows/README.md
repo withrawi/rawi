@@ -49,6 +49,10 @@ Streamline API development with design assistance, implementation guidance, test
 
 Comprehensive testing strategies including unit tests, integration tests, e2e tests, performance testing, and test command generation.
 
+### 🔐 [Security Operations Workflow](security-operations.md) **[WF-006]**
+
+Streamline security operations with key generation, security auditing, access management, and secure configuration, including interactive command handling.
+
 ### 📊 [Data Analysis Workflow](data-analysis.md) **[WF-006]**
 
 Advanced data analysis workflows for exploration, statistical analysis, visualization, and machine learning.
